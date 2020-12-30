@@ -9,7 +9,7 @@ final String COMMIT_MESSAGE = "Version change %version%"
 final String RESOURCE_ID = "e5b65750-4dcc-4631-b275-06113b31a416"
 
 final String BRANCH_DEVELOPMENT = "development"
-final String BRANCH_BETA = null
+final String BRANCH_BETA = "beta"
 final String BRANCH_MASTER = "master"
 
 String PROJECT_NAME = "McNativeBukkit"
