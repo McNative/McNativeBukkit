@@ -72,6 +72,7 @@ import org.mcnative.runtime.common.maf.MAFService;
 import org.mcnative.runtime.common.serviceprovider.message.ResourceMessageExtractor;
 import org.mcnative.runtime.network.integrations.cloudnet.v2.CloudNetV2Network;
 import org.mcnative.runtime.network.integrations.cloudnet.v3.CloudNetV3Network;
+import org.mcnative.runtime.protocol.java.MinecraftJavaProtocol;
 
 import java.io.File;
 import java.util.List;
@@ -146,6 +147,8 @@ public class McNativeLauncher {
         BukkitChannelInjector injector = new BukkitChannelInjector();
         CHANNEL_INJECTOR = injector;
         commandManager.inject();
+
+        MinecraftJavaProtocol.register(localService.getPacketManager());
 
         instance.registerDefaultProviders();
         instance.registerDefaultCommands();

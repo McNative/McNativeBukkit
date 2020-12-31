@@ -74,6 +74,7 @@ import org.mcnative.runtime.common.player.data.DefaultPlayerDataProvider;
 import org.mcnative.runtime.common.plugin.configuration.DefaultConfigurationProvider;
 import org.mcnative.runtime.common.serviceprovider.McNativePlaceholderProvider;
 import org.mcnative.runtime.common.serviceprovider.message.DefaultMessageProvider;
+import org.mcnative.runtime.protocol.java.MinecraftJavaProtocol;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -126,7 +127,6 @@ public class BukkitMcNative implements McNative {
         this.network = network;
 
         this.serverProperties = DocumentFileType.PROPERTIES.getReader().read(new File("server.properties"));
-
         this.rolloutConfiguration = DefaultRolloutConfiguration.load(new File("plugins/McNative/update.yml"));
         SLF4JStaticBridge.trySetLogger(logger);
     }
