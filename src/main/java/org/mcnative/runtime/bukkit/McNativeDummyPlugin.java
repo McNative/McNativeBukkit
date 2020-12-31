@@ -248,4 +248,5 @@ public class McNativeDummyPlugin implements Plugin {
             }else throw new IllegalArgumentException("This is not a McNative dummy plugin");
         }
     }
+
 }
