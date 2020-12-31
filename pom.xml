@@ -45,12 +45,9 @@
 
         <!-- Dependency version -->
         <dependency.mcnative.api>1.0.11.18-SNAPSHOT</dependency.mcnative.api>
-        <dependency.mcnative.common>1.7.81.8-SNAPSHOT</dependency.mcnative.common>
+        <dependency.mcnative.common>1.7.82.9-SNAPSHOT</dependency.mcnative.common>
 
         <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>
-
-        <dependency.pretronic.libraries>1.2.37.175-SNAPSHOT</dependency.pretronic.libraries>
-        <dependency.pretronic.databasequery>1.2.53.80-SNAPSHOT</dependency.pretronic.databasequery>
 
         <dependency.cloudnet.v2>2.1.17</dependency.cloudnet.v2>
         <dependency.cloudnet.v3>3.3.0-RELEASE</dependency.cloudnet.v3>
