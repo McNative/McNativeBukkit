@@ -369,4 +369,5 @@ public class McNativeLauncher {
         lookupNames.put(plugin.getName(),plugin);
         return plugin;
     }
+
 }
