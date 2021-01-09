@@ -34,6 +34,7 @@ import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.mcnative.runtime.api.ServerPerformance;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
 import org.mcnative.runtime.bukkit.serviceprovider.economy.VaultEconomyProvider;
 import org.mcnative.runtime.bukkit.serviceprovider.permission.VaultPermissionProvider;
@@ -75,6 +76,7 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
     private ServerStatusResponse statusResponse;
 
     private final NetworkIdentifier fallbackIdentifier;
+    private final ServerPerformance serverPerformance;
 
     protected BukkitService(CommandManager commandManager,BukkitPlayerManager playerManager, EventBus eventBus) {
         this.packetManager = new DefaultPacketManager();
@@ -85,6 +87,7 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
         initVaultHook();
 
         fallbackIdentifier = loadReportingId();
+        this.serverPerformance = new BukkitServerPerformance();
     }
 
     private NetworkIdentifier loadReportingId(){
@@ -200,6 +203,11 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
     @Override
     public void setStatusResponse(ServerStatusResponse status) {
         this.statusResponse = status;
+    }
+
+    @Override
+    public ServerPerformance getServerPerformance() {
+        return this.serverPerformance;
     }
 
     @Override

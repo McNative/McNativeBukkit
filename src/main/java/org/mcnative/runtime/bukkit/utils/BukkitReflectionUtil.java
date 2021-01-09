@@ -26,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -138,6 +139,15 @@ public class BukkitReflectionUtil {
             Class<?> craftPlayerClass = getCraftClass("entity.CraftPlayer");
             Method getHandle = craftPlayerClass.getDeclaredMethod("getHandle");
             return getHandle.invoke(player);
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static double[] getRecentTps() {
+        try {
+            Class<?> serverClass = getMNSClass("MinecraftServer");
+            return ReflectionUtil.getFieldValue(serverClass, "recentTps", double[].class);
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
