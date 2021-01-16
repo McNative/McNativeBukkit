@@ -217,12 +217,12 @@ public class BungeeCordProxyNetwork implements Network {
 
     @Override
     public String getGroup() {
-        return null;
+        return getIdentifier().getGroup();
     }
 
     @Override
     public String getStatus() {
-        return null;
+        return isConnected() ? "ONLINE" : "OFFLINE";
     }
 
     @Override

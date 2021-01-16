@@ -282,12 +282,12 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
 
     @Override
     public String getGroup() {
-       throw new UnsupportedOperationException();
+       return getIdentifier().getGroup();
     }
 
     @Override
     public String getStatus() {
-        throw new UnsupportedOperationException();
+        return McNative.getInstance().isReady() ? "ONLINE" : "STARTING";
     }
 
     @Override
