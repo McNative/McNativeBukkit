@@ -147,7 +147,8 @@ public class BukkitReflectionUtil {
     public static double[] getRecentTps() {
         try {
             Class<?> serverClass = getMNSClass("MinecraftServer");
-            return ReflectionUtil.getFieldValue(serverClass, "recentTps", double[].class);
+            Object server = serverClass.getDeclaredMethod("getServer").invoke(null);
+            return ReflectionUtil.getFieldValue(server, "recentTps", double[].class);
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
