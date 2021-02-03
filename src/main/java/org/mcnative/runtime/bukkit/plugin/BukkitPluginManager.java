@@ -321,10 +321,10 @@ public class BukkitPluginManager implements PluginManager {
         }
     }
 
+    //    && !plugin.getClass().getSimpleName().equals(DUMMY_CLASS_NAME)
     protected void registerBukkitPlugin(org.bukkit.plugin.Plugin plugin){
         if(!plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME)
-                && !plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME)
-                && !plugin.getClass().getSimpleName().equals(DUMMY_CLASS_NAME)){
+                && !plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME)){
 
             PluginLoader loader = Iterators.findOne(this.loaders, loader1
                     -> loader1 instanceof BukkitPluginLoader
