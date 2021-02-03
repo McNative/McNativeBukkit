@@ -21,6 +21,7 @@
 package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.utility.Validate;
+import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -52,6 +53,10 @@ public class McNativeDummyPlugin implements Plugin {
         this.pluginLoader = new DummyClassLoader();
         this.description = new PluginDescriptionFile("McNative",version,getClass().getName());
         this.enabled = true;
+
+        try {
+            ReflectionUtil.getFieldValue(this.description,"authors",List.class).add("Pretronic");
+        }catch (Exception ignored){}
     }
 
     @Override
