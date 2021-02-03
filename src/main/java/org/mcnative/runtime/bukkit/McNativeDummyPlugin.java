@@ -55,7 +55,8 @@ public class McNativeDummyPlugin implements Plugin {
         this.enabled = true;
 
         try {
-            ReflectionUtil.getFieldValue(this.description,"authors",List.class).add("Pretronic");
+            List<String> authors = Collections.singletonList("Pretronic");
+            ReflectionUtil.changeFieldValue(this.description,"authors",authors);
         }catch (Exception ignored){}
     }
 

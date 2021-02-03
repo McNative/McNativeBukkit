@@ -359,7 +359,8 @@ public class BukkitPluginManager implements PluginManager {
     public org.bukkit.plugin.Plugin getMappedPlugin(Plugin<?> original){//@Todo find better solution
         Validate.notNull(original);
         for (org.bukkit.plugin.Plugin plugin : Bukkit.getPluginManager().getPlugins()){
-            if(plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME) && plugin.getName().equals(original.getName())){
+            boolean allowed = plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME) || plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME);
+            if(allowed && plugin.getName().equals(original.getName())){
                 return plugin;
             }
         }
