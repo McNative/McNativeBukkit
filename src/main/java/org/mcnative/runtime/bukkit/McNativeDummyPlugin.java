@@ -122,7 +122,7 @@ public class McNativeDummyPlugin implements Plugin {
 
     @Override
     public void onLoad() {
-        McNativeLauncher.launchMcNativeInternal(this);
+        McNativeLauncher.launchMcNativeInternal(new ArrayList<>(),this);
     }
 
     @Override
@@ -240,7 +240,7 @@ public class McNativeDummyPlugin implements Plugin {
         @Override
         public void enablePlugin(Plugin plugin) {
             if(plugin.equals(McNativeDummyPlugin.this)){
-                McNativeLauncher.launchMcNativeInternal(plugin);
+                McNativeLauncher.launchMcNativeInternal(new ArrayList<>(),plugin);
                 McNativeDummyPlugin.this.enabled = true;
             }else throw new IllegalArgumentException("This is not a McNative dummy plugin");
         }

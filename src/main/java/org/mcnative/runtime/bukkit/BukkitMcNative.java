@@ -20,6 +20,7 @@
 package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.command.sender.CommandSender;
+import net.pretronic.libraries.command.sender.ConsoleCommandSender;
 import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
 import net.pretronic.libraries.dependency.DependencyManager;
@@ -105,8 +106,9 @@ public class BukkitMcNative implements McNative {
     private Network network;
     private final Document serverProperties;
     private boolean ready;
+    private final McNativeConsoleCredentials consoleCredentials;
 
-    protected BukkitMcNative(PluginVersion apiVersion,PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local, Network network) {
+    protected BukkitMcNative(PluginVersion apiVersion,PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local,Collection<Env> variables, McNativeConsoleCredentials consoleCredentials) {
         this.apiVersion = apiVersion;
         this.implementationVersion = implVersion;
 
@@ -125,13 +127,13 @@ public class BukkitMcNative implements McNative {
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
         this.factory = new DefaultObjectFactory();
-        this.variables = new ArrayList<>();
+        this.variables = variables;
 
         this.consoleSender = new McNativeCommand.MappedCommandSender(Bukkit.getConsoleSender());
         this.pluginManager = pluginManager;
         this.playerManager = playerManager;
         this.local = local;
-        this.network = network;
+        this.consoleCredentials = consoleCredentials;
 
         this.serverProperties = DocumentFileType.PROPERTIES.getReader().read(new File("server.properties"));
         this.loaderConfiguration = DefaultLoaderConfiguration.load(new File("plugins/McNative/loader.yml"));
@@ -155,7 +157,7 @@ public class BukkitMcNative implements McNative {
 
     @Override
     public McNativeConsoleCredentials getConsoleCredentials() {
-        return new McNativeConsoleCredentials(McNativeBukkitConfiguration.CONSOLE_NETWORK_ID,McNativeBukkitConfiguration.CONSOLE_SECRET);
+        return this.consoleCredentials;
     }
 
     @Override
