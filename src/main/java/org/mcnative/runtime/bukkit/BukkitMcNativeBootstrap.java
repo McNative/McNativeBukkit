@@ -21,12 +21,14 @@ package org.mcnative.runtime.bukkit;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+
 public class BukkitMcNativeBootstrap extends JavaPlugin {
 
     @Override
     public void onLoad() {
         try{
-            McNativeLauncher.launchMcNativeInternal(this);
+            McNativeLauncher.launchMcNativeInternal(new ArrayList<>(),this);
         }catch (Exception exception){
             exception.printStackTrace();
             getLogger().info("Could not bootstrap McNative ("+exception.getMessage()+")");

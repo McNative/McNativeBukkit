@@ -25,7 +25,7 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.8.1.18</version>
+    <version>1.9.18.40-BETA</version>
 
     <distributionManagement>
         <repository>
@@ -44,8 +44,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency version -->
-        <dependency.mcnative.api>1.0.13.20-SNAPSHOT</dependency.mcnative.api>
-        <dependency.mcnative.common>1.7.86.14-SNAPSHOT</dependency.mcnative.common>
+        <dependency.mcnative.api>1.0.19.26</dependency.mcnative.api>
+        <dependency.mcnative.common>1.7.102.30</dependency.mcnative.common>
+        <dependency.netty>4.1.56.Final</dependency.netty>
 
         <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>
 
@@ -102,7 +103,10 @@
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
+                        </manifest>A
+                        <manifestEntries>
+                            <Specification-Version>${dependency.mcnative.api}</Specification-Version>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -219,6 +223,13 @@
             <artifactId>VaultAPI</artifactId>
             <version>${dependency.valut}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-kqueue</artifactId>
+            <version>${dependency.netty}</version>
+            <scope>compile</scope>
         </dependency>
 
 

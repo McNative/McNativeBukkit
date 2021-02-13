@@ -122,7 +122,7 @@ public final class BungeeCordNetworkServer implements MinecraftServer {
 
     @Override
     public String getGroup() {
-        return getName().split(McNativeBukkitConfiguration.SERVER_GROUP_DELIMITER)[0];
+        return getIdentifier().getGroup();
     }
 
     @Override

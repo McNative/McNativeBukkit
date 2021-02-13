@@ -30,11 +30,14 @@ import net.pretronic.libraries.logging.bridge.JdkPretronicLogger;
 import net.pretronic.libraries.message.bml.variable.VariableSet;
 import net.pretronic.libraries.plugin.description.PluginVersion;
 import net.pretronic.libraries.utility.GeneralUtil;
+import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcnative.runtime.api.McNativeConsoleCredentials;
+import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV2PlatformListener;
@@ -75,10 +78,11 @@ import org.mcnative.runtime.network.integrations.cloudnet.v3.CloudNetV3Network;
 import org.mcnative.runtime.protocol.java.MinecraftJavaProtocol;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,13 +100,18 @@ public class McNativeLauncher {
     }
 
     public static void launchMcNative(){
-        launchMcNativeInternal(createDummyPlugin());
+        launchMcNative(new HashMap<>());
     }
 
-    public static void launchMcNativeInternal(Plugin plugin){
+    public static void launchMcNative(Map<String,String> variables0){
+        Collection<Env> variables = Iterators.map(variables0.entrySet(), entry -> new Env(entry.getKey().toLowerCase(),entry.getValue()));
+        launchMcNativeInternal(variables,createDummyPlugin());
+    }
+
+    public static void launchMcNativeInternal(Collection<Env> variables,Plugin plugin){
         if(McNative.isAvailable()) return;
         try {
-            bootstrapMCNative(plugin);
+            bootstrapMCNative(variables,plugin);
         }catch (Exception exception){
             exception.printStackTrace();
             Bukkit.getLogger().info(McNative.CONSOLE_PREFIX+"McNative failed to started, shutting down");
@@ -110,7 +119,7 @@ public class McNativeLauncher {
         }
     }
 
-    private static void bootstrapMCNative(Plugin plugin){
+    private static void bootstrapMCNative(Collection<Env> variables,Plugin plugin){
         PluginVersion apiVersion = PluginVersion.parse(McNativeLauncher.class.getPackage().getSpecificationVersion());
         PluginVersion implementationVersion = PluginVersion.ofImplementation(McNativeLauncher.class);
 
@@ -138,8 +147,9 @@ public class McNativeLauncher {
         COMMAND_MANAGER = commandManager;
         EVENT_BUS = eventBus;
 
+        McNativeConsoleCredentials credentials = setupCredentials(variables);
         BukkitService localService = new BukkitService(commandManager,playerManager,eventBus);
-        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,null);
+        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials);
 
         McNative.setInstance(instance);
         instance.setNetwork(setupNetwork(logger,instance.getExecutorService()));
@@ -192,8 +202,7 @@ public class McNativeLauncher {
         setupConfiguredServices();
 
         ResourceMessageExtractor.extractMessages(McNativeLauncher.class.getClassLoader(),"system-messages/","McNative");
-
-        if(McNativeBukkitConfiguration.CONSOLE_MAF_ENABLED && !McNativeBukkitConfiguration.CONSOLE_NETWORK_ID.equals("00000-00000-00000")){
+        if(McNativeBukkitConfiguration.CONSOLE_MAF_ENABLED && McNative.getInstance().getConsoleCredentials() != null){
             MAFService.start();
         }
         eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent());
@@ -229,6 +238,17 @@ public class McNativeLauncher {
         if(Bukkit.getPluginManager().getPlugin("Vault") != null){
             eventBus.subscribe(McNative.getInstance(), new VaultServiceListener(pluginManager));
         }
+    }
+
+    private static McNativeConsoleCredentials setupCredentials(Collection<Env> variables){
+        Env networkId = Iterators.findOne(variables, env -> env.getName().equalsIgnoreCase("mcnative.networkId"));
+        Env secret = Iterators.findOne(variables, env -> env.getName().equalsIgnoreCase("mcnative.secret"));
+        if(networkId != null && secret != null){
+            return new McNativeConsoleCredentials(networkId.getValue().toString(),secret.getValue().toString());
+        }else if(!McNativeBukkitConfiguration.CONSOLE_NETWORK_ID.equals("00000-00000-00000")){
+            return new McNativeConsoleCredentials(McNativeBukkitConfiguration.CONSOLE_NETWORK_ID,McNativeBukkitConfiguration.CONSOLE_SECRET);
+        }
+        return null;
     }
 
     private static void setupConfiguredServices(){
