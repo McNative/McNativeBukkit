@@ -62,6 +62,8 @@ import java.util.function.Supplier;
 public class BukkitPluginManager implements PluginManager {
 
     private final static String LOADER_CLASS_NAME = "BukkitMcNativePluginBootstrap";
+    private final static String DUMMY_CLASS_NAME = "McNativeDummyPlugin";
+    private final static String PLUGIN_CLASS_NAME = "BukkitDummyPlugin";
 
     private final ServicesManager serviceManager;
     private final Map<String, BiConsumer<Plugin<?>,LifecycleState>> stateListeners;
@@ -319,8 +321,10 @@ public class BukkitPluginManager implements PluginManager {
         }
     }
 
+    //    && !plugin.getClass().getSimpleName().equals(DUMMY_CLASS_NAME)
     protected void registerBukkitPlugin(org.bukkit.plugin.Plugin plugin){
-        if(!plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME)){
+        if(!plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME)
+                && !plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME)){
 
             PluginLoader loader = Iterators.findOne(this.loaders, loader1
                     -> loader1 instanceof BukkitPluginLoader
@@ -355,7 +359,8 @@ public class BukkitPluginManager implements PluginManager {
     public org.bukkit.plugin.Plugin getMappedPlugin(Plugin<?> original){//@Todo find better solution
         Validate.notNull(original);
         for (org.bukkit.plugin.Plugin plugin : Bukkit.getPluginManager().getPlugins()){
-            if(plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME) && plugin.getName().equals(original.getName())){
+            boolean allowed = plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME) || plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME);
+            if(allowed && plugin.getName().equals(original.getName())){
                 return plugin;
             }
         }

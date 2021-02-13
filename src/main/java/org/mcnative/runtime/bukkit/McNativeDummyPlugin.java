@@ -21,6 +21,7 @@
 package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.utility.Validate;
+import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -52,6 +53,11 @@ public class McNativeDummyPlugin implements Plugin {
         this.pluginLoader = new DummyClassLoader();
         this.description = new PluginDescriptionFile("McNative",version,getClass().getName());
         this.enabled = true;
+
+        try {
+            List<String> authors = Collections.singletonList("Pretronic");
+            ReflectionUtil.changeFieldValue(this.description,"authors",authors);
+        }catch (Exception ignored){}
     }
 
     @Override
@@ -116,7 +122,7 @@ public class McNativeDummyPlugin implements Plugin {
 
     @Override
     public void onLoad() {
-        McNativeLauncher.launchMcNativeInternal(this);
+        McNativeLauncher.launchMcNativeInternal(new ArrayList<>(),this);
     }
 
     @Override
@@ -234,7 +240,7 @@ public class McNativeDummyPlugin implements Plugin {
         @Override
         public void enablePlugin(Plugin plugin) {
             if(plugin.equals(McNativeDummyPlugin.this)){
-                McNativeLauncher.launchMcNativeInternal(plugin);
+                McNativeLauncher.launchMcNativeInternal(new ArrayList<>(),plugin);
                 McNativeDummyPlugin.this.enabled = true;
             }else throw new IllegalArgumentException("This is not a McNative dummy plugin");
         }

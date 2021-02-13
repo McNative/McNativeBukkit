@@ -20,6 +20,7 @@
 package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.command.sender.CommandSender;
+import net.pretronic.libraries.command.sender.ConsoleCommandSender;
 import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
 import net.pretronic.libraries.dependency.DependencyManager;
@@ -42,8 +43,11 @@ import net.pretronic.libraries.plugin.loader.DefaultPluginLoader;
 import net.pretronic.libraries.plugin.manager.PluginManager;
 import net.pretronic.libraries.plugin.service.ServiceRegistry;
 import net.pretronic.libraries.utility.GeneralUtil;
+import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.Bukkit;
+import org.mcnative.runtime.api.loader.LoaderConfiguration;
+import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionProvider;
@@ -59,14 +63,13 @@ import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.data.PlayerDataProvider;
 import org.mcnative.runtime.api.plugin.MinecraftPlugin;
 import org.mcnative.runtime.api.plugin.configuration.ConfigurationProvider;
-import org.mcnative.runtime.api.rollout.RolloutConfiguration;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.format.ColoredString;
+import org.mcnative.runtime.common.DefaultLoaderConfiguration;
 import org.mcnative.runtime.common.DefaultObjectFactory;
-import org.mcnative.runtime.common.DefaultRolloutConfiguration;
 import org.mcnative.runtime.common.player.DefaultChatChannel;
 import org.mcnative.runtime.common.player.DefaultPlayerDesign;
 import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
@@ -77,7 +80,10 @@ import org.mcnative.runtime.common.serviceprovider.message.DefaultMessageProvide
 import org.mcnative.runtime.protocol.java.MinecraftJavaProtocol;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public class BukkitMcNative implements McNative {
@@ -89,7 +95,8 @@ public class BukkitMcNative implements McNative {
     private final TaskScheduler scheduler;
     private final CommandSender consoleSender;
     private final ObjectFactory factory;
-    private final RolloutConfiguration rolloutConfiguration;
+    private final LoaderConfiguration loaderConfiguration;
+    private final Collection<Env> variables;
 
     private final PluginManager pluginManager;
     private final DependencyManager dependencyManager;
@@ -99,8 +106,9 @@ public class BukkitMcNative implements McNative {
     private Network network;
     private final Document serverProperties;
     private boolean ready;
+    private final McNativeConsoleCredentials consoleCredentials;
 
-    protected BukkitMcNative(PluginVersion apiVersion,PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local, Network network) {
+    protected BukkitMcNative(PluginVersion apiVersion,PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local,Collection<Env> variables, McNativeConsoleCredentials consoleCredentials) {
         this.apiVersion = apiVersion;
         this.implementationVersion = implVersion;
 
@@ -119,15 +127,16 @@ public class BukkitMcNative implements McNative {
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
         this.factory = new DefaultObjectFactory();
+        this.variables = variables;
 
         this.consoleSender = new McNativeCommand.MappedCommandSender(Bukkit.getConsoleSender());
         this.pluginManager = pluginManager;
         this.playerManager = playerManager;
         this.local = local;
-        this.network = network;
+        this.consoleCredentials = consoleCredentials;
 
         this.serverProperties = DocumentFileType.PROPERTIES.getReader().read(new File("server.properties"));
-        this.rolloutConfiguration = DefaultRolloutConfiguration.load(new File("plugins/McNative/update.yml"));
+        this.loaderConfiguration = DefaultLoaderConfiguration.load(new File("plugins/McNative/loader.yml"));
         SLF4JStaticBridge.trySetLogger(logger);
     }
 
@@ -142,15 +151,38 @@ public class BukkitMcNative implements McNative {
     }
 
     @Override
-    public RolloutConfiguration getRolloutConfiguration() {
-        return this.rolloutConfiguration;
+    public LoaderConfiguration getRolloutConfiguration() {
+        return loaderConfiguration;
     }
 
     @Override
     public McNativeConsoleCredentials getConsoleCredentials() {
-        return new McNativeConsoleCredentials(McNativeBukkitConfiguration.CONSOLE_NETWORK_ID,McNativeBukkitConfiguration.CONSOLE_SECRET);
+        return this.consoleCredentials;
     }
 
+    @Override
+    public Collection<Env> getVariables() {
+        return variables;
+    }
+
+    @Override
+    public Env getVariable(String name) {
+        Validate.notNull(name);
+        return Iterators.findOne(this.variables, env -> env.getName().equalsIgnoreCase(name));
+    }
+
+    @Override
+    public boolean hasVariable(String name) {
+        Validate.notNull(name);
+        return getVariable(name) != null;
+    }
+
+    @Override
+    public void setVariable(String name, Object value) {
+        Validate.notNull(name);
+        Iterators.remove(this.variables, env -> env.getName().equalsIgnoreCase(name));
+        if(value != null) this.variables.add(new Env(name,value));
+    }
 
     protected void setReady(boolean ready) {
         this.ready = ready;

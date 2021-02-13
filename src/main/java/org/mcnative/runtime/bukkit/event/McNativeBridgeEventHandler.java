@@ -20,12 +20,15 @@
 
 package org.mcnative.runtime.bukkit.event;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginConfirmEvent;
 import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryClickEvent;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryCloseEvent;
@@ -59,11 +62,13 @@ import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerIn
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryDragEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryOpenEvent;
 import org.mcnative.runtime.bukkit.event.player.*;
+import org.mcnative.runtime.common.event.player.DefaultMinecraftPlayerLoginConfirmEvent;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class McNativeBridgeEventHandler {
 
@@ -250,6 +255,16 @@ public class McNativeBridgeEventHandler {
         if(mcnativeEvent.hasLocationChanged()){
             player.teleport(mcnativeEvent.getSpawnLocation());
         }
+
+        McNative.getInstance().getScheduler().createTask(McNative.getInstance())
+                .delay(500, TimeUnit.MILLISECONDS).execute(()-> {
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        if(onlinePlayer.getUniqueId().equals(event.getPlayer().getUniqueId())) {
+                            this.eventBus.callEvent(MinecraftPlayerLoginConfirmEvent.class,
+                                    new DefaultMinecraftPlayerLoginConfirmEvent(player));
+                        }
+                    }
+                });
     }
 
     private void handleLogoutEvent(McNativeHandlerList handler, PlayerQuitEvent event){
