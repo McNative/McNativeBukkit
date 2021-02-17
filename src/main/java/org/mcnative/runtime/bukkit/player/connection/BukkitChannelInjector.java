@@ -116,12 +116,12 @@ public class BukkitChannelInjector {
             Object connection = BukkitReflectionUtil.getServerConnection();
             if(connection == null){
                 if(count < 3){
-                    McNative.getInstance().getLogger().error("[McNative] Could not get server connection, trying again in a view seconds");
+                    McNative.getInstance().getLogger().error(McNative.CONSOLE_PREFIX+"Could not get server connection, trying again in a view seconds");
                     McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM)
                             .delay(1500, TimeUnit.MILLISECONDS)
                             .execute(() -> injectChannelInitializer(after,count+1));
                 }else{
-                    McNative.getInstance().getLogger().error("[McNative] Could not get server connection, please report this issue to the McNative developer team.");
+                    McNative.getInstance().getLogger().error(McNative.CONSOLE_PREFIX+"Could not get server connection, please report this issue to the McNative developer team.");
                     after.accept(false);
                 }
                 return;
@@ -131,17 +131,18 @@ public class BukkitChannelInjector {
                     if(((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0].equals(ChannelFuture.class)){
                         field.setAccessible(true);
                         Object list = field.get(connection);
-                        McNative.getInstance().getLogger().info("[McNative] Overriding channel future list "+list);
+                        McNative.getInstance().getLogger().info(McNative.CONSOLE_PREFIX+"Overwriting channel future list "+list);
                         ChannelFutureWrapperList wrapper = new ChannelFutureWrapperList(this,(List<ChannelFuture>) list);
                         field.set(connection,wrapper);
                         this.channelFutureWrapperList = wrapper;
                         this.channelFutureListField = field;
                         after.accept(true);
+                        McNative.getInstance().getLogger().info(McNative.CONSOLE_PREFIX+"McNative has overwritten the channel initializer.");
                         return;
                     }
                 }
             }
-            McNative.getInstance().getLogger().error("[McNative] Could not override the channel future list in the server connection, please report this issue to the McNative developer team");
+            McNative.getInstance().getLogger().error(McNative.CONSOLE_PREFIX+"Could not override the channel future list in the server connection, please report this issue to the McNative developer team");
             after.accept(false);
         }catch (Exception e){
             throw new ReflectException(e);

@@ -34,6 +34,7 @@ import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcnative.runtime.api.McNativeConsoleCredentials;
@@ -86,7 +87,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class McNativeLauncher {
+public class McNativeLauncher implements Listener {
 
     private static Plugin PLUGIN;
 
@@ -166,14 +167,10 @@ public class McNativeLauncher {
         instance.registerDefaultCreators();
 
         registerDefaultListener(eventBus, pluginManager);
-
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
-
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
 
-        logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten the channel initializer.");
-
-        registerDependencyHooks(pluginManager,playerManager);
+        registerDependencyHooks(logger,pluginManager,playerManager);
 
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM)
                 .delay(1, TimeUnit.SECONDS)
@@ -363,8 +360,9 @@ public class McNativeLauncher {
         return null;
     }
 
-    private static void registerDependencyHooks(BukkitPluginManager pluginManager, BukkitPlayerManager playerManager){
-        if(Bukkit.getPluginManager().getPlugin("PlaceHolderApi") != null){
+    private static void registerDependencyHooks(Logger logger,BukkitPluginManager pluginManager, BukkitPlayerManager playerManager){
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+            logger.info(McNative.CONSOLE_PREFIX+"(Service) Initialized PlaceHolderApi provider");
             McNative.getInstance().getRegistry().registerService(McNative.getInstance(), PlaceholderProvider.class
                     ,new PlaceHolderApiProvider(playerManager,pluginManager));
         }
