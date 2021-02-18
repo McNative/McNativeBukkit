@@ -109,7 +109,7 @@ public class PlaceHolderApiProvider implements PlaceholderProvider, OwnerUnregis
             OfflinePlayer mapped;
             if(player instanceof BukkitPlayer) mapped = ((BukkitPlayer) player).getOriginal();
             else mapped = Bukkit.getOfflinePlayer(player.getUniqueId());
-            hook.onRequest(mapped,parameter);
+            return hook.onRequest(mapped,parameter);
         }
         return null;
     }
