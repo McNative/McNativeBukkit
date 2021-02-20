@@ -308,7 +308,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public void sendData(String channel, byte[] output) {
-        Validate.notNull(channel,output);
+        Validate.notNull(output,channel);
         CustomPayloadPacket packet = new CustomPayloadPacket();
         packet.setChannel(channel);
         packet.setContent(output);
