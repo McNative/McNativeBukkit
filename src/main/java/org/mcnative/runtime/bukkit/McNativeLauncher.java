@@ -38,6 +38,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcnative.runtime.api.McNativeConsoleCredentials;
+import org.mcnative.runtime.api.text.components.MessageKeyComponent;
+import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
@@ -261,12 +263,12 @@ public class McNativeLauncher implements Listener {
             tablist.setFormatter(new TablistFormatter() {
                 @Override
                 public MessageComponent<?> formatPrefix(ConnectedMinecraftPlayer player, TablistEntry entry, VariableSet variables) {
-                    return McNativeBukkitConfiguration.PLAYER_TABLIST_PREFIX_LOADED;
+                    return new TargetMessageKeyComponent(player,McNativeBukkitConfiguration.PLAYER_TABLIST_PREFIX_LOADED);
                 }
 
                 @Override
                 public MessageComponent<?> formatSuffix(ConnectedMinecraftPlayer player,TablistEntry entry, VariableSet variables) {
-                    return McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED;
+                    return new TargetMessageKeyComponent(player,McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
                 }
             });
 

@@ -77,9 +77,9 @@ public class McNativeBukkitConfiguration {
     public static String PLAYER_CHAT_FORMAT = "&e{design.chat}{player.name}&8:&f {message}";
 
 
+    public static transient Message PLAYER_TABLIST_PREFIX_LOADED;
+    public static transient Message PLAYER_TABLIST_SUFFIX_LOADED;
     public static transient MessageComponent<?> PLAYER_CHAT;
-    public static transient MessageComponent<?> PLAYER_TABLIST_PREFIX_LOADED;
-    public static transient MessageComponent<?> PLAYER_TABLIST_SUFFIX_LOADED;
     public static transient MessageComponent<?> PLAYER_TABLIST_OVERVIEW_HEADER_LOADED;
     public static transient MessageComponent<?> PLAYER_TABLIST_OVERVIEW_FOOTER_LOADED;
 
@@ -140,22 +140,21 @@ public class McNativeBukkitConfiguration {
     }
 
     public static boolean postLoad(){
-        PLAYER_CHAT = parseCustomMessage(PLAYER_CHAT_FORMAT);
+        PLAYER_CHAT = new MessageKeyComponent(parseCustomMessage(PLAYER_CHAT_FORMAT));
         PLAYER_TABLIST_PREFIX_LOADED = parseCustomMessage(PLAYER_TABLIST_PREFIX);
         PLAYER_TABLIST_SUFFIX_LOADED = parseCustomMessage(PLAYER_TABLIST_SUFFIX);
 
-        PLAYER_TABLIST_OVERVIEW_HEADER_LOADED = parseCustomMessage(PLAYER_TABLIST_OVERVIEW_HEADER);
-        PLAYER_TABLIST_OVERVIEW_FOOTER_LOADED = parseCustomMessage(PLAYER_TABLIST_OVERVIEW_FOOTER);
+        PLAYER_TABLIST_OVERVIEW_HEADER_LOADED = new MessageKeyComponent(parseCustomMessage(PLAYER_TABLIST_OVERVIEW_HEADER));
+        PLAYER_TABLIST_OVERVIEW_FOOTER_LOADED = new MessageKeyComponent(parseCustomMessage(PLAYER_TABLIST_OVERVIEW_FOOTER));
 
-        SERVER_STATUS_DESCRIPTION_LINE1_COMPILED = parseCustomMessage(SERVER_STATUS_DESCRIPTION_LINE1);
-        SERVER_STATUS_DESCRIPTION_LINE2_COMPILED = parseCustomMessage(SERVER_STATUS_DESCRIPTION_LINE2);
+        SERVER_STATUS_DESCRIPTION_LINE1_COMPILED = new MessageKeyComponent(parseCustomMessage(SERVER_STATUS_DESCRIPTION_LINE1));
+        SERVER_STATUS_DESCRIPTION_LINE2_COMPILED = new MessageKeyComponent(parseCustomMessage(SERVER_STATUS_DESCRIPTION_LINE2));
 
         OfflineMinecraftPlayer.DISPLAY_NAME_FORMAT = PLAYER_DISPLAY_NAME_FORMAT;
         return true;
     }
-    private static MessageComponent<?> parseCustomMessage(String input){
-        Message message = new MessageParser(McNative.getInstance().getRegistry()
+    private static Message parseCustomMessage(String input){
+        return new MessageParser(McNative.getInstance().getRegistry()
                 .getService(MessageProvider.class).getProcessor(),input).parse();
-        return new MessageKeyComponent(message);
     }
 }
