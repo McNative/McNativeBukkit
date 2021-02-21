@@ -38,6 +38,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcnative.runtime.api.McNativeConsoleCredentials;
+import org.mcnative.runtime.api.connection.MinecraftConnection;
 import org.mcnative.runtime.api.text.components.MessageKeyComponent;
 import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.utils.Env;
@@ -263,12 +264,20 @@ public class McNativeLauncher implements Listener {
             tablist.setFormatter(new TablistFormatter() {
                 @Override
                 public MessageComponent<?> formatPrefix(ConnectedMinecraftPlayer player, TablistEntry entry, VariableSet variables) {
-                    return new TargetMessageKeyComponent(player,McNativeBukkitConfiguration.PLAYER_TABLIST_PREFIX_LOADED);
+                    if(entry instanceof MinecraftConnection){
+                        return new TargetMessageKeyComponent((MinecraftConnection) entry,McNativeBukkitConfiguration.PLAYER_TABLIST_PREFIX_LOADED);
+                    }else{
+                        return new MessageKeyComponent(McNativeBukkitConfiguration.PLAYER_TABLIST_PREFIX_LOADED);
+                    }
                 }
 
                 @Override
                 public MessageComponent<?> formatSuffix(ConnectedMinecraftPlayer player,TablistEntry entry, VariableSet variables) {
-                    return new TargetMessageKeyComponent(player,McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
+                    if(entry instanceof MinecraftConnection){
+                        return new TargetMessageKeyComponent(player,McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
+                    }else{
+                        return new MessageKeyComponent(McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
+                    }
                 }
             });
 
