@@ -25,14 +25,18 @@ import net.milkbowl.vault.permission.Permission;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.MinecraftPlayer;
 import org.mcnative.runtime.api.player.PlayerDesign;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionHandler;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionResult;
+import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.common.player.DefaultPlayerDesign;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public class VaultPermissionHandler implements PermissionHandler {
@@ -84,11 +88,21 @@ public class VaultPermissionHandler implements PermissionHandler {
 
     @Override
     public PlayerDesign getDesign() {
-        return new DefaultPlayerDesign("",
+        return new DefaultPlayerDesign(getColor(),
                 chat.getPlayerPrefix(null, getBukkitPlayer()),
                 chat.getPlayerSuffix(null, getBukkitPlayer()),
                 chat.getPlayerPrefix(null, getBukkitPlayer()),
                 0);
+    }
+
+    private String getColor(){
+        for (Map.Entry<String, String> entry : McNativeBukkitConfiguration.PLAYER_COLORS_COLORS.entrySet()) {
+            Player player = Bukkit.getPlayer(playerId);
+            if(player != null && player.hasPermission(entry.getKey())){
+                return entry.getValue();
+            }
+        }
+        return McNativeBukkitConfiguration.PLAYER_COLORS_DEFAULT;
     }
 
     @Override
