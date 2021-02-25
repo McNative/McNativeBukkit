@@ -386,7 +386,7 @@ public class McNativeLauncher implements Listener {
     private static void enablePlugin(Plugin plugin){
         if(plugin instanceof JavaPlugin){
             ReflectionUtil.changeFieldValue(JavaPlugin.class,plugin,"isEnabled",true);
-        }else throw new IllegalArgumentException("Could not enable plugin, requires JavaPlugin");
+        }else throw new IllegalArgumentException("Could not enable plugin, requires JavaPlugin: "+plugin.getClass());
     }
 
     @SuppressWarnings("unchecked")
