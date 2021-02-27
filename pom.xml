@@ -44,11 +44,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency version -->
-        <dependency.mcnative.api>1.0.24.33-SNAPSHOT</dependency.mcnative.api>
-        <dependency.mcnative.common>1.8.16.48-SNAPSHOT</dependency.mcnative.common>
+        <dependency.mcnative.api>1.0.35.44-SNAPSHOT</dependency.mcnative.api>
+        <dependency.mcnative.common>1.8.19.51-SNAPSHOT</dependency.mcnative.common>
         <dependency.netty>4.1.56.Final</dependency.netty>
 
-        <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>
+        <dependencky.bukkit>1.14.2-R0.1-SNAPSHOT</dependencky.bukkit>
 
         <dependency.cloudnet.v2>2.1.17</dependency.cloudnet.v2>
         <dependency.cloudnet.v3>3.3.0-RELEASE</dependency.cloudnet.v3>
