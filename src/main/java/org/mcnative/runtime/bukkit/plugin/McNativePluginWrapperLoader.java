@@ -21,6 +21,7 @@
 package org.mcnative.runtime.bukkit.plugin;
 
 import net.pretronic.libraries.event.EventBus;
+import net.pretronic.libraries.event.execution.ExecutionType;
 import net.pretronic.libraries.event.executor.MethodEventExecutor;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
@@ -87,7 +88,7 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                     } else {
                         mappedOwner = new BukkitPluginOwner(plugin);
                     }
-                    eventBus.addExecutor(mappedClass, new MethodEventExecutor(mappedOwner, mapPriority(eventHandler.priority()), listener, eventClass, method));
+                    eventBus.addExecutor(mappedClass, new MethodEventExecutor(mappedOwner, mapPriority(eventHandler.priority()), ExecutionType.BLOCKING, listener, eventClass, method));
                 } else { //Bukkit Event
                     Class<? extends Event> directClass = eventClass.asSubclass(Event.class);
                     Set<RegisteredListener> eventSet = result.computeIfAbsent(directClass, k -> new HashSet<>());

@@ -19,9 +19,11 @@
 
 package org.mcnative.runtime.bukkit.plugin.event;
 
+import net.pretronic.libraries.event.execution.EventExecution;
 import net.pretronic.libraries.event.executor.ConsumerEventExecutor;
 import net.pretronic.libraries.event.executor.EventExecutor;
 import net.pretronic.libraries.event.executor.MethodEventExecutor;
+import net.pretronic.libraries.event.network.EventOrigin;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
@@ -47,6 +49,8 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class McNativeHandlerList extends HandlerList implements org.bukkit.plugin.EventExecutor,Listener {
+
+    private static final EventExecution DUMMY_EXECUTION = new DummyEventExecution();
 
     private final Class<?> eventClass;
     private final RegisteredListener[] dummyListener;
@@ -132,7 +136,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     public void callEvents(Object... objects){
         for (EventExecutor executor : executors){
             try {
-                executor.execute(objects);
+                executor.execute(DUMMY_EXECUTION,objects);
             } catch (AuthorNagException ex) {
                 if(executor instanceof BukkitEventExecutor){
                     Plugin plugin = ((BukkitEventExecutor) executor).getRegistration().getPlugin();
@@ -230,5 +234,18 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
         Object oldValue = field.get(null);
         field.set(null, newValue);
         return oldValue;
+    }
+
+    private static class DummyEventExecution implements EventExecution {
+
+        @Override
+        public EventOrigin getOrigin() {
+            return McNative.getInstance().getLocal();
+        }
+
+        @Override
+        public void complete() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

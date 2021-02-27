@@ -32,6 +32,8 @@ import net.pretronic.libraries.utility.OwnedObject;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.mcnative.runtime.api.McNative;
+import org.mcnative.runtime.api.event.player.MinecraftPlayerLogoutEvent;
+import org.mcnative.runtime.api.event.player.login.MinecraftPlayerPostLoginEvent;
 import org.mcnative.runtime.api.network.Network;
 import org.mcnative.runtime.api.network.NetworkIdentifier;
 import org.mcnative.runtime.api.network.NetworkOperations;
@@ -358,7 +360,7 @@ public class BungeeCordProxyNetwork implements Network {
         OnlineMinecraftPlayer player = new BungeeCordOnlinePlayer(data, uniqueId, name, address, onlineMode, server);
         this.players.add(player);
         if(server instanceof BungeeCordNetworkServer) ((BungeeCordNetworkServer) server).addPlayer(player);
-        this.eventBus.callEvent(new NetworkPlayerPostLoginEvent(player));
+        this.eventBus.callEvent(MinecraftPlayerPostLoginEvent.class,new NetworkPlayerPostLoginEvent(player));
     }
 
     private void handlePlayerLogout(Document document) {
@@ -368,7 +370,7 @@ public class BungeeCordProxyNetwork implements Network {
             if (player.getServer() instanceof BungeeCordNetworkServer) {
                 ((BungeeCordNetworkServer) player.getServer()).removePlayer(player);
             }
-            this.eventBus.callEvent(new NetworkPlayerLogoutEvent(player));
+            this.eventBus.callEvent(MinecraftPlayerLogoutEvent.class,new NetworkPlayerLogoutEvent(player));
         }
     }
 
@@ -386,7 +388,7 @@ public class BungeeCordProxyNetwork implements Network {
             if (server instanceof BungeeCordNetworkServer) {
                 ((BungeeCordNetworkServer) player.getServer()).addPlayer(player);
             }
-            this.eventBus.callEvent(new NetworkPlayerServerSwitchEvent(player,from,server));
+            this.eventBus.callEvent(NetworkPlayerServerSwitchEvent.class,new NetworkPlayerServerSwitchEvent(player,from,server));
         }
     }
 
