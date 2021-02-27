@@ -22,9 +22,11 @@ package org.mcnative.runtime.bukkit.player;
 
 import net.pretronic.libraries.concurrent.Task;
 import net.pretronic.libraries.message.bml.variable.VariableSet;
+import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
+import org.mcnative.runtime.api.protocol.packet.type.CustomPayloadPacket;
 import org.mcnative.runtime.bukkit.BukkitService;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.entity.BukkitEntity;
@@ -306,7 +308,11 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public void sendData(String channel, byte[] output) {
-        throw new UnsupportedOperationException("Currently not supported");
+        Validate.notNull(output,channel);
+        CustomPayloadPacket packet = new CustomPayloadPacket();
+        packet.setChannel(channel);
+        packet.setContent(output);
+        sendPacket(packet);
     }
 
     @Override

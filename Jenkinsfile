@@ -253,6 +253,13 @@ pipeline {
                             git push origin HEAD:$BRANCH_MASTER -v
                             """
 
+                            BUILD_NUMBER++
+                            minorVersion++
+                            patchVersion = 0
+
+                            version = major + "." + minorVersion + "." + patchVersion + "." + BUILD_NUMBER + "-SNAPSHOT"
+                            commitMessage = COMMIT_MESSAGE.replace("%version%", version)
+
                             if(BRANCH_BETA == null) {
                                 sh """
                                 if [ -d "tempDevelopment" ]; then rm -Rf tempDevelopment; fi

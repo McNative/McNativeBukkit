@@ -214,7 +214,6 @@ public class McNativeBridgeEventHandler {
             connection.setState(ConnectionState.GAME);
             connection.setPlayer(player);
 
-
             playerManager.registerPlayer(player);
             firstPlayerConnected = true;
 

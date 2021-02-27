@@ -19,6 +19,8 @@
 
 package org.mcnative.runtime.bukkit.plugin.event;
 
+import net.pretronic.libraries.event.execution.EventExecution;
+import net.pretronic.libraries.event.execution.ExecutionType;
 import net.pretronic.libraries.event.executor.EventExecutor;
 import net.pretronic.libraries.event.network.EventOrigin;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
@@ -53,12 +55,17 @@ public class BukkitEventExecutor implements EventExecutor {
     }
 
     @Override
+    public ExecutionType getExecutionType() {
+        return ExecutionType.BLOCKING;
+    }
+
+    @Override
     public ObjectOwner getOwner() {
         return null;//@Todo implement
     }
 
     @Override
-    public void execute(EventOrigin origin, Object... events) {
+    public void execute(EventExecution execution, Object... events) {
         for (Object event : events){
             if(allowedClass.isAssignableFrom(event.getClass())){
                 if (registration.getPlugin().isEnabled()) {

@@ -22,6 +22,10 @@ package org.mcnative.runtime.bukkit.plugin.event;
 
 import net.pretronic.libraries.event.EventBus;
 import net.pretronic.libraries.event.Listener;
+import net.pretronic.libraries.event.execution.AsyncEventExecution;
+import net.pretronic.libraries.event.execution.EventExecution;
+import net.pretronic.libraries.event.execution.ExecutionType;
+import net.pretronic.libraries.event.execution.SyncEventExecution;
 import net.pretronic.libraries.event.executor.BiConsumerEventExecutor;
 import net.pretronic.libraries.event.executor.ConsumerEventExecutor;
 import net.pretronic.libraries.event.executor.EventExecutor;
@@ -73,7 +77,7 @@ public class BukkitEventBus implements EventBus {
                     Class<?> eventClass = method.getParameterTypes()[0];
                     Class<?> mappedClass = this.mappedClasses.get(eventClass);
                     if(mappedClass == null) mappedClass = eventClass;
-                    addExecutor(mappedClass,new MethodEventExecutor(owner,info.priority(),listener,eventClass,method));
+                    addExecutor(mappedClass,new MethodEventExecutor(owner,info.priority(),info.execution(),listener,eventClass,method));
                 }
             }catch (Exception exception){
                 throw new IllegalArgumentException("Could not register listener "+listener,exception);
@@ -82,23 +86,23 @@ public class BukkitEventBus implements EventBus {
     }
 
     @Override
-    public <T> void subscribe(ObjectOwner owner, Class<T> original, Consumer<T> listener, byte priority) {
-        Validate.notNull(owner,original,listener);
+    public <T> void subscribe(ObjectOwner objectOwner, Class<T> original, Consumer<T> listener, ExecutionType executionType, byte priority) {
+        Validate.notNull(objectOwner,original,listener);
 
         Class<?> mappedClass = this.mappedClasses.get(original);
         if(mappedClass == null) mappedClass = original;
 
-        addExecutor(mappedClass,new ConsumerEventExecutor<>(owner,priority,original,listener));
+        addExecutor(mappedClass,new ConsumerEventExecutor<>(objectOwner,priority,executionType,original,listener));
     }
 
     @Override
-    public <T> void subscribe(ObjectOwner owner, Class<T> original, BiConsumer<T, EventOrigin> listener, byte priority) {
+    public <T> void subscribe(ObjectOwner owner, Class<T> original, BiConsumer<T, EventExecution> listener, ExecutionType executionType, byte priority) {
         Validate.notNull(owner,original,listener);
 
         Class<?> mappedClass = this.mappedClasses.get(original);
         if(mappedClass == null) mappedClass = original;
 
-        addExecutor(mappedClass,new BiConsumerEventExecutor<>(owner,priority,original,listener));
+        addExecutor(mappedClass,new BiConsumerEventExecutor<>(owner,priority,executionType,original,listener));
     }
 
     @Override
@@ -178,7 +182,8 @@ public class BukkitEventBus implements EventBus {
     }
 
     @Override
-    public <T> void callEvents(EventOrigin origin,Class<T> original, Object... objects) {
+    public <T> void callEvents(EventOrigin origin0,Class<T> original, Object... objects) {
+        final EventOrigin origin = origin0 != null ? origin0 : networkEventHandler.getLocal();
         Class<?> event = getMappedClass(original);
         if(event == null) event = original;
 
@@ -187,24 +192,47 @@ public class BukkitEventBus implements EventBus {
             McNativeHandlerList handlerList = getHandlerList(event);
             handlerList.callEvents(objects);
         }else{
-            if(networkEventHandler.isNetworkEvent(event)){
-                networkEventHandler.handleNetworkEvents(origin,event,objects);
-            }
             List<EventExecutor> executors = this.executors.get(event);
-            if(executors != null) executors.forEach(executor -> executor.execute(objects));
+            if(executors != null){
+                new SyncEventExecution(origin,executors.iterator(),this.executor,objects);
+            }
+            if(networkEventHandler.isNetworkEvent(original)){
+                networkEventHandler.handleNetworkEventsAsync(origin,original,objects);
+            }
         }
     }
 
     @Override
-    public <T> void callEventsAsync(EventOrigin origin,Class<T> executionClass, Runnable callback, Object... events) {
-        if(networkEventHandler.isNetworkEvent(executionClass)){
-            networkEventHandler.handleNetworkEvents(origin,executionClass,events);
+    public <T> void callEventsAsync(EventOrigin origin0,Class<T> executionClass, Runnable callback, Object... events) {
+        final EventOrigin origin = origin0 != null ? origin0 : networkEventHandler.getLocal();
+
+        Class<?> event = getMappedClass(executionClass);
+        if(event == null) event = executionClass;
+
+        if(Event.class.isAssignableFrom(event)){
+            final McNativeHandlerList handlerList = getHandlerList(event);
+            executor.execute(() -> {
+                handlerList.callEvents(events);
+                if(callback != null) callback.run();
+            });
+        }else{
+            List<EventExecutor> executors = this.executors.get(executionClass);
+            if(executors != null){
+                new AsyncEventExecution(origin, executors.iterator(), this.executor, events, () -> {
+                    if(networkEventHandler.isNetworkEvent(executionClass)){
+                        networkEventHandler.handleNetworkEventsAsync(origin,executionClass,events);
+                    }
+                    if(callback != null) callback.run();
+                });
+            }else{
+                this.executor.execute(() -> {
+                    if(networkEventHandler.isNetworkEvent(executionClass)){
+                        networkEventHandler.handleNetworkEventsAsync(origin,executionClass,events);
+                    }
+                    if(callback != null) callback.run();
+                });
+            }
         }
-        this.executor.execute(() -> {
-           List<EventExecutor> executors = BukkitEventBus.this.executors.get(executionClass);
-           if(executors != null) executors.forEach(executor -> executor.execute(events));
-           if(callback != null) callback.run();
-       });
     }
 
     @Override
