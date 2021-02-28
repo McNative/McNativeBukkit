@@ -125,6 +125,7 @@ public class McNativeBridgeEventHandler {
         eventBus.registerMappedClass(MinecraftPlayerCommandPreprocessEvent.class, PlayerCommandPreprocessEvent.class);
         eventBus.registerManagedEvent(PlayerCommandPreprocessEvent.class, this::handleCommandEvent);
 
+
         /* Inventory */
 
         //Inventory click
