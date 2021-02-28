@@ -338,7 +338,6 @@ public class McNativeLauncher implements Listener {
         }
     }
 
-
     private static String builtVersionInfo(){
         MinecraftPlatform platform = McNative.getInstance().getPlatform();
         if(platform.getJoinableProtocolVersions().size() > 1){
