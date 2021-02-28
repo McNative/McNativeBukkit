@@ -25,7 +25,7 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.10.16.64-BETA</version>
+    <version>1.11.3.71-SNAPSHOT</version>
 
     <distributionManagement>
         <repository>
@@ -147,6 +147,10 @@
             <id>viaversion-repo</id>
             <url>https://repo.viaversion.com</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -232,11 +236,17 @@
             <scope>compile</scope>
         </dependency>
 
-
         <dependency>
             <groupId>us.myles</groupId>
             <artifactId>viaversion</artifactId>
             <version>${dependency.viaversion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ProtocolSupport</groupId>
+            <artifactId>ProtocolSupport</artifactId>
+            <version>-f188eb2ea8-1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

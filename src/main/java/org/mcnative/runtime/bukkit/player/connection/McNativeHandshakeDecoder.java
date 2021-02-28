@@ -21,6 +21,7 @@ package org.mcnative.runtime.bukkit.player.connection;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import org.bukkit.Bukkit;
@@ -31,16 +32,19 @@ import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.network.component.server.ServerStatusResponse;
 import org.mcnative.runtime.api.protocol.MinecraftEdition;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
+import org.mcnative.runtime.bukkit.utils.ProtocolSupportExtensionUtil;
 import org.mcnative.runtime.protocol.java.MinecraftProtocolUtil;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
 
 //@Todo implement legacy < 1.6 status ping
 public class McNativeHandshakeDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     public static boolean VIA_VERSION = Bukkit.getPluginManager().getPlugin("ViaVersion") != null;
     public static boolean PROTOCOL_LIB = Bukkit.getPluginManager().getPlugin("ProtocolLib") != null;
+    public static boolean PROTOCOL_SUPPORT = Bukkit.getPluginManager().getPlugin("ProtocolSupport") != null;
 
     private final static int HANDSHAKE_PACKET_ID = 0;
     private final static int HANDSHAKE_PACKET_ID_LEGACY =  0xFE;
@@ -66,6 +70,7 @@ public class McNativeHandshakeDecoder extends MessageToMessageDecoder<ByteBuf> {
                 int packetId = MinecraftProtocolUtil.readVarInt(buffer);
                 if(packetId == HANDSHAKE_PACKET_ID){
                     int protocolVersion = MinecraftProtocolUtil.readVarInt(buffer);
+                    if(PROTOCOL_SUPPORT) protocolVersion = ProtocolSupportExtensionUtil.getProtocolVersion((InetSocketAddress) context.channel().remoteAddress());
                     String host = MinecraftProtocolUtil.readString(buffer);
                     int port = buffer.readUnsignedShort();
                     int next = MinecraftProtocolUtil.readVarInt(buffer);
@@ -104,6 +109,17 @@ public class McNativeHandshakeDecoder extends MessageToMessageDecoder<ByteBuf> {
         if(VIA_VERSION){
             connection.getChannel().pipeline().remove("encoder");
             connection.getChannel().pipeline().remove("viaversion_packet_handler");
+        }
+        if(PROTOCOL_SUPPORT){
+            connection.getChannel().pipeline().remove("encoder");
+            connection.getChannel().pipeline().remove("decoder");
+            connection.getChannel().pipeline().remove("ps_raw_capture_send");
+            connection.getChannel().pipeline().remove("ps_raw_capture_receive");
+            connection.getChannel().pipeline().remove("ps_logic");
+            try {
+                connection.getChannel().pipeline().remove("ps_decoder_transformer");
+                connection.getChannel().pipeline().remove("ps_encoder_transformer");
+            }catch (Exception ignored){}
         }
     }
 

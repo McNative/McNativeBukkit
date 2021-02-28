@@ -125,10 +125,11 @@ public class McNativeBridgeEventHandler {
         eventBus.registerMappedClass(MinecraftPlayerCommandPreprocessEvent.class, PlayerCommandPreprocessEvent.class);
         eventBus.registerManagedEvent(PlayerCommandPreprocessEvent.class, this::handleCommandEvent);
 
+
         /* Inventory */
 
         //Inventory click
-        eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
+        /*eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
         eventBus.registerManagedEvent(InventoryClickEvent.class, this::handleInventoryClick);
 
         //Inventory close
@@ -141,7 +142,7 @@ public class McNativeBridgeEventHandler {
 
         //Inventory open
         eventBus.registerMappedClass(MinecraftPlayerInventoryOpenEvent.class, InventoryOpenEvent.class);
-        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);
+        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);*/
     }
 
     private void handlePreLoginEvent(McNativeHandlerList handler, AsyncPlayerPreLoginEvent event) {
@@ -152,7 +153,8 @@ public class McNativeBridgeEventHandler {
         }
         ChannelConnection connection0 = injector.findConnection(event.getUniqueId());
         if(connection0 == null){
-            event.setKickMessage("§cAn error occurred.");//@Todo configurable error message
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("§cAn error occurred (Pre Login).");//@Todo configurable error message
             return;
         }
 
@@ -181,7 +183,8 @@ public class McNativeBridgeEventHandler {
         }
         BukkitPendingConnection connection = this.pendingConnections.remove(event.getPlayer().getUniqueId());
         if(connection == null){
-            event.setKickMessage("§cAn error occurred.");//@Todo configurable error message
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("§cAn error occurred (Login).");//@Todo configurable error message
             return;
         }
 
