@@ -42,6 +42,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -65,7 +66,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
 
     @Override
     public void register(RegisteredListener listener) {
-         this.executors.add(new BukkitEventExecutor(eventClass,listener));
+        this.executors.add(new BukkitEventExecutor(eventClass,listener));
     }
 
     @Override

@@ -46,22 +46,22 @@ public class BukkitPlayerInventoryDragEvent extends BukkitPlayerInventoryInterac
     }
 
     @Override
-    public Map<Integer, ItemStack> getNewItems​() {
+    public Map<Integer, ItemStack> getNewItems() {
         return this.newItems;
     }
 
     @Override
-    public Set<Integer> getRawSlots​() {
+    public Set<Integer> getRawSlots() {
         return getOriginal().getRawSlots();
     }
 
     @Override
-    public Set<Integer> getInventorySlots​() {
+    public Set<Integer> getInventorySlots() {
         return getOriginal().getInventorySlots();
     }
 
     @Override
-    public ItemStack getCursor​() {
+    public ItemStack getCursor() {
         return new BukkitItemStack(getOriginal().getCursor());
     }
 
