@@ -128,7 +128,7 @@ public class McNativeBridgeEventHandler {
         /* Inventory */
 
         //Inventory click
-        eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
+        /*eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
         eventBus.registerManagedEvent(InventoryClickEvent.class, this::handleInventoryClick);
 
         //Inventory close
@@ -141,7 +141,7 @@ public class McNativeBridgeEventHandler {
 
         //Inventory open
         eventBus.registerMappedClass(MinecraftPlayerInventoryOpenEvent.class, InventoryOpenEvent.class);
-        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);
+        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);*/
     }
 
     private void handlePreLoginEvent(McNativeHandlerList handler, AsyncPlayerPreLoginEvent event) {
