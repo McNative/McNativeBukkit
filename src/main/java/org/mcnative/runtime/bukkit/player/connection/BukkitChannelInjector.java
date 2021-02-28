@@ -46,17 +46,46 @@ public class BukkitChannelInjector {
     private final static Class<? extends ChannelInitializer<?>> PACKET_HANDLER_CLASS = (Class<? extends ChannelInitializer<?>>) BukkitReflectionUtil.getMNSClass("NetworkManager");
     private final static Class<?> GAME_PROFILE_CLASS = BukkitReflectionUtil.getClass("com.mojang.authlib.GameProfile");
     private final static Class<?> LOGIN_LISTENER_CLASS = BukkitReflectionUtil.getMNSClass("LoginListener");
+    private final static String PS_LOGIN_LISTENER_CLASS = "protocolsupport.zplatform.impl.spigot.network.handler.SpigotLoginListener";
+    private final static String PS_CONNECTION_CLASS = "protocolsupport.api.Connection";
+    private final static String PS_PROFILE_CLASS = "protocolsupport.protocol.utils.authlib.LoginProfile";
 
     private final static Field PACKET_LISTENER_FIELD = ReflectionUtil.findFieldBySimpleName(PACKET_HANDLER_CLASS,"PacketListener");
     private final static Field GAME_PROFILE_FIELD = ReflectionUtil.findFieldByType(LOGIN_LISTENER_CLASS,GAME_PROFILE_CLASS);
     private final static Field UUID_GAME_PROFILE_FIELD = ReflectionUtil.getField(GAME_PROFILE_CLASS,"id");
     private final static Field NAME_GAME_PROFILE_FIELD = ReflectionUtil.getField(GAME_PROFILE_CLASS,"name");
 
+    private final static Field PS_CONNECTION_FIELD;
+    private final static Field PS_PROFILE_FIELD;
+    private final static Field PS_UUID_GAME_PROFILE_FIELD;
+    private final static Field PS_NAME_GAME_PROFILE_FIELD;
+
     static{
         PACKET_LISTENER_FIELD.setAccessible(true);
         GAME_PROFILE_FIELD.setAccessible(true);
         UUID_GAME_PROFILE_FIELD.setAccessible(true);
         NAME_GAME_PROFILE_FIELD.setAccessible(true);
+
+        if(McNativeHandshakeDecoder.PROTOCOL_SUPPORT){
+            try {
+                PS_CONNECTION_FIELD = ReflectionUtil.getField(Class.forName(PS_LOGIN_LISTENER_CLASS).getSuperclass(),"connection");
+                PS_PROFILE_FIELD = ReflectionUtil.getField(Class.forName(PS_CONNECTION_CLASS),"profile");
+                PS_UUID_GAME_PROFILE_FIELD = ReflectionUtil.getField(Class.forName(PS_PROFILE_CLASS),"uuid");
+                PS_NAME_GAME_PROFILE_FIELD = ReflectionUtil.getField(Class.forName(PS_PROFILE_CLASS),"name");
+
+                PS_CONNECTION_FIELD.setAccessible(true);
+                PS_PROFILE_FIELD.setAccessible(true);
+                PS_UUID_GAME_PROFILE_FIELD.setAccessible(true);
+                PS_NAME_GAME_PROFILE_FIELD.setAccessible(true);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            PS_CONNECTION_FIELD = null;
+            PS_PROFILE_FIELD = null;
+            PS_UUID_GAME_PROFILE_FIELD = null;
+            PS_NAME_GAME_PROFILE_FIELD = null;
+        }
     }
 
     private final Collection<ChannelConnection> handshakingConnections;
@@ -82,6 +111,11 @@ public class BukkitChannelInjector {
                         Object profile = GAME_PROFILE_FIELD.get(packetListener);
                         gameProfile = extractGameProfile(profile);
                         connection.setGameProfile(gameProfile);
+                    }else if(packetListener != null && packetListener.getClass().getName().equals(PS_LOGIN_LISTENER_CLASS)){
+                        Object psConnection = PS_CONNECTION_FIELD.get(packetListener);
+                        Object profile = PS_PROFILE_FIELD.get(psConnection);
+                        gameProfile = extractPsGameProfile(profile);
+                        connection.setGameProfile(gameProfile);
                     }else continue;
                 }
                 if(gameProfile.getUniqueId().equals(uniqueId)){
@@ -92,6 +126,7 @@ public class BukkitChannelInjector {
             }
             return null;
         }catch (Exception exception){
+            exception.printStackTrace();
             throw new UnsupportedOperationException("McNative is not able to extract profile information of connecting channel",exception);
         }
     }
@@ -211,6 +246,12 @@ public class BukkitChannelInjector {
     public static GameProfile extractGameProfile(Object profile) throws Exception{//@Todo extract properties
         UUID uniqueId = (UUID) UUID_GAME_PROFILE_FIELD.get(profile);
         String name = (String) NAME_GAME_PROFILE_FIELD.get(profile);
+        return new GameProfile(uniqueId,name,new GameProfile.Property[]{});
+    }
+
+    public static GameProfile extractPsGameProfile(Object profile) throws Exception{//@Todo extract properties
+        UUID uniqueId = (UUID) PS_UUID_GAME_PROFILE_FIELD.get(profile);
+        String name = (String) PS_NAME_GAME_PROFILE_FIELD.get(profile);
         return new GameProfile(uniqueId,name,new GameProfile.Property[]{});
     }
 

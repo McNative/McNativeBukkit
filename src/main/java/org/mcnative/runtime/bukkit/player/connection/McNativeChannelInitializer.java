@@ -20,6 +20,7 @@
 package org.mcnative.runtime.bukkit.player.connection;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.Future;
@@ -27,6 +28,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 public class McNativeChannelInitializer extends ChannelInitializer<SocketChannel> {
 

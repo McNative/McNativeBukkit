@@ -152,7 +152,8 @@ public class McNativeBridgeEventHandler {
         }
         ChannelConnection connection0 = injector.findConnection(event.getUniqueId());
         if(connection0 == null){
-            event.setKickMessage("§cAn error occurred.");//@Todo configurable error message
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("§cAn error occurred (Pre Login).");//@Todo configurable error message
             return;
         }
 
@@ -181,7 +182,8 @@ public class McNativeBridgeEventHandler {
         }
         BukkitPendingConnection connection = this.pendingConnections.remove(event.getPlayer().getUniqueId());
         if(connection == null){
-            event.setKickMessage("§cAn error occurred.");//@Todo configurable error message
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("§cAn error occurred (Login).");//@Todo configurable error message
             return;
         }
 

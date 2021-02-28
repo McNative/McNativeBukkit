@@ -24,6 +24,7 @@ import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
+import org.mcnative.runtime.bukkit.utils.ProtocolSupportExtensionUtil;
 import org.mcnative.runtime.bukkit.utils.ViaVersionExtensionUtil;
 import org.mcnative.runtime.api.MinecraftPlatform;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class BukkitPlatform implements MinecraftPlatform {
 
     private final Plugin VIAVERSION = Bukkit.getPluginManager().getPlugin("ViaVersion");
+    private final Plugin PROTOCOL_SUPPORT = Bukkit.getPluginManager().getPlugin("ProtocolSupport");
 
     private final MinecraftProtocolVersion protocolVersion = BukkitReflectionUtil.getProtocolVersionByServerVersion();
     private Collection<MinecraftProtocolVersion> versions;
@@ -44,6 +46,7 @@ public class BukkitPlatform implements MinecraftPlatform {
     public BukkitPlatform(TaskScheduler scheduler) {
         this.latestLogLocation = new File("logs/latest.log");
         versions = Collections.singletonList(protocolVersion);
+        if(PROTOCOL_SUPPORT != null) versions = ProtocolSupportExtensionUtil.getVersions();
         trySetViaVersions(scheduler,0);
     }
 
