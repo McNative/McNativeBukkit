@@ -73,7 +73,16 @@ public class McNativePluginWrapperLoader implements PluginLoader {
         boolean useTimings = Bukkit.getPluginManager().useTimings();
         Map<Class<? extends Event>, Set<RegisteredListener>> result = new HashMap<>();
 
-        for (final Method method : listener.getClass().getDeclaredMethods()) {
+        Class<?> eventClass = listener.getClass();
+        while (eventClass != null) {
+            registerMethods(plugin, eventBus, eventClass, listener, result, useTimings);
+            eventClass = eventClass.getSuperclass();
+        }
+        return result;
+    }
+
+    private void registerMethods(Plugin plugin, EventBus eventBus, Class<?> eventsClass, Listener listener, Map<Class<? extends Event>, Set<RegisteredListener>> result, boolean useTimings) {
+        for (final Method method : eventsClass.getDeclaredMethods()) {
             method.setAccessible(true);
             final EventHandler eventHandler = method.getAnnotation(EventHandler.class);
             if (eventHandler != null && !method.isBridge() && !method.isSynthetic() && method.getParameterTypes().length == 1) {
@@ -110,7 +119,6 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                 }
             }
         }
-        return result;
     }
 
     @Override
