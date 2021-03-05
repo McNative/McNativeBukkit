@@ -35,31 +35,12 @@ import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcnative.runtime.api.McNativeConsoleCredentials;
-import org.mcnative.runtime.api.connection.MinecraftConnection;
-import org.mcnative.runtime.api.text.components.MessageKeyComponent;
-import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
-import org.mcnative.runtime.api.utils.Env;
-import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
-import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
-import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV2PlatformListener;
-import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV3PlatformListener;
-import org.mcnative.runtime.bukkit.player.BukkitPlayer;
-import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
-import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
-import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
-import org.mcnative.runtime.bukkit.plugin.BukkitPluginManager;
-import org.mcnative.runtime.bukkit.plugin.command.BukkitCommandManager;
-import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
-import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
-import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
 import org.mcnative.runtime.api.McNative;
+import org.mcnative.runtime.api.McNativeConsoleCredentials;
 import org.mcnative.runtime.api.MinecraftPlatform;
+import org.mcnative.runtime.api.connection.MinecraftConnection;
 import org.mcnative.runtime.api.event.player.design.MinecraftPlayerDesignUpdateEvent;
 import org.mcnative.runtime.api.event.service.local.LocalServiceShutdownEvent;
 import org.mcnative.runtime.api.event.service.local.LocalServiceStartupEvent;
@@ -76,6 +57,22 @@ import org.mcnative.runtime.api.player.tablist.TablistOverviewFormatter;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
+import org.mcnative.runtime.api.text.components.MessageKeyComponent;
+import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
+import org.mcnative.runtime.api.utils.Env;
+import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
+import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
+import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV2PlatformListener;
+import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV3PlatformListener;
+import org.mcnative.runtime.bukkit.player.BukkitPlayer;
+import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
+import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
+import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
+import org.mcnative.runtime.bukkit.plugin.BukkitPluginManager;
+import org.mcnative.runtime.bukkit.plugin.command.BukkitCommandManager;
+import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
+import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
+import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceShutdownEvent;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceStartupEvent;
 import org.mcnative.runtime.common.maf.MAFService;
@@ -85,11 +82,12 @@ import org.mcnative.runtime.network.integrations.cloudnet.v3.CloudNetV3Network;
 import org.mcnative.runtime.protocol.java.MinecraftJavaProtocol;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -208,7 +206,9 @@ public class McNativeLauncher implements Listener {
         if(McNativeBukkitConfiguration.CONSOLE_MAF_ENABLED && McNative.getInstance().getConsoleCredentials() != null){
             MAFService.start();
         }
-        eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent());
+
+        McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).delay(2,TimeUnit.SECONDS)
+                .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
     }
 
     public static void shutdown(){
