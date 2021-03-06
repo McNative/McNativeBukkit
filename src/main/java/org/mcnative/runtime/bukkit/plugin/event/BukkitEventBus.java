@@ -194,7 +194,7 @@ public class BukkitEventBus implements EventBus {
         }else{
             List<EventExecutor> executors = this.executors.get(event);
             if(executors != null){
-                new SyncEventExecution(origin,executors.iterator(),this.executor,objects);
+                new SyncEventExecution(origin,executors.iterator(),this.executor,objects, null);
             }
             if(networkEventHandler.isNetworkEvent(original)){
                 networkEventHandler.handleNetworkEventsAsync(origin,original,objects);
@@ -218,7 +218,7 @@ public class BukkitEventBus implements EventBus {
         }else{
             List<EventExecutor> executors = this.executors.get(executionClass);
             if(executors != null){
-                new AsyncEventExecution(origin, executors.iterator(), this.executor, events, () -> {
+                new AsyncEventExecution(origin, executors.iterator(), this.executor, events, null, () -> {
                     if(networkEventHandler.isNetworkEvent(executionClass)){
                         networkEventHandler.handleNetworkEventsAsync(origin,executionClass,events);
                     }
