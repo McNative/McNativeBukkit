@@ -248,5 +248,11 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
         public void complete() {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void throwException(Throwable throwable, Object location) {
+            System.out.println("Could not execute subscription " + location);
+            throwable.printStackTrace();
+        }
     }
 }

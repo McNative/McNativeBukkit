@@ -47,11 +47,14 @@ import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.Bukkit;
 import org.mcnative.runtime.api.loader.LoaderConfiguration;
+import org.mcnative.runtime.api.player.profile.GameProfileLoader;
+import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionProvider;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPlayerDesign;
+import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
@@ -72,6 +75,7 @@ import org.mcnative.runtime.common.DefaultLoaderConfiguration;
 import org.mcnative.runtime.common.DefaultObjectFactory;
 import org.mcnative.runtime.common.player.DefaultChatChannel;
 import org.mcnative.runtime.common.player.DefaultPlayerDesign;
+import org.mcnative.runtime.common.player.MemoryGameProfileLoader;
 import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
 import org.mcnative.runtime.common.player.data.DefaultPlayerDataProvider;
 import org.mcnative.runtime.common.plugin.configuration.DefaultConfigurationProvider;
@@ -278,6 +282,7 @@ public class BukkitMcNative implements McNative {
         pluginManager.registerService(this, PlayerDataProvider.class,new DefaultPlayerDataProvider());
         pluginManager.registerService(this, MessageProvider.class,new DefaultMessageProvider());
         pluginManager.registerService(this, PermissionProvider.class,new BukkitPermissionProvider());
+        pluginManager.registerService(this, GameProfileLoader.class,new MemoryGameProfileLoader());
         pluginManager.registerService(this, PlaceholderProvider.class,new McNativePlaceholderProvider(), EventPriority.LOW);
     }
 
@@ -308,6 +313,7 @@ public class BukkitMcNative implements McNative {
 
     protected void registerDefaultCreators(){
         factory.registerCreator(ChatChannel.class, objects -> new DefaultChatChannel());
+        factory.registerCreator(Tablist.class, objects -> new BukkitTablist());
         factory.registerCreator(ItemStack.class, parameters -> {
             Material material = (Material) parameters[0];
             org.bukkit.Material bukkitMaterial = null;

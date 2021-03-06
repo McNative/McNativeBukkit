@@ -75,7 +75,6 @@ public class BukkitTablist implements Tablist {
         this.formatter = formatter;
     }
 
-
     @Override
     public void addEntry(ConnectedMinecraftPlayer player) {
         addEntry((TablistEntry)player);
@@ -133,13 +132,12 @@ public class BukkitTablist implements Tablist {
 
     @Override
     public void updateOverview(ConnectedMinecraftPlayer player, VariableSet headerVariables, VariableSet footerVariables) {
-        if(McNativeBukkitConfiguration.PLAYER_TABLIST_OVERVIEW_ENABLED) {
+        if(overviewFormatter != null){
             MinecraftPlayerListHeaderAndFooterPacket packet = new MinecraftPlayerListHeaderAndFooterPacket();
             packet.setHeader(getOverviewFormatter().formatHeader(player, headerVariables, footerVariables));
             packet.setFooter(getOverviewFormatter().formatFooter(player, headerVariables, footerVariables));
             packet.setHeaderVariables(headerVariables);
             packet.setFooterVariables(footerVariables);
-
             player.sendPacket(packet);
         }
     }
@@ -157,7 +155,7 @@ public class BukkitTablist implements Tablist {
     }
 
     private void sendEntry(ConnectedMinecraftPlayer receiver,TablistEntry entry){
-        if(!(receiver instanceof BukkitPlayer)) return;
+        if(formatter == null || !(receiver instanceof BukkitPlayer)) return;
         PlayerDesign design = entry.getDesign(receiver);
         VariableSet variables = VariableSet.create();
         variables.addDescribed("entry",entry);
