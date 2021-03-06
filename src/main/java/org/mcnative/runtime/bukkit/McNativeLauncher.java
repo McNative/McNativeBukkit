@@ -59,6 +59,7 @@ import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.api.text.components.MessageKeyComponent;
 import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
+import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
@@ -315,7 +316,7 @@ public class McNativeLauncher implements Listener {
                 defaultResponse.addPlayerInfo(Text.translateAlternateColorCodes('&',player));
             }
         }else {
-            defaultResponse.setDescription(Text.parse("§7"+Bukkit.getMotd()));
+            defaultResponse.setDescription(Text.parse("§7"+Bukkit.getMotd(), TextColor.GRAY));
         }
 
         File serverIcon = new File("server-icon.png");
