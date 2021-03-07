@@ -41,10 +41,7 @@ import org.mcnative.runtime.api.McNative;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -135,7 +132,9 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     }
 
     public void callEvents(Object... objects){
-        for (EventExecutor executor : executors){
+        Iterator<EventExecutor> iterator = executors.listIterator();
+        while (iterator.hasNext()){
+            EventExecutor executor = iterator.next();
             try {
                 executor.execute(DUMMY_EXECUTION,objects);
             } catch (AuthorNagException ex) {
