@@ -132,13 +132,11 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     }
 
     public void callEvents(Object... objects){
-        Iterator<EventExecutor> iterator = executors.listIterator();
-        while (iterator.hasNext()){
-            EventExecutor executor = iterator.next();
+        for (EventExecutor executor : new ArrayList<>(executors)) {
             try {
-                executor.execute(DUMMY_EXECUTION,objects);
+                executor.execute(DUMMY_EXECUTION, objects);
             } catch (AuthorNagException ex) {
-                if(executor instanceof BukkitEventExecutor){
+                if (executor instanceof BukkitEventExecutor) {
                     Plugin plugin = ((BukkitEventExecutor) executor).getRegistration().getPlugin();
 
                     if (plugin.isNaggable()) {
@@ -151,14 +149,14 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
                                 ex.getMessage()
                         ));
                     }
-                }else{
-                    Bukkit.getLogger().log(Level.SEVERE, "Could not pass event " +eventClass.getSimpleName() + " to " + executor.getOwner().getName(), ex);
+                } else {
+                    Bukkit.getLogger().log(Level.SEVERE, "Could not pass event " + eventClass.getSimpleName() + " to " + executor.getOwner().getName(), ex);
                 }
             } catch (Throwable ex) {
                 String plugin;
-                if(executor instanceof BukkitEventExecutor){
+                if (executor instanceof BukkitEventExecutor) {
                     plugin = ((BukkitEventExecutor) executor).getRegistration().getPlugin().getDescription().getFullName();
-                }else{
+                } else {
                     plugin = executor.getOwner().getName();
                 }
                 Bukkit.getLogger().log(Level.SEVERE, "Could not pass event " + eventClass.getSimpleName() + " to " + plugin, ex);
