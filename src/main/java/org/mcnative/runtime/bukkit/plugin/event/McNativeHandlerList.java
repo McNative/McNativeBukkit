@@ -41,10 +41,7 @@ import org.mcnative.runtime.api.McNative;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -135,11 +132,11 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     }
 
     public void callEvents(Object... objects){
-        for (EventExecutor executor : executors){
+        for (EventExecutor executor : new ArrayList<>(executors)) {
             try {
-                executor.execute(DUMMY_EXECUTION,objects);
+                executor.execute(DUMMY_EXECUTION, objects);
             } catch (AuthorNagException ex) {
-                if(executor instanceof BukkitEventExecutor){
+                if (executor instanceof BukkitEventExecutor) {
                     Plugin plugin = ((BukkitEventExecutor) executor).getRegistration().getPlugin();
 
                     if (plugin.isNaggable()) {
@@ -152,14 +149,14 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
                                 ex.getMessage()
                         ));
                     }
-                }else{
-                    Bukkit.getLogger().log(Level.SEVERE, "Could not pass event " +eventClass.getSimpleName() + " to " + executor.getOwner().getName(), ex);
+                } else {
+                    Bukkit.getLogger().log(Level.SEVERE, "Could not pass event " + eventClass.getSimpleName() + " to " + executor.getOwner().getName(), ex);
                 }
             } catch (Throwable ex) {
                 String plugin;
-                if(executor instanceof BukkitEventExecutor){
+                if (executor instanceof BukkitEventExecutor) {
                     plugin = ((BukkitEventExecutor) executor).getRegistration().getPlugin().getDescription().getFullName();
-                }else{
+                } else {
                     plugin = executor.getOwner().getName();
                 }
                 Bukkit.getLogger().log(Level.SEVERE, "Could not pass event " + eventClass.getSimpleName() + " to " + plugin, ex);
@@ -255,4 +252,5 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
             throwable.printStackTrace();
         }
     }
+
 }
