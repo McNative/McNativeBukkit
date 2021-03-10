@@ -278,7 +278,7 @@ public class McNativeLauncher implements Listener {
                 @Override
                 public MessageComponent<?> formatSuffix(ConnectedMinecraftPlayer player,TablistEntry entry, VariableSet variables) {
                     if(entry instanceof MinecraftConnection){
-                        return new TargetMessageKeyComponent(player,McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
+                        return new TargetMessageKeyComponent((MinecraftConnection) entry,McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
                     }else{
                         return new MessageKeyComponent(McNativeBukkitConfiguration.PLAYER_TABLIST_SUFFIX_LOADED);
                     }
