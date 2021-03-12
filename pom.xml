@@ -25,7 +25,7 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.15.0.95-SNAPSHOT</version>
+    <version>1.15.1.100-SNAPSHOT</version>
 
     <distributionManagement>
         <repository>
