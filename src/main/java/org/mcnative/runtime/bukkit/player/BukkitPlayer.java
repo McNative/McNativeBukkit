@@ -26,7 +26,9 @@ import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
-import org.mcnative.runtime.api.protocol.packet.type.CustomPayloadPacket;
+import org.mcnative.runtime.api.protocol.packet.type.MinecraftCustomPayloadPacket;
+import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftSoundEffectPacket;
+import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftStopSoundPacket;
 import org.mcnative.runtime.bukkit.BukkitService;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.entity.BukkitEntity;
@@ -52,9 +54,6 @@ import org.mcnative.runtime.api.player.chat.ChatPosition;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
 import org.mcnative.runtime.api.player.scoreboard.BelowNameInfo;
 import org.mcnative.runtime.api.player.scoreboard.sidebar.Sidebar;
-import org.mcnative.runtime.api.player.sound.Instrument;
-import org.mcnative.runtime.api.player.sound.Note;
-import org.mcnative.runtime.api.player.sound.Sound;
 import org.mcnative.runtime.api.player.sound.SoundCategory;
 import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
@@ -143,6 +142,11 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public ConnectionState getState() {
         return connection.getState();
+    }
+
+    @Override
+    public PlayerDesign getDesign(MinecraftPlayer player) {
+        return super.getDesign(player);
     }
 
     @Override
@@ -309,30 +313,62 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public void sendData(String channel, byte[] output) {
         Validate.notNull(output,channel);
-        CustomPayloadPacket packet = new CustomPayloadPacket();
+        MinecraftCustomPayloadPacket packet = new MinecraftCustomPayloadPacket();
         packet.setChannel(channel);
         packet.setContent(output);
         sendPacket(packet);
     }
 
     @Override
-    public void playNote(Instrument instrument, Note note) {
-        throw new UnsupportedOperationException("Currently not supported");
+    public void playSound(String sound, SoundCategory category, float volume, float pitch) {
+        MinecraftSoundEffectPacket packet = new MinecraftSoundEffectPacket();
+        packet.setSoundName(sound);
+        packet.setCategory(category);
+        packet.setVolume(volume);
+        packet.setPitch(pitch);
+
+        org.bukkit.Location location = original.getLocation();
+        packet.setPositionX(location.getBlockX());
+        packet.setPositionY(location.getBlockY());
+        packet.setPositionZ(location.getBlockZ());
+
+        sendPacket(packet);
     }
 
     @Override
-    public void playSound(Sound sound, SoundCategory category, float volume, float pitch) {
-        throw new UnsupportedOperationException();
+    public void stopSound() {
+        if(getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_13)) return;
+        MinecraftStopSoundPacket packet = new MinecraftStopSoundPacket();
+        packet.setAction(MinecraftStopSoundPacket.Action.ALL);
+        sendPacket(packet);
     }
 
     @Override
-    public void stopSound(Sound sound) {
-        throw new UnsupportedOperationException("Currently not supported");
+    public void stopSound(String sound) {
+        if(getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_13)) return;
+        MinecraftStopSoundPacket packet = new MinecraftStopSoundPacket();
+        packet.setAction(MinecraftStopSoundPacket.Action.SOUND);
+        packet.setSoundName(sound);
+        sendPacket(packet);
+    }
+
+    @Override
+    public void stopSound(SoundCategory category) {
+        if(getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_13)) return;
+        MinecraftStopSoundPacket packet = new MinecraftStopSoundPacket();
+        packet.setAction(MinecraftStopSoundPacket.Action.CATEGORY);
+        packet.setCategory(category);
+        sendPacket(packet);
     }
 
     @Override
     public void stopSound(String sound, SoundCategory category) {
-        throw new UnsupportedOperationException("Currently not supported");
+        if(getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_13)) return;
+        MinecraftStopSoundPacket packet = new MinecraftStopSoundPacket();
+        packet.setAction(MinecraftStopSoundPacket.Action.BOTH);
+        packet.setSoundName(sound);
+        packet.setCategory(category);
+        sendPacket(packet);
     }
 
     @Override

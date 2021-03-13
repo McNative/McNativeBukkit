@@ -167,9 +167,10 @@ public class BukkitPendingConnection implements PendingConnection {
 
     @Override
     public void sendPacket(MinecraftPacket packet) {
-       if(isConnected()){//@Todo implement packet queue
-           channel.writeAndFlush(packet);
-       }
+        packet.validate();
+        if(isConnected()){//@Todo implement packet queue
+            channel.writeAndFlush(packet);
+        }
     }
 
     @Override

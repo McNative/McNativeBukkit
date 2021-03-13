@@ -26,6 +26,7 @@ import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.annonations.Internal;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
+import org.mcnative.runtime.api.player.MinecraftPlayer;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
 import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
@@ -47,6 +48,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class BukkitPlayerManager extends AbstractPlayerManager {
 
@@ -85,6 +87,7 @@ public class BukkitPlayerManager extends AbstractPlayerManager {
     @Internal
     public void registerPlayer(Player player){
         this.onlineMinecraftPlayers.add(player);
+        this.offlineMinecraftPlayers.remove(player0 -> player0.getUniqueId().equals(player.getUniqueId()));
     }
 
     @Internal

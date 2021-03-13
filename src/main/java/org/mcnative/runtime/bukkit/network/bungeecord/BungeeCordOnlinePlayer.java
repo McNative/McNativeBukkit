@@ -32,9 +32,6 @@ import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
 import org.mcnative.runtime.api.player.Title;
 import org.mcnative.runtime.api.player.chat.ChatPosition;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
-import org.mcnative.runtime.api.player.sound.Instrument;
-import org.mcnative.runtime.api.player.sound.Note;
-import org.mcnative.runtime.api.player.sound.Sound;
 import org.mcnative.runtime.api.player.sound.SoundCategory;
 import org.mcnative.runtime.api.protocol.packet.MinecraftPacket;
 import org.mcnative.runtime.api.text.components.MessageComponent;
@@ -174,22 +171,27 @@ public class BungeeCordOnlinePlayer extends OfflineMinecraftPlayer implements On
     }
 
     @Override
-    public void playNote(Instrument instrument, Note note) {
+    public void playSound(String s, SoundCategory soundCategory, float v, float v1) {
         throw new UnsupportedOperationException("Currently not supported, implementation in progress");
     }
 
     @Override
-    public void playSound(Sound sound, SoundCategory category, float volume, float pitch) {
+    public void stopSound() {
         throw new UnsupportedOperationException("Currently not supported, implementation in progress");
     }
 
     @Override
-    public void stopSound(Sound sound) {
+    public void stopSound(String s) {
         throw new UnsupportedOperationException("Currently not supported, implementation in progress");
     }
 
     @Override
-    public void stopSound(String sound, SoundCategory category) {
+    public void stopSound(SoundCategory soundCategory) {
+        throw new UnsupportedOperationException("Currently not supported, implementation in progress");
+    }
+
+    @Override
+    public void stopSound(String s, SoundCategory soundCategory) {
         throw new UnsupportedOperationException("Currently not supported, implementation in progress");
     }
 

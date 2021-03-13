@@ -39,6 +39,7 @@ public class BukkitPermissionHandler implements PermissionHandler {
     public BukkitPermissionHandler(BukkitPlayer player) {
         this.player = player;
         this.design = new BukkitPlayerDesign(player.getOriginal());
+        this.player.setDesign(design);
     }
 
     @Override
