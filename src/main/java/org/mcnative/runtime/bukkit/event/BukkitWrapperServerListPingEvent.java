@@ -40,7 +40,7 @@ public class BukkitWrapperServerListPingEvent extends ServerListPingEvent {
     private final BukkitServerListPingEvent mcNativeEvent;
 
     public BukkitWrapperServerListPingEvent(BukkitServerListPingEvent mcNativeEvent) {
-        super(null, null, 0, 0);
+        super(mcNativeEvent.getClientAddress().getAddress(), "EMPTY (McNative bridged)", 0, 0);
         this.mcNativeEvent = mcNativeEvent;
     }
 
