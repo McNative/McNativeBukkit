@@ -19,6 +19,7 @@
 
 package org.mcnative.runtime.bukkit.player;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -31,6 +32,7 @@ import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
 import org.mcnative.runtime.api.connection.MinecraftOutputStream;
 import org.mcnative.runtime.api.connection.PendingConnection;
+import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
 import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
 import org.mcnative.runtime.api.player.profile.GameProfile;
 import org.mcnative.runtime.api.protocol.Endpoint;
@@ -62,7 +64,7 @@ public class BukkitPendingConnection implements PendingConnection {
     private final InetSocketAddress virtualHost;
 
     private ConnectionState state;
-    private OnlineMinecraftPlayer player;
+    private ConnectedMinecraftPlayer player;
 
     public BukkitPendingConnection(Channel channel,GameProfile gameProfile,InetSocketAddress address
             ,InetSocketAddress virtualHost, int protocolVersion) {
@@ -128,7 +130,7 @@ public class BukkitPendingConnection implements PendingConnection {
     }
 
     @Override
-    public OnlineMinecraftPlayer getPlayer() {
+    public ConnectedMinecraftPlayer getPlayer() {
         return player;
     }
 
@@ -173,6 +175,10 @@ public class BukkitPendingConnection implements PendingConnection {
         }
     }
 
+    public void sendRawPacket(ByteBuf buffer){
+        this.channel.writeAndFlush(buffer);
+    }
+
     @Override
     public void sendLocalLoopPacket(MinecraftPacket packet) {
         throw new UnsupportedOperationException("Currently not supported on bukkit servers");
@@ -194,7 +200,7 @@ public class BukkitPendingConnection implements PendingConnection {
     }
 
     @Internal
-    public void setPlayer(OnlineMinecraftPlayer player){
+    public void setPlayer(ConnectedMinecraftPlayer player){
         this.player = player;
     }
 

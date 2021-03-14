@@ -153,6 +153,7 @@ public class McNativeBukkitConfiguration {
         OfflineMinecraftPlayer.DISPLAY_NAME_FORMAT = PLAYER_DISPLAY_NAME_FORMAT;
         return true;
     }
+
     private static Message parseCustomMessage(String input){
         return new MessageParser(McNative.getInstance().getRegistry()
                 .getService(MessageProvider.class).getProcessor(),input).parse();

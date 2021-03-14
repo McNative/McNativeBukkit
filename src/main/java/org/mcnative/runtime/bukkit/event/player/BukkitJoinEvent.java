@@ -24,7 +24,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.api.service.entity.living.Player;
 import org.mcnative.runtime.api.service.event.player.MinecraftPlayerJoinEvent;
-import org.mcnative.runtime.api.service.location.Location;
+import org.mcnative.runtime.api.service.world.location.Location;
 
 public class BukkitJoinEvent implements MinecraftPlayerJoinEvent {
 

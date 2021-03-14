@@ -32,8 +32,8 @@ import org.mcnative.runtime.api.service.entity.projectile.Projectile;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
 import org.mcnative.runtime.api.service.inventory.item.potion.PotionEffect;
 import org.mcnative.runtime.api.service.inventory.item.potion.PotionEffectType;
-import org.mcnative.runtime.api.service.location.Location;
-import org.mcnative.runtime.api.service.location.Vector;
+import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.utils.positioning.Vector;
 import org.mcnative.runtime.api.service.world.block.Block;
 
 import java.util.Collection;

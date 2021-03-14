@@ -30,7 +30,11 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginConfirmEvent;
-import org.mcnative.runtime.api.player.sound.MinecraftSound;
+import org.mcnative.runtime.api.player.bossbar.BarColor;
+import org.mcnative.runtime.api.player.bossbar.BarDivider;
+import org.mcnative.runtime.api.player.bossbar.BarFlag;
+import org.mcnative.runtime.api.player.bossbar.BossBar;
+import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryClickEvent;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryCloseEvent;
@@ -65,6 +69,7 @@ import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerIn
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryOpenEvent;
 import org.mcnative.runtime.bukkit.event.player.*;
 import org.mcnative.runtime.common.event.player.DefaultMinecraftPlayerLoginConfirmEvent;
+import org.mcnative.runtime.common.player.DefaultBossBar;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -268,6 +273,22 @@ public class McNativeBridgeEventHandler {
                                     new DefaultMinecraftPlayerLoginConfirmEvent(player));
                         }
                     }
+                });
+
+
+        BossBar bossBar = new DefaultBossBar();
+        bossBar.setColor(BarColor.GREEN);
+        bossBar.setFlag(BarFlag.DARKEN_SKY);
+        bossBar.setMaximum(100);
+        bossBar.setProgress(30);
+        bossBar.setDivider(BarDivider.NOTCHED_20);
+        bossBar.setTitle(Text.parse("&9Test"));
+        player.addBossBar(bossBar);
+        McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM)
+                .interval(1,TimeUnit.SECONDS)
+                .delay(5,TimeUnit.SECONDS).execute(() -> {
+                    bossBar.setProgress(bossBar.getProgress()+5);
+                    bossBar.update();
                 });
     }
 

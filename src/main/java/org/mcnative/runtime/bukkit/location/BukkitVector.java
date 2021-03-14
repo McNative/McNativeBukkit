@@ -21,9 +21,10 @@ package org.mcnative.runtime.bukkit.location;
 
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.util.NumberConversions;
+import org.mcnative.runtime.api.utils.positioning.Position;
 import org.mcnative.runtime.bukkit.world.BukkitWorld;
-import org.mcnative.runtime.api.service.location.Location;
-import org.mcnative.runtime.api.service.location.Vector;
+import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.utils.positioning.Vector;
 import org.mcnative.runtime.api.service.world.World;
 
 public class BukkitVector implements Vector {
@@ -54,18 +55,21 @@ public class BukkitVector implements Vector {
     }
 
     @Override
-    public void setX(double x) {
+    public Vector setX(double x) {
         this.original.setX(x);
+        return this;
     }
 
     @Override
-    public void setY(double y) {
+    public Vector setY(double y) {
         this.original.setY(y);
+        return this;
     }
 
     @Override
-    public void setZ(double z) {
+    public Vector setZ(double z) {
         this.original.setZ(z);
+        return this;
     }
 
     @Override
@@ -97,33 +101,93 @@ public class BukkitVector implements Vector {
     }
 
     @Override
-    public void add(Vector other) {
+    public Vector add(Vector other) {
         this.original.add(new org.bukkit.util.Vector(other.getX(), other.getY(), other.getZ()));
+        return this;
     }
 
     @Override
-    public void add(double x, double y, double z) {
+    public Vector add(double x, double y, double z) {
         this.original.add(new org.bukkit.util.Vector(x, y, z));
+        return this;
     }
 
     @Override
-    public void subtract(Vector other) {
+    public Vector add(int i) {
+        return add(i,i,i);
+    }
+
+    @Override
+    public Vector add(double v) {
+        return add(v,v,v);
+    }
+
+    @Override
+    public Vector subtract(Vector other) {
         this.original.subtract(new org.bukkit.util.Vector(other.getX(), other.getY(), other.getZ()));
+        return this;
     }
 
     @Override
-    public void subtract(double x, double y, double z) {
+    public Vector subtract(double x, double y, double z) {
         this.original.subtract(new org.bukkit.util.Vector(x, y, z));
+        return this;
     }
 
     @Override
-    public void multiply(Vector multiplier) {
+    public Vector subtract(int i) {
+        return subtract(i,i,i);
+    }
+
+    @Override
+    public Vector subtract(double v) {
+        return subtract(v,v,v);
+    }
+
+    @Override
+    public Vector multiply(Vector multiplier) {
         this.original.multiply(new org.bukkit.util.Vector(multiplier.getX(), multiplier.getY(), multiplier.getZ()));
+        return this;
     }
 
     @Override
-    public void divide(Vector divider) {
+    public Vector multiply(double v, double v1, double v2) {
+        this.original.multiply(new org.bukkit.util.Vector(v, v1,v2));
+        return this;
+    }
+
+    @Override
+    public Vector multiply(int i) {
+        this.original.multiply(i);
+        return this;
+    }
+
+    @Override
+    public Vector multiply(double v) {
+        this.original.multiply(v);
+        return this;
+    }
+
+    @Override
+    public Vector divide(Vector divider) {
         this.original.divide(new org.bukkit.util.Vector(divider.getX(), divider.getY(), divider.getZ()));
+        return this;
+    }
+
+    @Override
+    public Vector divide(double v, double v1, double v2) {
+       this.original.divide(new org.bukkit.util.Vector(v,v1,v2));
+       return this;
+    }
+
+    @Override
+    public Vector divide(int i) {
+        return divide(i,i,i);
+    }
+
+    @Override
+    public Vector divide(double v) {
+        return this.divide(v,v,v);
     }
 
     @Override
@@ -157,9 +221,8 @@ public class BukkitVector implements Vector {
     }
 
     @Override
-    public Location toLocation(World world) {
-        Validate.isTrue(world instanceof BukkitWorld, "World is not a BukkitWorld.");
-        return new BukkitLocation(new org.bukkit.Location(((BukkitWorld)world).getOriginal(), this.original.getX(), this.original.getY(), this.original.getZ()), (BukkitWorld) world);
+    public Position toPosition() {//@Todo implement
+        throw new UnsupportedOperationException();
     }
 
     @Override

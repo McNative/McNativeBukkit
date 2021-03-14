@@ -22,7 +22,7 @@ package org.mcnative.runtime.bukkit.entity;
 import org.mcnative.runtime.bukkit.location.BukkitLocation;
 import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.api.service.entity.Entity;
-import org.mcnative.runtime.api.service.location.Location;
+import org.mcnative.runtime.api.service.world.location.Location;
 import org.mcnative.runtime.api.service.world.World;
 
 import java.util.List;

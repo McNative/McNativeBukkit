@@ -19,8 +19,10 @@
 
 package org.mcnative.runtime.bukkit.location;
 
+import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.utils.positioning.Position;
+import org.mcnative.runtime.api.utils.positioning.Vector;
 import org.mcnative.runtime.bukkit.world.BukkitWorld;
-import org.mcnative.runtime.api.service.location.Location;
 import org.mcnative.runtime.api.service.world.Chunk;
 import org.mcnative.runtime.api.service.world.World;
 
@@ -70,9 +72,25 @@ public class BukkitLocation extends BukkitVector implements Location {
     }
 
     @Override
+    public Vector getDirection() {
+        return new BukkitVector(this.original.getDirection());
+    }
+
+    @Override
+    public Position setDirection(Vector vector) {
+        this.original.setDirection(new org.bukkit.util.Vector(vector.getX(),vector.getY(),vector.getZ()));
+        return this;
+    }
+
+    @Override
     public void setWorld(World world) {
         this.world = (BukkitWorld) world;
         this.original.setWorld(this.world.getOriginal());
+    }
+
+    @Override
+    public Position toPosition() {
+        return this;
     }
 
     @Override

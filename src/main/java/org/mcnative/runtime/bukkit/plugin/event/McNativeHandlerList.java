@@ -247,6 +247,11 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
         }
 
         @Override
+        public void stopPropagation() {
+            throw new UnsupportedOperationException("Not supported for default bridged Bukkit events");
+        }
+
+        @Override
         public void throwException(Throwable throwable, Object location) {
             System.out.println("Could not execute subscription " + location);
             throwable.printStackTrace();

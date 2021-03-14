@@ -20,6 +20,7 @@
 
 package org.mcnative.runtime.bukkit.player;
 
+import io.netty.buffer.ByteBuf;
 import net.pretronic.libraries.concurrent.Task;
 import net.pretronic.libraries.message.bml.variable.VariableSet;
 import net.pretronic.libraries.utility.Validate;
@@ -29,6 +30,8 @@ import org.bukkit.Bukkit;
 import org.mcnative.runtime.api.protocol.packet.type.MinecraftCustomPayloadPacket;
 import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftSoundEffectPacket;
 import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftStopSoundPacket;
+import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.utils.positioning.Position;
 import org.mcnative.runtime.bukkit.BukkitService;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.entity.BukkitEntity;
@@ -73,11 +76,12 @@ import org.mcnative.runtime.api.service.entity.Entity;
 import org.mcnative.runtime.api.service.entity.living.Player;
 import org.mcnative.runtime.api.service.inventory.Inventory;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
-import org.mcnative.runtime.api.service.location.Location;
+import org.mcnative.runtime.common.player.DefaultBossBar;
 import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +95,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     private ChatChannel chatChannel;
     private Tablist tablist;
+    private Collection<BossBar> bossBars;
 
     private BukkitWorld world;
     private boolean permissibleInjected;
@@ -108,6 +113,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
         this.world = (BukkitWorld) ((BukkitService)MinecraftService.getInstance()).getMappedWorld(original.getWorld());
         this.tablistTeamNames = new HashMap<>();
         this.tablistTeamIndex = 0;
+        this.bossBars = new ArrayList<>();
     }
 
     @Override
@@ -303,6 +309,11 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public void sendLocalLoopPacket(MinecraftPacket packet) {
         throw new UnsupportedOperationException("Currently not supported");
+    }
+
+    @Override
+    public void sendRawPacket(ByteBuf byteBuf) {
+        connection.sendRawPacket(byteBuf);
     }
 
     @Override
@@ -678,6 +689,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public void setTablist(Tablist tablist) {
+        if(this.tablist == tablist) return;
         if(this.tablist != null){
             ((BukkitTablist)this.tablist).detachReceiver(this);
         }
@@ -700,17 +712,23 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public Collection<BossBar> getActiveBossBars() {
-        throw new UnsupportedOperationException("Currently not supported");
+        return this.bossBars;
     }
 
     @Override
     public void addBossBar(BossBar bossBar) {
-        throw new UnsupportedOperationException("Currently not supported");
+        if(!this.bossBars.contains(bossBar)){
+            this.bossBars.remove(bossBar);
+            ((DefaultBossBar)bossBar).attachReceiver(this);
+        }
     }
 
     @Override
     public void removeBossBar(BossBar bossBar) {
-        throw new UnsupportedOperationException("Currently not supported");
+        if(this.bossBars.contains(bossBar)){
+            this.bossBars.remove(bossBar);
+            ((DefaultBossBar)bossBar).detachReceiver(this);
+        }
     }
 
     @Override
@@ -770,5 +788,10 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Internal
     public int getTablistTeamIndexAndIncrement(){
         return tablistTeamIndex++;
+    }
+
+    @Override
+    public Position getPosition() {
+        return getLocation();
     }
 }
