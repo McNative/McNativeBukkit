@@ -274,22 +274,6 @@ public class McNativeBridgeEventHandler {
                         }
                     }
                 });
-
-
-        BossBar bossBar = new DefaultBossBar();
-        bossBar.setColor(BarColor.GREEN);
-        bossBar.setFlag(BarFlag.DARKEN_SKY);
-        bossBar.setMaximum(100);
-        bossBar.setProgress(30);
-        bossBar.setDivider(BarDivider.NOTCHED_20);
-        bossBar.setTitle(Text.parse("&9Test"));
-        player.addBossBar(bossBar);
-        McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM)
-                .interval(1,TimeUnit.SECONDS)
-                .delay(5,TimeUnit.SECONDS).execute(() -> {
-                    bossBar.setProgress(bossBar.getProgress()+5);
-                    bossBar.update();
-                });
     }
 
     private void handleLogoutEvent(McNativeHandlerList handler, PlayerQuitEvent event){
