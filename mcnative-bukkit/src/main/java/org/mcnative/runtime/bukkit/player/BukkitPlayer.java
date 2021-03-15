@@ -36,6 +36,7 @@ import org.mcnative.runtime.bukkit.BukkitService;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.entity.BukkitEntity;
 import org.mcnative.runtime.bukkit.entity.living.BukkitHumanEntity;
+import org.mcnative.runtime.bukkit.inventory.BukkitInventory;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.bukkit.location.BukkitLocation;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionHandler;
@@ -78,6 +79,7 @@ import org.mcnative.runtime.api.service.inventory.Inventory;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
 import org.mcnative.runtime.common.player.DefaultBossBar;
 import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
+import org.mcnative.runtime.common.utils.PlayerRegisterAble;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -746,23 +748,21 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public void openInventory(Inventory inventory) {
-        throw new UnsupportedOperationException();
-       /*
         if(isJoining()) {
             Bukkit.getScheduler().runTask(McNativeLauncher.getPlugin(), () -> openInventory(inventory));
             return;
         }
 
-        if(inventory instanceof DefaultAnvilInventory) {
-            DefaultAnvilInventory anvilInventory = ((DefaultAnvilInventory) inventory);
-            byte windowId = (byte) BukkitReflectionUtil.getNextPlayerContainerId(getOriginal());
-            anvilInventory.addViewer(this, windowId);
-            sendPacket(new InventoryOpenWindowPacket(windowId, "AnvilInventory", "Unused"));
-            sendPacket(new InventoryWindowItemsPacket(windowId, anvilInventory.getItems()));
+        if(inventory instanceof PlayerRegisterAble) {
+            Bukkit.getScheduler().runTask(McNativeLauncher.getPlugin(), ()-> {
+                ((PlayerRegisterAble)inventory).registerPlayer(this);
+                //getOriginal().openInventory(bukkitInventory);
+            });
         } else {
-            getOriginal().openInventory(((BukkitInventory<?>)inventory).getOriginal());
+            org.bukkit.inventory.Inventory bukkitInventory = ((BukkitInventory<?>)inventory).getOriginal();
+            getOriginal().openInventory(bukkitInventory);
         }
-        */
+
     }
 
     @Internal

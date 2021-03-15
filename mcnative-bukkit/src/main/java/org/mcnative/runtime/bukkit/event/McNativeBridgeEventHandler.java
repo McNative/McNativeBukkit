@@ -40,6 +40,7 @@ import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryC
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryCloseEvent;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryDragEvent;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryOpenEvent;
+import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.bukkit.player.BukkitPendingConnection;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;

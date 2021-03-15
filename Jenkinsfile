@@ -19,7 +19,7 @@ String JAVADOCS_NAME = "mcnative"
 String JAVADOCS_MODULES = ":McNative,:mcnative-common,:mcnative-service,:mcnative-proxy,:mcnative-licensing"
 
 def MIRROR_SERVER_PUBLISHING = [
-        "target/McNativeBukkit-%version%.jar": "default",
+        "mcnative-bukkit/target/mcnative-bukkit-%version%.jar": "default",
 ]
 
 String MAVEN_SETTINGS_FILE_ID = "afe25550-309e-40c1-80ad-59da7989fb4e"
@@ -109,7 +109,7 @@ pipeline {
             when { equals expected: false, actual: SKIP }
             steps {
                 configFileProvider([configFile(fileId: MAVEN_SETTINGS_FILE_ID, variable: 'MAVEN_GLOBAL_SETTINGS')]) {
-                    sh 'mvn -B -gs $MAVEN_GLOBAL_SETTINGS clean deploy -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true'
+                    sh 'mvn -B -gs $MAVEN_GLOBAL_SETTINGS clean package -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true'
                 }
             }
         }

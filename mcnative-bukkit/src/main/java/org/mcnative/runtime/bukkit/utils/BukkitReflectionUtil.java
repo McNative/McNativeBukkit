@@ -37,6 +37,8 @@ public class BukkitReflectionUtil {
     private static final String NMS_BASE = BUKKIT_BASE.replace("org.bukkit.craftbukkit", "net.minecraft.server");
     private static final Map<String,MinecraftProtocolVersion> protocolVersionsByServerVersion = new HashMap<>();
 
+    public static final String SERVER_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
+
     static {
         protocolVersionsByServerVersion.put("1_7_R4",MinecraftProtocolVersion.JE_1_7_10);
         protocolVersionsByServerVersion.put("1_8_R1",MinecraftProtocolVersion.JE_1_8);

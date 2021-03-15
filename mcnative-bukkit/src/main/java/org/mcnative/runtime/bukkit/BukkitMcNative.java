@@ -20,7 +20,6 @@
 package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.command.sender.CommandSender;
-import net.pretronic.libraries.command.sender.ConsoleCommandSender;
 import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
 import net.pretronic.libraries.dependency.DependencyManager;
@@ -46,11 +45,31 @@ import net.pretronic.libraries.utility.GeneralUtil;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.InventoryHolder;
+import org.mcnative.bukkit.v18R3.BukkitAnvilInventory1_8_R3;
+import org.mcnative.runtime.api.*;
 import org.mcnative.runtime.api.loader.LoaderConfiguration;
+import org.mcnative.runtime.api.network.Network;
+import org.mcnative.runtime.api.player.PlayerDesign;
+import org.mcnative.runtime.api.player.PlayerManager;
+import org.mcnative.runtime.api.player.chat.ChatChannel;
+import org.mcnative.runtime.api.player.data.PlayerDataProvider;
 import org.mcnative.runtime.api.player.profile.GameProfileLoader;
 import org.mcnative.runtime.api.player.tablist.Tablist;
+import org.mcnative.runtime.api.plugin.MinecraftPlugin;
+import org.mcnative.runtime.api.plugin.configuration.ConfigurationProvider;
+import org.mcnative.runtime.api.service.inventory.Inventory;
+import org.mcnative.runtime.api.service.inventory.InventoryOwner;
+import org.mcnative.runtime.api.service.inventory.item.ItemStack;
+import org.mcnative.runtime.api.service.inventory.item.material.Material;
+import org.mcnative.runtime.api.service.inventory.type.AnvilInventory;
+import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
+import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
+import org.mcnative.runtime.api.text.format.ColoredString;
 import org.mcnative.runtime.api.utils.Env;
+import org.mcnative.runtime.bukkit.inventory.BukkitInventoryHolder;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
+import org.mcnative.runtime.bukkit.inventory.type.BukkitChestInventory;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionProvider;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPlayerDesign;
@@ -58,19 +77,6 @@ import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
-import org.mcnative.runtime.api.*;
-import org.mcnative.runtime.api.network.Network;
-import org.mcnative.runtime.api.player.PlayerDesign;
-import org.mcnative.runtime.api.player.PlayerManager;
-import org.mcnative.runtime.api.player.chat.ChatChannel;
-import org.mcnative.runtime.api.player.data.PlayerDataProvider;
-import org.mcnative.runtime.api.plugin.MinecraftPlugin;
-import org.mcnative.runtime.api.plugin.configuration.ConfigurationProvider;
-import org.mcnative.runtime.api.service.inventory.item.ItemStack;
-import org.mcnative.runtime.api.service.inventory.item.material.Material;
-import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
-import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
-import org.mcnative.runtime.api.text.format.ColoredString;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
 import org.mcnative.runtime.common.DefaultObjectFactory;
 import org.mcnative.runtime.common.player.DefaultChatChannel;
@@ -81,13 +87,10 @@ import org.mcnative.runtime.common.player.data.DefaultPlayerDataProvider;
 import org.mcnative.runtime.common.plugin.configuration.DefaultConfigurationProvider;
 import org.mcnative.runtime.common.serviceprovider.McNativePlaceholderProvider;
 import org.mcnative.runtime.common.serviceprovider.message.DefaultMessageProvider;
-import org.mcnative.runtime.protocol.java.MinecraftJavaProtocol;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public class BukkitMcNative implements McNative {
@@ -326,6 +329,18 @@ public class BukkitMcNative implements McNative {
 
             Validate.notNull(bukkitMaterial, "Can't create item stack for " + material + ".");
             return new BukkitItemStack(new org.bukkit.inventory.ItemStack(bukkitMaterial));
+        });
+        factory.registerCreator(AnvilInventory.class, parameters -> {
+            InventoryOwner owner = parameters.length > 0 && parameters[0] instanceof InventoryOwner ? (InventoryOwner) parameters[0] : null;
+
+            return new BukkitAnvilInventory1_8_R3(McNativeLauncher.getPlugin(), owner);
+        });
+        factory.registerCreator(Inventory.class, parameters -> {
+            InventoryOwner owner = parameters.length > 0 && parameters[0] instanceof InventoryOwner ? (InventoryOwner) parameters[0] : null;
+            int size = parameters.length > 1 && parameters[1] instanceof Integer ? (int) parameters[1] : 27;
+            String title = parameters.length > 2 && parameters[2] instanceof String ? (String) parameters[2] : "Chest";
+            InventoryHolder holder = owner != null ? new BukkitInventoryHolder(owner) : null;
+            return new BukkitChestInventory<>(owner, Bukkit.createInventory(holder, size, title));
         });
     }
 
