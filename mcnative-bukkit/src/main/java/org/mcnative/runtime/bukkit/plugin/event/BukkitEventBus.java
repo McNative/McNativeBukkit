@@ -70,18 +70,23 @@ public class BukkitEventBus implements EventBus {
     @Override
     public void subscribe(ObjectOwner owner, Object listener) {
         Validate.notNull(owner,listener);
-        for(Method method : listener.getClass().getDeclaredMethods()){
-            try{
-                Listener info = method.getAnnotation(Listener.class);
-                if(info != null && method.getParameterTypes().length == 1){
-                    Class<?> eventClass = method.getParameterTypes()[0];
-                    Class<?> mappedClass = this.mappedClasses.get(eventClass);
-                    if(mappedClass == null) mappedClass = eventClass;
-                    addExecutor(mappedClass,new MethodEventExecutor(owner,info.priority(),info.execution(),listener,eventClass,method));
+
+        Class<?> listenerClass = listener.getClass();
+        while (listenerClass != null) {
+            for(Method method : listenerClass.getDeclaredMethods()){
+                try{
+                    Listener info = method.getAnnotation(Listener.class);
+                    if(info != null && method.getParameterTypes().length == 1){
+                        Class<?> eventClass = method.getParameterTypes()[0];
+                        Class<?> mappedClass = this.mappedClasses.get(eventClass);
+                        if(mappedClass == null) mappedClass = eventClass;
+                        addExecutor(mappedClass,new MethodEventExecutor(owner,info.priority(),info.execution(),listener,eventClass,method));
+                    }
+                }catch (Exception exception){
+                    throw new IllegalArgumentException("Could not register listener "+listener,exception);
                 }
-            }catch (Exception exception){
-                throw new IllegalArgumentException("Could not register listener "+listener,exception);
             }
+            listenerClass = listenerClass.getSuperclass();
         }
     }
 

@@ -27,6 +27,7 @@ import org.mcnative.runtime.common.player.tablist.AbstractTablist;
 
 public class BukkitTablist extends AbstractTablist {
 
+
     @Override
     public String getPlayerTablistNames(ConnectedMinecraftPlayer receiver, TablistEntry entry) {
         return ((BukkitPlayer) receiver).getTablistTeamNames().get(entry);
