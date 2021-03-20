@@ -472,4 +472,5 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
     protected abstract AnvilInventoryHolder createAnvilInventory(Player player, String title);
 
     protected abstract void openAnvilInventory(AnvilInventoryHolder holder);
+
 }
