@@ -118,7 +118,7 @@ public class BukkitCommandManager implements CommandManager {
         if(!(command.getOwner() instanceof net.pretronic.libraries.plugin.Plugin) && !command.getOwner().equals(McNative.getInstance())){
             throw new IllegalArgumentException("Owner is not a plugin.");
         }
-        if(command instanceof CommandManager && ((CommandManager)command).getNoPermissionHandler() == null) {
+        if(command instanceof CommandManager && ((CommandManager)command).getNoPermissionHandler(command.getOwner()) == null) {
             ((CommandManager)command).setNoPermissionHandler(DefaultNoPermissionHandler.DEFAULT);
         }
         this.commandMap.register(command.getOwner().getName().toLowerCase(),new McNativeCommand(this, command));
