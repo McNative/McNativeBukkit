@@ -34,10 +34,16 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
     private final Map<Player, AnvilInventoryHolder> playerInventories;
     private org.bukkit.inventory.ItemStack[] items = new org.bukkit.inventory.ItemStack[3];
 
+    private int repairCost;
+    private int maximumRepairCost;
+
     public BukkitAnvilInventory(Plugin plugin, InventoryOwner owner) {
         this.plugin = plugin;
         this.owner = owner;
         this.playerInventories = new ConcurrentHashMap<>();
+
+        this.repairCost = -1;
+        this.maximumRepairCost = -1;
     }
 
     @Override
@@ -52,7 +58,7 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
     @Override
     public ItemStack getOutput() {
-        return null;
+        return getItem(AnvilInventory.SLOT_OUTPUT);
     }
 
     @Override
@@ -62,27 +68,27 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
     @Override
     public int getRepairCost() {
-        return 0;
+        return this.repairCost;
     }
 
     @Override
     public int getMaximumRepairCost() {
-        return 0;
+        return this.maximumRepairCost;
     }
 
     @Override
     public void setInputLeft(ItemStack itemStack) {
-
+        setItem(AnvilInventory.SLOT_INPUT_LEFT, itemStack);
     }
 
     @Override
     public void setInputRight(ItemStack itemStack) {
-
+        setItem(AnvilInventory.SLOT_INPUT_LEFT, itemStack);
     }
 
     @Override
     public void setOutput(ItemStack itemStack) {
-
+        setItem(AnvilInventory.SLOT_OUTPUT, itemStack);
     }
 
     @Override
@@ -91,13 +97,13 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
     }
 
     @Override
-    public void setRepairCost(int i) {
-
+    public void setRepairCost(int repairCost) {
+        this.repairCost = repairCost;
     }
 
     @Override
-    public void setMaximumRepairCost(int i) {
-
+    public void setMaximumRepairCost(int maximumRepairCost) {
+        this.maximumRepairCost = maximumRepairCost;
     }
 
     @Override
@@ -112,7 +118,7 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
     @Override
     public int getSize() {
-        return 0;
+        return 3;
     }
 
     @Override
@@ -127,7 +133,7 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
     @Override
     public ItemStack getItem(int i) {
-        return null;
+        return McNative.getInstance().getObjectFactory().createObject(ItemStack.class, this.items[i]);
     }
 
     @Override
@@ -232,6 +238,7 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
     @Override
     public void setItem(int slot, ItemStack itemStack) {
+        System.out.println("Set item");
         updateItem(slot, McNative.getInstance().getObjectFactory().createObject(org.bukkit.inventory.ItemStack.class, itemStack));
     }
 
@@ -361,9 +368,11 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
         Validate.notNull(player, "Error: Player can't be null");
         if(this.playerInventories.containsKey(player)) return;
 
+        System.out.println("register player");
         AnvilInventoryHolder holder = createAnvilInventory(player, "Test");
         this.playerInventories.put(player, holder);
-        setBukkitInventoryItems(holder.getInventory());
+        System.out.println("registered "+playerInventories.size());
+        //setBukkitInventoryItems(holder.getInventory());
         Bukkit.getPluginManager().registerEvents(new AnvilListener(), this.plugin);
 
         openAnvilInventory(holder);
@@ -396,21 +405,21 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
         @EventHandler
         public void onInventoryClick(InventoryClickEvent event) {
+            System.out.println("onClick " + event.getRawSlot() + ":" + playerInventories.size());
+            System.out.println(event.getInventory());
             for (Map.Entry<Player, AnvilInventoryHolder> entry : playerInventories.entrySet()) {
                 Inventory inventory = entry.getValue().getInventory();
 
+                System.out.println(inventory + ":" + event.getInventory());
+
                 if (event.getInventory().equals(inventory) && (event.getRawSlot() < 3 || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY))) { ;
-                    if(event.getRawSlot() == AnvilInventory.SLOT_OUTPUT) {
+                    /*if(event.getRawSlot() == AnvilInventory.SLOT_OUTPUT) {
                         System.out.println(event.getCurrentItem().getType());
                         System.out.println("Output" + (event.getCurrentItem() == null || event.getCurrentItem().getType() == org.bukkit.Material.AIR));
                         if(event.getCurrentItem() == null || event.getCurrentItem().getType() == org.bukkit.Material.AIR) {
                             return;
                         }
-                        Player player = (Player) event.getWhoClicked();
-                        player.setItemOnCursor(event.getCurrentItem());
-                        inventory.setItem(AnvilInventory.SLOT_OUTPUT, null);
-                        return;
-                    }
+                    }*/
                     //One tick later, because otherwise inventory content are not updated by craftbukkit/nms
                     Bukkit.getScheduler().runTask(plugin, ()-> {
                         updateItems(inventory.getContents());
@@ -451,9 +460,10 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
         }
 
         private void unregisterInventory(Player player) {
+            System.out.println("unregister " + player.getName());
             for (Map.Entry<Player, AnvilInventoryHolder> entry : playerInventories.entrySet()) {
                 if (entry.getKey().equals(player)) {
-                    playerInventories.remove(entry.getKey());
+                    //playerInventories.remove(entry.getKey());
                 }
             }
         }
@@ -462,8 +472,4 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
     protected abstract AnvilInventoryHolder createAnvilInventory(Player player, String title);
 
     protected abstract void openAnvilInventory(AnvilInventoryHolder holder);
-
-    protected abstract void setRepairCost(AnvilInventoryHolder holder, int cost);
-
-    protected abstract void setMaximumRepairCost(AnvilInventoryHolder holder, int cost);
 }

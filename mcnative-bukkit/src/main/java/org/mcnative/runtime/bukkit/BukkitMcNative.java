@@ -45,7 +45,9 @@ import net.pretronic.libraries.utility.GeneralUtil;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+import org.mcnative.bukkit.v13R1.BukkitAnvilInventory1_13_R1;
 import org.mcnative.bukkit.v18R3.BukkitAnvilInventory1_8_R3;
 import org.mcnative.runtime.api.*;
 import org.mcnative.runtime.api.loader.LoaderConfiguration;
@@ -318,22 +320,30 @@ public class BukkitMcNative implements McNative {
         factory.registerCreator(ChatChannel.class, objects -> new DefaultChatChannel());
         factory.registerCreator(Tablist.class, objects -> new BukkitTablist());
         factory.registerCreator(ItemStack.class, parameters -> {
-            Material material = (Material) parameters[0];
-            org.bukkit.Material bukkitMaterial = null;
-            for (org.bukkit.Material value : org.bukkit.Material.values()) {
-                if(value.toString().equalsIgnoreCase(material.getName())) {
-                    bukkitMaterial = value;
-                    break;
-                }
-            }
+            if(parameters.length == 0 || parameters[0] == null) return null;
 
-            Validate.notNull(bukkitMaterial, "Can't create item stack for " + material + ".");
-            return new BukkitItemStack(new org.bukkit.inventory.ItemStack(bukkitMaterial));
+            org.bukkit.inventory.ItemStack itemStack;
+
+            if(parameters[0] instanceof org.bukkit.inventory.ItemStack) {
+                itemStack = (org.bukkit.inventory.ItemStack) parameters[0];
+            } else {
+                Material material = (Material) parameters[0];
+                org.bukkit.Material bukkitMaterial = null;
+                for (org.bukkit.Material value : org.bukkit.Material.values()) {
+                    if(value.toString().equalsIgnoreCase(material.getName())) {
+                        bukkitMaterial = value;
+                        break;
+                    }
+                }
+                Validate.notNull(bukkitMaterial, "Can't create item stack for " + material + ".");
+                itemStack = new org.bukkit.inventory.ItemStack(bukkitMaterial);
+            }
+            return new BukkitItemStack(itemStack);
         });
         factory.registerCreator(AnvilInventory.class, parameters -> {
             InventoryOwner owner = parameters.length > 0 && parameters[0] instanceof InventoryOwner ? (InventoryOwner) parameters[0] : null;
 
-            return new BukkitAnvilInventory1_8_R3(McNativeLauncher.getPlugin(), owner);
+            return null;//new BukkitAnvilInventory1_13_R1(McNativeLauncher.getPlugin(), owner);
         });
         factory.registerCreator(Inventory.class, parameters -> {
             InventoryOwner owner = parameters.length > 0 && parameters[0] instanceof InventoryOwner ? (InventoryOwner) parameters[0] : null;
@@ -342,8 +352,22 @@ public class BukkitMcNative implements McNative {
             InventoryHolder holder = owner != null ? new BukkitInventoryHolder(owner) : null;
             return new BukkitChestInventory<>(owner, Bukkit.createInventory(holder, size, title));
         });
+        factory.registerCreator(org.bukkit.inventory.ItemStack.class, parameters -> {
+            System.out.println("Convert:" +(parameters.length == 0 || parameters[0] == null));
+            if(parameters.length == 0 || parameters[0] == null) return null;
+            Validate.isTrue(parameters.length == 1 && parameters[0] instanceof BukkitItemStack, "Not valid inputs to convert to ItemStack from Bukkit");
+            return ((BukkitItemStack)parameters[0]).getOriginal();
+        });
     }
 
+    protected void registerPlayerAdapter() {
+        McNative.getInstance().getPlayerManager().registerPlayerAdapter(Player.class, minecraftPlayer -> {
+            if(minecraftPlayer instanceof BukkitPlayer) {
+                return ((BukkitPlayer)minecraftPlayer).getOriginal();
+            }
+            return null;
+        });
+    }
     /*
      @SuppressWarnings("unchecked")
     @Override

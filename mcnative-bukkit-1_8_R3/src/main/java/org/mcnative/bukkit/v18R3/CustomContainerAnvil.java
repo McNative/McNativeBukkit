@@ -11,7 +11,9 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+import org.mcnative.bukkit.nms.shared.BukkitAnvilInventory;
 import org.mcnative.bukkit.nms.shared.NMSHelper;
+import org.mcnative.runtime.api.service.inventory.type.AnvilInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,36 +21,38 @@ import java.util.Map;
 
 public class CustomContainerAnvil extends Container {
 
-    private final IInventory resultSlot = new InventoryCraftResult();
-    private final IInventory processSlots = new CustomContainerAnvilInventory(this, "Repair", true, 2);
-    private final World inWorld;
+    private final static BlockPosition BLOCK_POSITION_ZERO = new BlockPosition(0, 0, 0);
 
-    private final BlockPosition position;
-    public int repairCost;
-    private int maximumRepairCost;
+    private final AnvilInventory anvilInventory;
+
+    private final IInventory resultSlot = new InventoryCraftResult();
+    private final IInventory processSlots = new CustomContainerAnvilInventory("Repair", true, 2);
 
     private int iDontKnow;
+
+    private int repairCost;
+
     private String textbox;
     private final EntityHuman human;
     private CraftInventoryView bukkitEntity = null;
     private final PlayerInventory playerInventory;
 
-    public CustomContainerAnvil(PlayerInventory playerinventory, World world, BlockPosition blockposition, EntityHuman entityhuman) {
-        this.playerInventory = playerinventory;
-        this.position = blockposition;
-        this.inWorld = world;
+    public CustomContainerAnvil(BukkitAnvilInventory anvilInventory, EntityHuman entityhuman) {
+        this.anvilInventory = anvilInventory;
+
+        this.playerInventory = entityhuman.inventory;
         this.human = entityhuman;
-        this.maximumRepairCost = 39;
+
         setSlot(new Slot(processSlots, 0, 27, 47));
         setSlot(new Slot(processSlots, 1, 76, 47));
-        setSlot(new CustomSlotAnvilResult(this, resultSlot, 2, 134, 47, world, blockposition));
+        setSlot(new CustomSlotAnvilResult(this, resultSlot, 2, 134, 47, entityhuman.world, BLOCK_POSITION_ZERO));
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
-                setSlot(new Slot(playerinventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                setSlot(new Slot(this.playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
         for (int i = 0; i < 9; i++) {
-            setSlot(new Slot(playerinventory, i, 8 + i * 18, 142));
+            setSlot(new Slot(this.playerInventory, i, 8 + i * 18, 142));
         }
     }
 
@@ -61,21 +65,20 @@ public class CustomContainerAnvil extends Container {
     public void onAnvilInventoryClick(IInventory inventory) {
         super.a(inventory);
         if (inventory == processSlots) {
-            //updateAnvilDisplay();
-            this.repairCost = 27;
+            updateAnvilDisplay();
 
-            org.bukkit.inventory.ItemStack bukkitItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND);
-            ItemStack leftSlot = processSlots.getItem(0);
-            if(leftSlot == null) return;
-            ItemStack resultItem = CraftItemStack.asNMSCopy(bukkitItem);
-            resultItem.setRepairCost(repairCost);
+            //org.bukkit.inventory.ItemStack bukkitItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND);
+            //ItemStack leftSlot = processSlots.getItem(0);
+            //if(leftSlot == null) return;
+            //ItemStack resultItem = CraftItemStack.asNMSCopy(bukkitItem);
+            //resultItem.setRepairCost(this.anvilInventory.getRepairCost());
 
-            resultSlot.setItem(0, resultItem);
-            b();
+            //resultSlot.setItem(0, resultItem);
+            //b();
 
-            for (ICrafting listener : this.listeners) {
-                listener.setContainerData(this, 0, repairCost);
-            }
+            /*for (ICrafting listener : this.listeners) {
+                listener.setContainerData(this, 0, this.anvilInventory.getRepairCost());
+            }*/
         }
     }
 
@@ -101,8 +104,7 @@ public class CustomContainerAnvil extends Container {
     @Override
     public void addSlotListener(ICrafting icrafting) {
         super.addSlotListener(icrafting);
-        System.out.println(repairCost);
-        icrafting.setContainerData(this, 0, repairCost);//expCost
+        icrafting.setContainerData(this, 0, this.anvilInventory.getRepairCost());//expCost
     }
 
     @NMSHelper
@@ -133,16 +135,6 @@ public class CustomContainerAnvil extends Container {
             slot.a(entityhuman, inSlot);
         }
         return itemResult;
-    }
-
-    @Internal
-    public void setRepairCost(int cost) {
-        this.repairCost = cost;
-    }
-
-    @Internal
-    public void setMaximumRepairCost(int maximumRepairCost) {
-        this.maximumRepairCost = maximumRepairCost;
     }
 
     public void updateAnvilDisplay() {
@@ -247,7 +239,7 @@ public class CustomContainerAnvil extends Container {
                                 if(rightLevel > enchantment.getMaxLevel()) {
                                     rightLevel = enchantment.getMaxLevel();
                                 }
-                                leftEnchantments.put(Integer.valueOf(enchantmentID), Integer.valueOf(rightLevel));
+                                leftEnchantments.put(enchantmentID, rightLevel);
                                 int randomCostModifier = 0;
                                 switch (enchantment.getRandomWeight()) {
                                     case 1:
@@ -281,6 +273,7 @@ public class CustomContainerAnvil extends Container {
 
             // If the textbox is blank...
             if (StringUtils.isBlank(textbox)) {
+
                 // Remove the name on our item.
                 if (leftSlot.hasName()) {
                     costOffsetModifier = 1;
@@ -312,7 +305,7 @@ public class CustomContainerAnvil extends Container {
 
             // Apply everything to our result item.
             if (resultItem != null) {
-                int repairCost = resultItem.getRepairCost();
+                repairCost = resultItem.getRepairCost();
                 if (rightSlot != null && repairCost < rightSlot.getRepairCost()) {
                     repairCost = rightSlot.getRepairCost();
                 }
@@ -345,6 +338,21 @@ public class CustomContainerAnvil extends Container {
     @Override
     public void b(EntityHuman entityhuman) {
         this.onAnvilClose(entityhuman);
+    }
+
+    public void a(String s) {
+        System.out.println("method a " + s);
+        this.textbox = s;
+        if (getSlot(2).hasItem()) {
+            ItemStack itemstack = getSlot(2).getItem();
+
+            if (StringUtils.isBlank(s)) {
+                itemstack.r();
+            } else {
+                itemstack.c(this.textbox);
+            }
+        }
+        updateAnvilDisplay();
     }
 
     /**
@@ -383,6 +391,8 @@ public class CustomContainerAnvil extends Container {
         return containerAnvil.iDontKnow;
     }
 
+
+
     @Override
     public CraftInventoryView getBukkitView() {
         if (bukkitEntity != null) { return bukkitEntity; }
@@ -391,61 +401,20 @@ public class CustomContainerAnvil extends Container {
         return bukkitEntity;
     }
 
-    private static class CustomContainerAnvilInventory extends InventorySubcontainer {
+    private class CustomContainerAnvilInventory extends InventorySubcontainer {
 
-        final CustomContainerAnvil anvil;
-        public List<HumanEntity> transaction = new ArrayList<>();
-        public Player player;
-        private int maxStack = 64;
-
-        @Override
-        public ItemStack[] getContents() {
-            return items;
-        }
-
-        @Override
-        public void onOpen(CraftHumanEntity who) {
-            transaction.add(who);
-        }
-
-        @Override
-        public void onClose(CraftHumanEntity who) {
-            transaction.remove(who);
-        }
-
-        @Override
-        public List<HumanEntity> getViewers() {
-            return transaction;
-        }
-
-        @Override
-        public InventoryHolder getOwner() {
-            return player;
-        }
-
-        @Override
-        public void setMaxStackSize(int size) {
-            maxStack = size;
-        }
-
-        CustomContainerAnvilInventory(CustomContainerAnvil containerAnvil, String title, boolean customName, int size) {
+        CustomContainerAnvilInventory(String title, boolean customName, int size) {
             super(title, customName, size);
-            anvil = containerAnvil;
         }
 
         @Override
         public void update() {
             super.update();
-            anvil.onAnvilInventoryClick(this);
-        }
-
-        @Override
-        public int getMaxStackSize() {
-            return maxStack;
+            onAnvilInventoryClick(this);
         }
     }
 
-    private static class CustomSlotAnvilResult extends Slot {
+    private class CustomSlotAnvilResult extends Slot {
 
         private final CustomContainerAnvil anvil;
         private final World world;
@@ -478,6 +447,8 @@ public class CustomContainerAnvil extends Container {
 
         @NMSHelper
         public void onResultTake(EntityHuman entityHuman, ItemStack itemStack) {
+            System.out.println("onResultTake " + iDontKnow + ":" + itemStack);
+
             if (!entityHuman.abilities.canInstantlyBuild) {
                 entityHuman.levelDown(-anvil.repairCost);
             }
@@ -496,7 +467,7 @@ public class CustomContainerAnvil extends Container {
             }
             anvil.repairCost = 0;
 
-            damageAnvil(entityHuman);
+            //damageAnvil(entityHuman);
         }
 
         public void damageAnvil(EntityHuman entityHuman) {

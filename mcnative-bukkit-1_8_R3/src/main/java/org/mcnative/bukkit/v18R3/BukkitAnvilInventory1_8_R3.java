@@ -12,19 +12,14 @@ import org.mcnative.runtime.api.service.inventory.InventoryOwner;
 
 public class BukkitAnvilInventory1_8_R3 extends BukkitAnvilInventory {
 
-    private final static BlockPosition BLOCK_POSITION_ZERO = new BlockPosition(0, 0, 0);
-
     public BukkitAnvilInventory1_8_R3(Plugin plugin, InventoryOwner owner) {
         super(plugin, owner);
     }
 
     @Override
     protected AnvilInventoryHolder createAnvilInventory(Player player, String title) {
-
-
-
         EntityPlayer entityPlayer = toNMS(player);
-        final Container container = new CustomContainerAnvil(entityPlayer.inventory, entityPlayer.world, BlockPosition.ZERO, entityPlayer);
+        final Container container = new CustomContainerAnvil2(this, entityPlayer);
 
         Inventory inventory = container.getBukkitView().getTopInventory();
 
@@ -44,24 +39,6 @@ public class BukkitAnvilInventory1_8_R3 extends BukkitAnvilInventory {
         ((Container) holder.getContainer()).windowId = containerId;
         ((Container) holder.getContainer()).addSlotListener(entityPlayer);
         holder.setContainerId(containerId);
-    }
-
-    @Override
-    public void setRepairCost(AnvilInventoryHolder holder, int cost) {
-        if(holder.getContainer() instanceof CustomContainerAnvil) {
-            ((CustomContainerAnvil)holder.getContainer()).setRepairCost(cost);
-        } else {
-            throw new IllegalArgumentException("Container must be a CustomContainerAnvil");
-        }
-    }
-
-    @Override
-    public void setMaximumRepairCost(AnvilInventoryHolder holder, int cost) {
-        if(holder.getContainer() instanceof CustomContainerAnvil) {
-            ((CustomContainerAnvil)holder.getContainer()).setMaximumRepairCost(cost);
-        } else {
-            throw new IllegalArgumentException("Container must be a CustomContainerAnvil");
-        }
     }
 
     private EntityPlayer toNMS(Player player) {
