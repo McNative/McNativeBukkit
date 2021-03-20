@@ -95,6 +95,7 @@ public class BukkitCommandManager implements CommandManager {
     @Override
     public void registerCommand(Command command) {
         Validate.notNull(command,command.getConfiguration(),command.getOwner());
+        if(!command.getConfiguration().isEnabled()) return;
         if(!(command.getOwner() instanceof net.pretronic.libraries.plugin.Plugin) && !command.getOwner().equals(McNative.getInstance())){
             throw new IllegalArgumentException("Owner is not a plugin.");
         }
