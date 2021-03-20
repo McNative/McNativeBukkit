@@ -25,7 +25,14 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.14.3.98</version>
+    <version>1.15.12.112-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>mcnative-bukkit</module>
+        <module>mcnative-bukkit-1_8_R3</module>
+        <module>mcnative-bukkit-shared</module>
+        <module>mcnative-bukkit-1_13_R1</module>
+    </modules>
 
     <distributionManagement>
         <repository>
@@ -44,8 +51,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency version -->
-        <dependency.mcnative.api>1.2.0.56-SNAPSHOT</dependency.mcnative.api>
-        <dependency.mcnative.common>1.9.8.63</dependency.mcnative.common>
+        <dependency.mcnative.api>1.2.18.75-SNAPSHOT</dependency.mcnative.api>
+        <dependency.mcnative.common>1.10.20.87-SNAPSHOT</dependency.mcnative.common>
         <dependency.netty>4.1.56.Final</dependency.netty>
 
         <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>
@@ -66,61 +73,6 @@
         <plugin.shade.version>3.2.1</plugin.shade.version>
         <plugin.jar.version>3.2.0</plugin.jar.version>
     </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${plugin.compiler.version}</version>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>${plugin.shade.version}</version>
-                <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${plugin.jar.version}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>A
-                        <manifestEntries>
-                            <Specification-Version>${dependency.mcnative.api}</Specification-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0-M1</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <repositories>
         <repository>
@@ -152,103 +104,4 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-
-    <dependencies>
-        <!-- Internal project dependencies -->
-        <dependency>
-            <groupId>org.mcnative.runtime.api</groupId>
-            <artifactId>mcnative-runtime-api-service</artifactId>
-            <version>${dependency.mcnative.api}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mcnative.runtime</groupId>
-            <artifactId>mcnative-runtime-common</artifactId>
-            <version>${dependency.mcnative.common}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mcnative.runtime</groupId>
-            <artifactId>mcnative-runtime-protocol-java</artifactId>
-            <version>${dependency.mcnative.common}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mcnative.runtime</groupId>
-            <artifactId>mcnative-runtime-network-integrations</artifactId>
-            <version>${dependency.mcnative.common}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Runtime platform dependencies -->
-
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>${dependency.bukkit}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Networking dependencies -->
-
-        <dependency>
-            <groupId>de.dytanic.cloudnet</groupId>
-            <artifactId>cloudnet-api-bridge</artifactId>
-            <version>${dependency.cloudnet.v2}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>de.dytanic.cloudnet</groupId>
-            <artifactId>cloudnet-wrapper-jvm</artifactId>
-            <version>${dependency.cloudnet.v3}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>de.dytanic.cloudnet</groupId>
-            <artifactId>cloudnet-bridge</artifactId>
-            <version>${dependency.cloudnet.v3}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Additional dependencies-->
-
-        <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
-            <version>${dependency.placeholderapi}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>${dependency.valut}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport-native-kqueue</artifactId>
-            <version>${dependency.netty}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>us.myles</groupId>
-            <artifactId>viaversion</artifactId>
-            <version>${dependency.viaversion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.ProtocolSupport</groupId>
-            <artifactId>ProtocolSupport</artifactId>
-            <version>-f188eb2ea8-1</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
 </project>
