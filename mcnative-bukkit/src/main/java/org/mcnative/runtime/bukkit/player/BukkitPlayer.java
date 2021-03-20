@@ -720,7 +720,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public void addBossBar(BossBar bossBar) {
         if(!this.bossBars.contains(bossBar)){
-            this.bossBars.remove(bossBar);
+            this.bossBars.add(bossBar);
             ((DefaultBossBar)bossBar).attachReceiver(this);
         }
     }
