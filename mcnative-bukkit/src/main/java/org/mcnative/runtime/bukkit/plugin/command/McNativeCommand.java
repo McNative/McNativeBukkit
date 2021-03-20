@@ -80,7 +80,7 @@ public class McNativeCommand extends Command {
                         if(original instanceof NoPermissionAble) {
                             noPermissionHandler = ((NoPermissionAble)original);
                         } else {
-                            noPermissionHandler = this.commandManager.getNoPermissionHandler();
+                            noPermissionHandler = this.commandManager.getNoPermissionHandler(getOriginal().getOwner());
                         }
 
                         if(CommandManager.hasPermission(mappedSender, noPermissionHandler, null,

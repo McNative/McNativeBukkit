@@ -36,7 +36,9 @@ import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.common.plugin.DefaultNoPermissionHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BukkitCommandManager implements CommandManager {
 
@@ -46,8 +48,11 @@ public class BukkitCommandManager implements CommandManager {
     private NotFoundHandler notFoundHandler;
     private NoPermissionHandler noPermissionHandler;
 
+    private final Map<ObjectOwner, NoPermissionHandler> objectOwnerNoPermissionHandler;
+
     public BukkitCommandManager() {
         this.commands = new ArrayList<>();
+        this.objectOwnerNoPermissionHandler = new HashMap<>();
     }
 
     public NotFoundHandler getNotFoundHandler() {
@@ -79,6 +84,20 @@ public class BukkitCommandManager implements CommandManager {
     @Override
     public void setNoPermissionHandler(NoPermissionHandler noPermissionHandler) {
         this.noPermissionHandler = noPermissionHandler;
+    }
+
+    @Override
+    public NoPermissionHandler getNoPermissionHandler(ObjectOwner objectOwner) {
+        Validate.notNull(objectOwner);
+        NoPermissionHandler handler = this.objectOwnerNoPermissionHandler.get(objectOwner);
+        if(handler == null) handler = getNoPermissionHandler();
+        return handler;
+    }
+
+    @Override
+    public void setNoPermissionHandler(ObjectOwner objectOwner, NoPermissionHandler noPermissionHandler) {
+        Validate.notNull(objectOwner, noPermissionHandler);
+        this.objectOwnerNoPermissionHandler.put(objectOwner, noPermissionHandler);
     }
 
     @Override
