@@ -385,11 +385,6 @@ public class BukkitChunk implements Chunk {
     }
 
     @Override
-    public void playSound(Vector vector, String s, float v, float v1) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
     public void playSound(Vector vector, String s, SoundCategory soundCategory, float v, float v1) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
