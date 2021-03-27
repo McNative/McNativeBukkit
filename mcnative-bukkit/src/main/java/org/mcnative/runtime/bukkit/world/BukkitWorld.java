@@ -479,11 +479,6 @@ public class BukkitWorld implements World {
     }
 
     @Override
-    public void playSound(Vector vector, String s, float v, float v1) {
-
-    }
-
-    @Override
     public void playSound(Vector vector, String s, SoundCategory soundCategory, float v, float v1) {
 
     }

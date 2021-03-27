@@ -52,7 +52,7 @@ public class BukkitItemStack implements ItemStack {
 
     @Override
     public ItemData getData() {
-        return null;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -128,15 +128,16 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public void setMaterial(Material material) {
+    public ItemStack setMaterial(Material material) {
         org.bukkit.Material bukkitMaterial = org.bukkit.Material.getMaterial(material.getName());
         Validate.notNull(bukkitMaterial, "Can't map bukkit material " + material.getName());
         this.original.setType(bukkitMaterial);
+        return this;
     }
 
     @Override
-    public void setData(ItemData data) {
-
+    public ItemStack setData(ItemData data) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -146,54 +147,58 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public void setDurability(int durability) {
+    public ItemStack setDurability(int durability) {
         if (this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             ((Damageable) meta).setDamage(durability);
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override
-    public void setDisplayName(String name) {
+    public ItemStack setDisplayName(String name) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             meta.setDisplayName(name);
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override
-    public void setTag(NBTTag tag) {
-
+    public ItemStack setTag(NBTTag tag) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public void addEnchantment(Enchantment enchantment) {
-        addEnchantment(enchantment, enchantment.getStartLevel());
+    public ItemStack addEnchantment(Enchantment enchantment) {
+        return addEnchantment(enchantment, enchantment.getStartLevel());
     }
 
     @Override
-    public void addEnchantment(Enchantment enchantment, int level) {
+    public ItemStack addEnchantment(Enchantment enchantment, int level) {
         this.original.addEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getName()), level);
+        return this;
     }
 
     @Override
-    public void setLore(List<String> lore) {
+    public ItemStack setLore(List<String> lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             meta.setLore(lore);
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override
-    public void setLore(String... lore) {
-        setLore(Arrays.asList(lore));
+    public ItemStack setLore(String... lore) {
+        return setLore(Arrays.asList(lore));
     }
 
     @Override
-    public void setLore(int index, String lore) {
+    public ItemStack setLore(int index, String lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             List<String> newLore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
@@ -201,10 +206,11 @@ public class BukkitItemStack implements ItemStack {
             meta.setLore(newLore);
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override
-    public void addLore(List<String> lore) {
+    public ItemStack addLore(List<String> lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             List<String> newLore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
@@ -212,30 +218,32 @@ public class BukkitItemStack implements ItemStack {
             meta.setLore(newLore);
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override
-    public void addLore(String... lore) {
-        addLore(Arrays.asList(lore));
+    public ItemStack addLore(String... lore) {
+        return addLore(Arrays.asList(lore));
     }
 
     @Override
-    public void addLore(String lore) {
-        addLore(Collections.singletonList(lore));
+    public ItemStack addLore(String lore) {
+        return addLore(Collections.singletonList(lore));
     }
 
     @Override
-    public void setFlags(ItemFlag... flags) {
+    public ItemStack setFlags(ItemFlag... flags) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             meta.getItemFlags().iterator().forEachRemaining(meta::removeItemFlags);
             this.original.setItemMeta(meta);
             addFlags(flags);
         }
+        return this;
     }
 
     @Override
-    public void addFlags(ItemFlag... flags) {
+    public ItemStack addFlags(ItemFlag... flags) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             for (ItemFlag flag : flags) {
@@ -243,10 +251,11 @@ public class BukkitItemStack implements ItemStack {
             }
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override
-    public void removeFlag(ItemFlag... flags) {
+    public ItemStack removeFlag(ItemFlag... flags) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             for (ItemFlag flag : flags) {
@@ -254,6 +263,7 @@ public class BukkitItemStack implements ItemStack {
             }
             this.original.setItemMeta(meta);
         }
+        return this;
     }
 
     @Override

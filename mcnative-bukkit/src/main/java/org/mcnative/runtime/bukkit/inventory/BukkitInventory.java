@@ -25,6 +25,7 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.block.Container;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
+import org.jetbrains.annotations.NotNull;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
@@ -217,7 +218,7 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
 
     @Override
     public void setTitle(String title) {
-
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -344,18 +345,15 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
     }
 
     @Override
-    public void move(int index, int destination, short speed) {
-
-    }
-
-    @Override
     public void show(HumanEntity entity) {
         entity.openInventory(this);
     }
 
     @Override
     public void showAllPlayers() {
-        //     MinecraftService.getInstance().getPlayerManager().getOnlinePlayers().forEach(player -> player.openInventory(this));
+        McNative.getInstance().getLocal().getOnlinePlayers().forEach(player -> {
+            if(player instanceof Player) ((Player)player).openInventory(this);
+        });
     }
 
     @Override
@@ -370,7 +368,7 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
 
 
     @Override
-    public Iterator<ItemStack> iterator() {
+    public @NotNull Iterator<ItemStack> iterator() {
         Iterator<org.bukkit.inventory.ItemStack> bukkitIterator = this.original.iterator();
         return new Iterator<ItemStack>() {
             @Override
@@ -385,46 +383,8 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
         };
     }
 
+    //@Todo for other inventory types
     public static BukkitInventory<?> mapInventory(org.bukkit.inventory.Inventory inventory) {
-        if(inventory instanceof AnvilInventory) {
-            return new BukkitAnvilInventory(mapInventoryHolder(inventory.getHolder()), (AnvilInventory)inventory);
-        } else if(inventory instanceof HorseInventory) {
-            return new BukkitArmorableHorseInventory(mapInventoryHolder(inventory.getHolder()), (HorseInventory)inventory);
-        } else if(inventory instanceof BeaconInventory) {
-            return new BukkitBeaconInventory(mapInventoryHolder(inventory.getHolder()), (BeaconInventory) inventory);
-        } else if(inventory instanceof BrewerInventory) {
-            return new BukkitBrewerInventory(mapInventoryHolder(inventory.getHolder()), (BrewerInventory)inventory);
-        } else if(inventory instanceof CraftingInventory) {
-            return new BukkitCraftingInventory(mapInventoryHolder(inventory.getHolder()), (CraftingInventory) inventory);
-        } else if(inventory instanceof DoubleChestInventory) {
-            return new BukkitDoubleChestInventory(mapInventoryHolder(inventory.getHolder()), (DoubleChestInventory)inventory);
-        } else if(inventory instanceof EnchantingInventory) {
-            return new BukkitEnchantingInventory(mapInventoryHolder(inventory.getHolder()), (EnchantingInventory)inventory);
-        } else if(inventory instanceof FurnaceInventory) {
-            return new BukkitFurnaceInventory(mapInventoryHolder(inventory.getHolder()), (FurnaceInventory) inventory);
-        } else if(McNative.getInstance().getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_11)
-                && inventory instanceof LlamaInventory) {
-            return new BukkitLlamaInventory(mapInventoryHolder(inventory.getHolder()), (LlamaInventory) inventory);
-        } else if(McNative.getInstance().getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_11) &&
-                inventory instanceof AbstractHorseInventory) {
-            return new BukkitHorseInventory<>(mapInventoryHolder(inventory.getHolder()), (AbstractHorseInventory)inventory);
-        } else if(inventory instanceof PlayerInventory) {
-            return new BukkitPlayerInventory(mapInventoryHolder(inventory.getHolder()), (PlayerInventory)inventory);
-        } else if(inventory.getType() == InventoryType.CHEST) {
-            return new BukkitChestInventory<>(mapInventoryHolder(inventory.getHolder()), inventory);
-        } else if(McNative.getInstance().getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_14)) {
-            if(inventory instanceof CartographyInventory) {
-                return new BukkitCartographyInventory(mapInventoryHolder(inventory.getHolder()), (CartographyInventory) inventory);
-            } else if(inventory instanceof GrindstoneInventory) {
-                return new BukkitGrindstoneInventory(mapInventoryHolder(inventory.getHolder()), (GrindstoneInventory) inventory);
-            } else if(inventory instanceof LecternInventory) {
-                return new BukkitLecternInventory(mapInventoryHolder(inventory.getHolder()), (LecternInventory) inventory);
-            } else if(inventory instanceof LoomInventory) {
-                return new BukkitLoomInventory(mapInventoryHolder(inventory.getHolder()), (LoomInventory) inventory);
-            } else if(inventory instanceof StonecutterInventory) {
-                return new BukkitStonecutterInventory(mapInventoryHolder(inventory.getHolder()), (StonecutterInventory) inventory);
-            }
-        }
         return new BukkitInventory<>(mapInventoryHolder(inventory.getHolder()), inventory);
     }
 
