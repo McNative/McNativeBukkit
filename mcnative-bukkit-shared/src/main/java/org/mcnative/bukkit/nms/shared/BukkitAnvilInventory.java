@@ -333,11 +333,6 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
     }
 
     @Override
-    public void move(int i, int i1, short i2) {
-
-    }
-
-    @Override
     public void show(HumanEntity humanEntity) {
 
     }

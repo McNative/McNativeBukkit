@@ -19,6 +19,7 @@
 
 package org.mcnative.runtime.bukkit.world;
 
+import org.mcnative.runtime.bukkit.world.block.BukkitBlock;
 import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
 import org.mcnative.runtime.api.player.sound.SoundCategory;
 import org.mcnative.runtime.api.service.entity.Entity;
@@ -29,16 +30,15 @@ import org.mcnative.runtime.api.service.entity.projectile.arrow.Arrow;
 import org.mcnative.runtime.api.service.inventory.item.DroppedItem;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
+import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.utils.positioning.Vector;
 import org.mcnative.runtime.api.service.world.Biome;
 import org.mcnative.runtime.api.service.world.Chunk;
 import org.mcnative.runtime.api.service.world.Effect;
 import org.mcnative.runtime.api.service.world.TreeType;
 import org.mcnative.runtime.api.service.world.block.Block;
 import org.mcnative.runtime.api.service.world.block.data.BlockData;
-import org.mcnative.runtime.api.service.world.location.Location;
 import org.mcnative.runtime.api.service.world.particle.Particle;
-import org.mcnative.runtime.api.utils.positioning.Vector;
-import org.mcnative.runtime.bukkit.world.block.BukkitBlock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -143,21 +143,21 @@ public class BukkitChunk implements Chunk {
 
     @Override
     public void fill(int z, Material material) {
-        fill(z,z,material);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public void fill(int startZ, int endZ, Material material) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public void clear() {
-        fill(Material.AIR);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public Iterator<Block> iterator() {//@Todo create block iterator
+    public Iterator<Block> iterator() {
         Collection<Block> blocks = new ArrayList<>();
         for(int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -321,76 +321,76 @@ public class BukkitChunk implements Chunk {
 
     @Override
     public DroppedItem dropItem(Vector location, ItemStack item) {
-        return world.dropItem(location,item);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public DroppedItem dropItemNaturally(Vector location, ItemStack item) {
-        return world.dropItemNaturally(location,item);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public boolean createExplosion(Vector point, float power) {
-        return world.createExplosion(point,power);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public boolean createExplosion(Vector point, float power, boolean fire) {
-        return world.createExplosion(point,power,fire);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public boolean createExplosion(Vector point, float power, boolean fire, boolean destroyBlocks) {
-        return world.createExplosion(point,power,fire,destroyBlocks);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public boolean createExplosion(Vector point, Vector vector, float power) {
-        return world.createExplosion(point,vector,power);
+    public boolean createExplosion(Vector point, Vector Vector, float power) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public boolean createExplosion(Vector point, Vector vector, float power, boolean fire) {
-        return world.createExplosion(point,vector,power,fire);
+    public boolean createExplosion(Vector point, Vector Vector, float power, boolean fire) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public boolean createExplosion(Vector point, Vector vector, float power, boolean fire, boolean destroyBlocks) {
-        return world.createExplosion(point,vector,power,fire,destroyBlocks);
+    public boolean createExplosion(Vector point, Vector Vector, float power, boolean fire, boolean destroyBlocks) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public void strikeLightning(Vector location, boolean damage) {
-        world.strikeLightning(location,damage);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public void createFallingBlock(Vector point, Material material) {
-        world.createFallingBlock(point,material);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public void createFallingBlock(Vector point, BlockData data) {
-        world.createFallingBlock(point,data);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public void playEffect(Location location, Effect effect) {
-        world.playEffect(location, effect);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public void playEffect(Location location, Effect effect, Vector vector) {
-        world.playEffect(location, effect, vector);
+    public void playEffect(Location location, Effect effect, Vector Vector) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public void playSound(Vector vector, String sound, SoundCategory category, float volume, float pitch) {
-        world.playSound(vector, sound, category, volume, pitch);
+    public void playSound(Vector vector, String s, SoundCategory soundCategory, float v, float v1) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public boolean generateTree(Vector location, TreeType treeType) {
-        return world.generateTree(location,treeType);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

@@ -20,7 +20,6 @@
 package org.mcnative.runtime.bukkit.world;
 
 import net.pretronic.libraries.utility.Iterators;
-import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftSoundEffectPacket;
 import org.mcnative.runtime.bukkit.BukkitMcNative;
 import org.mcnative.runtime.bukkit.location.BukkitLocation;
 import org.mcnative.runtime.bukkit.world.block.BukkitBlock;
@@ -336,25 +335,17 @@ public class BukkitWorld implements World {
 
     @Override
     public Collection<Animal> getAnimals() {
-        Collection<Animal> animals = new ArrayList<>();
-        for (Entity entity : getLivingEntities()) {
-            if(entity instanceof Animal) animals.add((Animal) entity);
-        }
-        return animals;
+        throw new UnsupportedOperationException("Currently not supported");
     }
 
     @Override
     public Collection<Monster> getMonsters() {
-        Collection<Monster> monsters = new ArrayList<>();
-        for (Entity entity : getLivingEntities()) {
-            if(entity instanceof Monster) monsters.add((Monster) entity);
-        }
-        return monsters;
+        throw new UnsupportedOperationException("Currently not supported");
     }
 
     @Override
     public Collection<Player> getPlayers() {
-        return Iterators.map(getOriginal().getPlayers(), player -> (Player) McNative.getInstance().getLocal().getConnectedPlayer(player.getUniqueId()));
+        return Iterators.map(getOriginal().getPlayers(), player -> (Player) McNative.getInstance().getPlayerManager().getPlayer(player.getUniqueId()));
     }
 
     @Override
@@ -488,16 +479,8 @@ public class BukkitWorld implements World {
     }
 
     @Override
-    public void playSound(Vector vector, String sound, SoundCategory category, float volume, float pitch) {
-        MinecraftSoundEffectPacket packet = new MinecraftSoundEffectPacket();
-        packet.setPositionX(vector.getBlockX());
-        packet.setPositionX(vector.getBlockY());
-        packet.setPositionX(vector.getBlockZ());
-        packet.setSoundName(sound);
-        packet.setCategory(category);
-        packet.setVolume(volume);
-        packet.setPitch(pitch);
-        for (Player player : getPlayers()) player.sendPacket(packet);
+    public void playSound(Vector vector, String s, SoundCategory soundCategory, float v, float v1) {
+
     }
 
     @Override
