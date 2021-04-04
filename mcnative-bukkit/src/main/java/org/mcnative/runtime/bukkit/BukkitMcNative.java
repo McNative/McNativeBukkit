@@ -69,6 +69,9 @@ import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.format.ColoredString;
 import org.mcnative.runtime.api.utils.Env;
+import org.mcnative.runtime.bukkit.creators.BukkitItemStackCreator;
+import org.mcnative.runtime.bukkit.creators.InventoryCreator;
+import org.mcnative.runtime.bukkit.creators.ItemStackCreator;
 import org.mcnative.runtime.bukkit.inventory.BukkitInventoryHolder;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.bukkit.inventory.type.BukkitChestInventory;
@@ -319,45 +322,9 @@ public class BukkitMcNative implements McNative {
     protected void registerDefaultCreators(){
         factory.registerCreator(ChatChannel.class, objects -> new DefaultChatChannel());
         factory.registerCreator(Tablist.class, objects -> new BukkitTablist());
-        factory.registerCreator(ItemStack.class, parameters -> {
-            if(parameters.length == 0 || parameters[0] == null) return null;
-
-            org.bukkit.inventory.ItemStack itemStack;
-
-            if(parameters[0] instanceof org.bukkit.inventory.ItemStack) {
-                itemStack = (org.bukkit.inventory.ItemStack) parameters[0];
-            } else {
-                Material material = (Material) parameters[0];
-                org.bukkit.Material bukkitMaterial = null;
-                for (org.bukkit.Material value : org.bukkit.Material.values()) {
-                    if(value.toString().equalsIgnoreCase(material.getName())) {
-                        bukkitMaterial = value;
-                        break;
-                    }
-                }
-                Validate.notNull(bukkitMaterial, "Can't create item stack for " + material + ".");
-                itemStack = new org.bukkit.inventory.ItemStack(bukkitMaterial);
-            }
-            return new BukkitItemStack(itemStack);
-        });
-        factory.registerCreator(AnvilInventory.class, parameters -> {
-            InventoryOwner owner = parameters.length > 0 && parameters[0] instanceof InventoryOwner ? (InventoryOwner) parameters[0] : null;
-
-            return null;//new BukkitAnvilInventory1_13_R1(McNativeLauncher.getPlugin(), owner);
-        });
-        factory.registerCreator(Inventory.class, parameters -> {
-            InventoryOwner owner = parameters.length > 0 && parameters[0] instanceof InventoryOwner ? (InventoryOwner) parameters[0] : null;
-            int size = parameters.length > 1 && parameters[1] instanceof Integer ? (int) parameters[1] : 27;
-            String title = parameters.length > 2 && parameters[2] instanceof String ? (String) parameters[2] : "Chest";
-            InventoryHolder holder = owner != null ? new BukkitInventoryHolder(owner) : null;
-            return new BukkitChestInventory<>(owner, Bukkit.createInventory(holder, size, title));
-        });
-        factory.registerCreator(org.bukkit.inventory.ItemStack.class, parameters -> {
-            System.out.println("Convert:" +(parameters.length == 0 || parameters[0] == null));
-            if(parameters.length == 0 || parameters[0] == null) return null;
-            Validate.isTrue(parameters.length == 1 && parameters[0] instanceof BukkitItemStack, "Not valid inputs to convert to ItemStack from Bukkit");
-            return ((BukkitItemStack)parameters[0]).getOriginal();
-        });
+        factory.registerCreator(ItemStack.class, new ItemStackCreator());
+        factory.registerCreator(Inventory.class, new InventoryCreator());
+        factory.registerCreator(org.bukkit.inventory.ItemStack.class, new BukkitItemStackCreator());
     }
 
     protected void registerPlayerAdapter() {

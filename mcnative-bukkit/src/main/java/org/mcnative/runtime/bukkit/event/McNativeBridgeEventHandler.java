@@ -20,7 +20,6 @@
 
 package org.mcnative.runtime.bukkit.event;
 
-import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,35 +28,12 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginConfirmEvent;
-import org.mcnative.runtime.api.player.bossbar.BarColor;
-import org.mcnative.runtime.api.player.bossbar.BarDivider;
-import org.mcnative.runtime.api.player.bossbar.BarFlag;
-import org.mcnative.runtime.api.player.bossbar.BossBar;
-import org.mcnative.runtime.api.service.inventory.Inventory;
-import org.mcnative.runtime.api.service.inventory.item.ItemStack;
-import org.mcnative.runtime.api.service.inventory.item.material.Material;
-import org.mcnative.runtime.api.service.inventory.type.AnvilInventory;
-import org.mcnative.runtime.api.text.Text;
-import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
-import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryClickEvent;
-import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryCloseEvent;
-import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryDragEvent;
-import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryOpenEvent;
-import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
-import org.mcnative.runtime.bukkit.player.BukkitPendingConnection;
-import org.mcnative.runtime.bukkit.player.BukkitPlayer;
-import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
-import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
-import org.mcnative.runtime.bukkit.player.connection.ChannelConnection;
-import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
-import org.mcnative.runtime.bukkit.plugin.event.McNativeHandlerList;
-import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerChatEvent;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerCommandPreprocessEvent;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerLogoutEvent;
+import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginConfirmEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerPostLoginEvent;
 import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
@@ -72,9 +48,21 @@ import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerIn
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryCloseEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryDragEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryOpenEvent;
+import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.event.player.*;
+import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryClickEvent;
+import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryCloseEvent;
+import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryDragEvent;
+import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryOpenEvent;
+import org.mcnative.runtime.bukkit.player.BukkitPendingConnection;
+import org.mcnative.runtime.bukkit.player.BukkitPlayer;
+import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
+import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
+import org.mcnative.runtime.bukkit.player.connection.ChannelConnection;
+import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
+import org.mcnative.runtime.bukkit.plugin.event.McNativeHandlerList;
+import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.common.event.player.DefaultMinecraftPlayerLoginConfirmEvent;
-import org.mcnative.runtime.common.player.DefaultBossBar;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -141,7 +129,7 @@ public class McNativeBridgeEventHandler {
         /* Inventory */
 
         //Inventory click
-        /*eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
+        eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
         eventBus.registerManagedEvent(InventoryClickEvent.class, this::handleInventoryClick);
 
         //Inventory close
@@ -154,7 +142,7 @@ public class McNativeBridgeEventHandler {
 
         //Inventory open
         eventBus.registerMappedClass(MinecraftPlayerInventoryOpenEvent.class, InventoryOpenEvent.class);
-        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);*/
+        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);
     }
 
     private void handlePreLoginEvent(McNativeHandlerList handler, AsyncPlayerPreLoginEvent event) {

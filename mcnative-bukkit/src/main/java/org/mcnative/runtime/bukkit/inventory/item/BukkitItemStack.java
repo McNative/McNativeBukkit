@@ -19,6 +19,7 @@
 
 package org.mcnative.runtime.bukkit.inventory.item;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.inventory.meta.Damageable;
@@ -29,6 +30,7 @@ import org.mcnative.runtime.api.service.inventory.item.ItemStack;
 import org.mcnative.runtime.api.service.inventory.item.data.ItemData;
 import org.mcnative.runtime.api.service.inventory.item.material.Enchantment;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
+import org.mcnative.runtime.bukkit.BukkitNBTTag;
 
 import java.util.*;
 
@@ -82,7 +84,8 @@ public class BukkitItemStack implements ItemStack {
 
     @Override
     public NBTTag getTag() {
-        return null;
+        NBTItem nbtItem = new NBTItem(this.original, true);
+        return new BukkitNBTTag(nbtItem);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class BukkitItemStack implements ItemStack {
 
     @Override
     public boolean hasTag() {
-        return this.original.getItemMeta() != null && !this.original.getItemMeta().getItemFlags().isEmpty();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -168,7 +171,10 @@ public class BukkitItemStack implements ItemStack {
 
     @Override
     public ItemStack setTag(NBTTag tag) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Validate.isTrue(tag instanceof BukkitNBTTag);
+        NBTItem nbtItem = new NBTItem(this.original, true);
+        nbtItem.mergeCompound(((BukkitNBTTag)tag).getOriginal());
+        return this;
     }
 
     @Override
@@ -284,7 +290,7 @@ public class BukkitItemStack implements ItemStack {
             return false;
         } else if (stack == this) {
             return true;
-        } else {//@Todo compare nbt tag
+        } else {
             Material comparisonType = getMaterial();
             return comparisonType.equals(stack.getMaterial())
                     && this.getDurability() == stack.getDurability()
@@ -293,7 +299,8 @@ public class BukkitItemStack implements ItemStack {
                     && (!hasDisplayName() || getDisplayName().equals(stack.getDisplayName()))
                     && (!hasLore() || getLore().equals(stack.getLore()))
                     && hasSameFlags(stack)
-                    && hasSameEnchantments(stack);
+                    && hasSameEnchantments(stack)
+                    && getTag().equals(stack.getTag());
         }
     }
 
