@@ -73,15 +73,21 @@ public class McNativePluginWrapperLoader implements PluginLoader {
         boolean useTimings = Bukkit.getPluginManager().useTimings();
         Map<Class<? extends Event>, Set<RegisteredListener>> result = new HashMap<>();
 
-        Class<?> eventClass = listener.getClass();
-        while (eventClass != null) {
-            registerMethods(plugin, eventBus, eventClass, listener, result, useTimings);
-            eventClass = eventClass.getSuperclass();
+        try {
+            Class<?> eventClass = listener.getClass();
+            while (eventClass != null) {
+                registerMethods(plugin, eventBus, eventClass, listener, result, useTimings);
+                eventClass = eventClass.getSuperclass();
+            }
+        }catch (NoClassDefFoundError e) {
+            plugin.getLogger().severe("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for " + listener.getClass() + " because " + e.getMessage() + " does not exist.");
         }
+
         return result;
     }
 
     private void registerMethods(Plugin plugin, EventBus eventBus, Class<?> eventsClass, Listener listener, Map<Class<? extends Event>, Set<RegisteredListener>> result, boolean useTimings) {
+
         for (final Method method : eventsClass.getDeclaredMethods()) {
             method.setAccessible(true);
             final EventHandler eventHandler = method.getAnnotation(EventHandler.class);
