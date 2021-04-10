@@ -376,14 +376,7 @@ public class BungeeCordProxyNetwork implements Network {
 
     private void handlePlayerServerSwitch(Document document) {
         UUID uniqueId = document.getObject("uniqueId", UUID.class);
-        String serverName = document.getString("server");
-
-
-        System.out.println("NEW SERVER: "+serverName);
-        for (MinecraftServer server : this.servers) {
-            System.out.println("AVAILABLE: "+server.getName());
-        }
-        System.out.println("---------------------------");
+        String serverName = document.getString("target");
 
         OnlineMinecraftPlayer player = Iterators.removeOne(this.players, player1 -> player1.getUniqueId().equals(uniqueId));
         MinecraftServer server = Iterators.findOne(this.servers, server1 -> server1.getName().equalsIgnoreCase(serverName));
