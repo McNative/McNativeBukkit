@@ -403,4 +403,5 @@ public class McNativeLauncher implements Listener {
         lookupNames.put(plugin.getName(),plugin);
         return plugin;
     }
+
 }
