@@ -272,7 +272,6 @@ public class McNativeBridgeEventHandler {
     private void handleLogoutEvent(McNativeHandlerList handler, PlayerQuitEvent event){
         if(!McNative.getInstance().isReady() || !firstPlayerConnected) return;
         BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
-        playerManager.unregisterPlayer(event.getPlayer().getUniqueId());
         player.handleLogout();
 
         BukkitQuitEvent mcnativeEvent = new BukkitQuitEvent(event,player);
@@ -293,6 +292,8 @@ public class McNativeBridgeEventHandler {
 
         Tablist serverTablist = McNative.getInstance().getLocal().getServerTablist();
         if(serverTablist != null) serverTablist.removeEntry(player);
+
+        playerManager.unregisterPlayer(event.getPlayer().getUniqueId());
     }
 
     private void handleWorldChangedEvent(McNativeHandlerList handler,PlayerChangedWorldEvent event){
