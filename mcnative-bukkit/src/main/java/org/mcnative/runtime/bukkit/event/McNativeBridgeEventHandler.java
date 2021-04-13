@@ -20,6 +20,8 @@
 
 package org.mcnative.runtime.bukkit.event;
 
+import net.pretronic.libraries.utility.Iterators;
+import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -65,10 +67,12 @@ import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.common.event.player.DefaultMinecraftPlayerLoginConfirmEvent;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 public class McNativeBridgeEventHandler {
 
@@ -76,6 +80,7 @@ public class McNativeBridgeEventHandler {
     private final BukkitChannelInjector injector;
     private final BukkitPlayerManager playerManager;
     private final Map<UUID,BukkitPendingConnection> pendingConnections;
+    private final Map<Long,BukkitPlayer> disconnectingPlayers;
 
     //For preventing McNative mapping error.
     private boolean firstPlayerConnected;
@@ -85,8 +90,14 @@ public class McNativeBridgeEventHandler {
         this.eventBus = eventBus;
         this.playerManager = playerManager;
         this.pendingConnections = new ConcurrentHashMap<>();
+        this.disconnectingPlayers = new ConcurrentHashMap<>();
         firstPlayerConnected = false;
         setup();
+        McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).async()
+                .delay(5,TimeUnit.SECONDS).interval(200,TimeUnit.MILLISECONDS).execute(() -> {
+                    long timeout = System.currentTimeMillis()+500;
+                    disconnectingPlayers.keySet().removeIf(time -> time > timeout);
+                });
     }
 
     private void setup(){
@@ -293,6 +304,7 @@ public class McNativeBridgeEventHandler {
         Tablist serverTablist = McNative.getInstance().getLocal().getServerTablist();
         if(serverTablist != null) serverTablist.removeEntry(player);
 
+        this.disconnectingPlayers.put(System.currentTimeMillis(),player);
         playerManager.unregisterPlayer(event.getPlayer().getUniqueId());
     }
 
@@ -334,7 +346,8 @@ public class McNativeBridgeEventHandler {
 
     private void handleInventoryClose(McNativeHandlerList handler, InventoryCloseEvent event) {
         if(!McNative.getInstance().isReady() || !firstPlayerConnected) return;
-        BukkitPlayer player = playerManager.getMappedPlayer((org.bukkit.entity.Player) event.getPlayer());
+        BukkitPlayer player = Iterators.findOne(this.disconnectingPlayers.values(), player1 -> player1.getUniqueId().equals(event.getPlayer().getUniqueId()));
+        if(player == null) player = playerManager.getMappedPlayer((org.bukkit.entity.Player) event.getPlayer());
         MinecraftPlayerInventoryCloseEvent mcnativeEvent = new BukkitPlayerInventoryCloseEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
     }
