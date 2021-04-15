@@ -39,16 +39,16 @@ public class McNativeCommandMap extends SimpleCommandMap implements Listener {
 
     private final BukkitCommandManager commandManager;
     private final SimpleCommandMap original;
-    private final Map<String,Command> commands;
+    protected final Map<String,Command> knownCommands;
 
     @SuppressWarnings("unchecked")
     public McNativeCommandMap(BukkitCommandManager commandManager,SimpleCommandMap original) {
         super(Bukkit.getServer());
         this.commandManager = commandManager;
         this.original = original;
-        this.commands = (Map<String, Command>) ReflectionUtil.getFieldValue(SimpleCommandMap.class,original, "knownCommands");
+        this.knownCommands = (Map<String, Command>) ReflectionUtil.getFieldValue(SimpleCommandMap.class,original, "knownCommands");
 
-        for (Map.Entry<String, Command> entry : this.commands.entrySet()) {
+        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet()) {
             if(!(entry.getValue() instanceof McNativeCommand)){
                 String[] parts = entry.getKey().split(":");
                 if(parts.length == 2){
@@ -149,13 +149,13 @@ public class McNativeCommandMap extends SimpleCommandMap implements Listener {
     }
 
     public void unregister(Object command){
-        Iterators.removeSilent(this.commands.entrySet(), entry -> entry.getValue().equals(command));
+        Iterators.removeSilent(this.knownCommands.entrySet(), entry -> entry.getValue().equals(command));
         commandManager.unregisterCommand(command);
     }
 
     public synchronized void unregister(org.bukkit.plugin.Plugin plugin){
         synchronized (this){
-            Iterator<Map.Entry<String, Command>> iterator =  this.commands.entrySet().iterator();
+            Iterator<Map.Entry<String, Command>> iterator =  this.knownCommands.entrySet().iterator();
             while (iterator.hasNext()){
                 Map.Entry<String, Command> entry = iterator.next();
                 if(entry.getValue() instanceof PluginCommand){
