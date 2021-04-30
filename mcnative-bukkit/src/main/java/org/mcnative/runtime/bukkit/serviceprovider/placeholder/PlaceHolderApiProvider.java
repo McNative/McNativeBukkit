@@ -32,6 +32,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
@@ -209,9 +210,14 @@ public class PlaceHolderApiProvider implements PlaceholderProvider, OwnerUnregis
             }
         }
         private String replace(MinecraftPlayer player,String identifier){
-            Object result = hook.onRequest(player,identifier);
-            if(result == null) return "NULL";
-            else return result instanceof String ? (String) result : result.toString();
+            try {
+                Object result = hook.onRequest(player,identifier);
+                if(result == null) return "NULL";
+                else return result instanceof String ? (String) result : result.toString();
+            }catch (Exception e){
+                e.printStackTrace();
+                return "Error: "+e.getMessage();
+            }
         }
     }
 }
