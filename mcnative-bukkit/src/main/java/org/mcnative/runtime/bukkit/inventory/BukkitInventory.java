@@ -26,6 +26,7 @@ import org.bukkit.block.Container;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
+import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
@@ -388,10 +389,13 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
         return new BukkitInventory<>(mapInventoryHolder(inventory.getHolder()), inventory);
     }
 
+    public static BukkitInventory<?> mapInventory(org.bukkit.inventory.Inventory inventory, Player holder) {
+        return new BukkitInventory<>(holder, inventory);
+    }
+
     public static InventoryOwner mapInventoryHolder(InventoryHolder inventoryHolder) {
         if(inventoryHolder instanceof org.bukkit.entity.Player) {
-            OnlineMinecraftPlayer player = MinecraftService.getInstance()
-                    .getOnlinePlayer(((org.bukkit.entity.Player)inventoryHolder).getUniqueId());
+            ConnectedMinecraftPlayer player = MinecraftService.getInstance().getConnectedPlayer(((org.bukkit.entity.Player)inventoryHolder).getUniqueId());
             if(player instanceof Player) {
                 return (Player) player;
             } else {

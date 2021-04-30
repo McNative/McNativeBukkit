@@ -24,6 +24,8 @@ import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.clip.placeholderapi.expansion.manager.LocalExpansionManager;
 import net.pretronic.libraries.utility.Iterators;
+import net.pretronic.libraries.utility.StringUtil;
+import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import net.pretronic.libraries.utility.interfaces.OwnerUnregisterAble;
 import org.bukkit.Bukkit;
@@ -67,7 +69,8 @@ public class PlaceHolderApiProvider implements PlaceholderProvider, OwnerUnregis
 
     @Override
     public void registerPlaceHolders(ObjectOwner owner, String identifier, PlaceholderHook hook) {
-        this.expansions.add(new McNativePlaceHolderExpansion(getPlugin(owner),identifier,hook,owner));
+        Validate.notNull(owner,identifier,hook);
+        this.expansions.add(new McNativePlaceHolderExpansion(getPlugin(owner),owner.getName(),identifier,hook,owner));
     }
 
     @Override
@@ -148,13 +151,15 @@ public class PlaceHolderApiProvider implements PlaceholderProvider, OwnerUnregis
 
     private class McNativePlaceHolderExpansion extends PlaceholderExpansion {
 
+        private final String author;
         private final Plugin plugin;
         private final String identifier;
         private final PlaceholderHook hook;
         private final ObjectOwner owner;
 
-        public McNativePlaceHolderExpansion(Plugin plugin, String identifier, PlaceholderHook hook,ObjectOwner owner) {
+        public McNativePlaceHolderExpansion(Plugin plugin,String author, String identifier, PlaceholderHook hook,ObjectOwner owner) {
             this.plugin = plugin;
+            this.author = author;
             this.identifier = identifier;
             this.hook = hook;
             this.owner = owner;
@@ -177,7 +182,7 @@ public class PlaceHolderApiProvider implements PlaceholderProvider, OwnerUnregis
 
         @Override
         public String getAuthor(){
-            return plugin.getDescription().getAuthors().toString();
+            return author;
         }
 
         @Override
