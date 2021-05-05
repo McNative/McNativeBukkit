@@ -24,6 +24,7 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.OfflinePlayer;
 import org.mcnative.runtime.api.McNative;
+import org.mcnative.runtime.api.player.MinecraftPlayer;
 import org.mcnative.runtime.api.serviceprovider.economy.EconomyProvider;
 
 import java.util.ArrayList;
@@ -99,12 +100,16 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public double getBalance(String playerName) {
-        return this.economyProvider.getPlayerBalance(McNative.getInstance().getPlayerManager().getPlayer(playerName));
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
+        if(player == null)throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        return this.economyProvider.getPlayerBalance(player);
     }
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
-        return this.economyProvider.getPlayerBalance(McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId()));
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
+        if(player == null)throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        return this.economyProvider.getPlayerBalance(player);
     }
 
     @Override
@@ -119,11 +124,15 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public boolean has(String playerName, double amount) {
-        return this.economyProvider.hasPlayerBalance(McNative.getInstance().getPlayerManager().getPlayer(playerName), amount);
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
+        if(player == null) throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        return this.economyProvider.hasPlayerBalance(player, amount);
     }
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double amount) {
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getName());
+        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
         return this.economyProvider.hasPlayerBalance(McNative.getInstance().getPlayerManager()
                 .getPlayer(offlinePlayer.getUniqueId()), amount);
     }
@@ -140,15 +149,18 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
-        org.mcnative.runtime.api.serviceprovider.economy.EconomyResponse response = this.economyProvider
-                .withdrawPlayerBalance(McNative.getInstance().getPlayerManager().getPlayer(playerName), amount);
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
+        if(player == null) throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        org.mcnative.runtime.api.serviceprovider.economy.EconomyResponse response = this.economyProvider.withdrawPlayerBalance(player, amount);
         return mapEconomyResponse(response);
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, double amount) {
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
+        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
         org.mcnative.runtime.api.serviceprovider.economy.EconomyResponse response = this.economyProvider
-                .withdrawPlayerBalance(McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId()), amount);
+                .withdrawPlayerBalance(player, amount);
         return mapEconomyResponse(response);
     }
 
@@ -164,14 +176,16 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public EconomyResponse depositPlayer(String playerName, double amount) {
-        return mapEconomyResponse(this.economyProvider.depositPlayerBalance(McNative.getInstance().getPlayerManager().
-                getPlayer(playerName), amount));
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
+        if(player == null) throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        return mapEconomyResponse(this.economyProvider.depositPlayerBalance(player, amount));
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, double amount) {
-        return mapEconomyResponse(this.economyProvider.depositPlayerBalance(McNative.getInstance().getPlayerManager().
-                getPlayer(offlinePlayer.getUniqueId()), amount));
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
+        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        return mapEconomyResponse(this.economyProvider.depositPlayerBalance(player, amount));
     }
 
     @Override
@@ -186,12 +200,16 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public EconomyResponse createBank(String name, String playerName) {
-        boolean success = this.economyProvider.createBank(name, McNative.getInstance().getPlayerManager().getPlayer(playerName));
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(name);
+        if(player == null) throw new IllegalArgumentException(name+" is not registered in McNative");
+        boolean success = this.economyProvider.createBank(name,player);
         return new EconomyResponse(0, 0, success ? EconomyResponse.ResponseType.SUCCESS : EconomyResponse.ResponseType.FAILURE, "Failed");
     }
 
     @Override
     public EconomyResponse createBank(String name, OfflinePlayer offlinePlayer) {
+        MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
+        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
         boolean success = this.economyProvider.createBank(name, McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId()));
         return new EconomyResponse(0, 0, success ? EconomyResponse.ResponseType.SUCCESS : EconomyResponse.ResponseType.FAILURE, "Failed");
     }
