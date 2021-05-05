@@ -131,7 +131,7 @@ public class McNativeBukkitConfiguration {
             FileConfiguration.FILE_TYPE = type;
             Document config = type.getReader().read(configFile, StandardCharsets.UTF_8);
             Document.loadConfigurationClass(McNativeBukkitConfiguration.class,config);
-            type.getWriter().write(configFile,config);
+            type.getWriter().write(configFile, StandardCharsets.UTF_8,config,true);
         }catch (Exception exception){
             logger.info(McNative.CONSOLE_PREFIX+"Could not load configuration (config."+type.getEnding()+")",exception);
             exception.printStackTrace();
