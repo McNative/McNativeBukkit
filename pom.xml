@@ -25,7 +25,7 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.19.1.156</version>
+    <version>1.20.3.161-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>mcnative-bukkit</module>
@@ -51,8 +51,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency version -->
-        <dependency.mcnative.api>1.2.28.89</dependency.mcnative.api>
-        <dependency.mcnative.common>1.11.7.103</dependency.mcnative.common>
+        <dependency.mcnative.api>1.3.1.94</dependency.mcnative.api>
+        <dependency.mcnative.common>1.12.0.107</dependency.mcnative.common>
         <dependency.netty>4.1.56.Final</dependency.netty>
 
         <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>

@@ -35,7 +35,7 @@ public class BukkitPlayerInventoryEvent<T extends InventoryEvent> implements Min
     public BukkitPlayerInventoryEvent(T original, Player player) {
         this.original = original;
         this.player = player;
-        this.inventory = BukkitInventory.mapInventory(original.getInventory());
+        this.inventory = BukkitInventory.mapInventory(original.getInventory(),player);
     }
 
     protected T getOriginal() {

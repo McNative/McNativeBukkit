@@ -35,6 +35,7 @@ import org.mcnative.runtime.common.plugin.configuration.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,9 +129,9 @@ public class McNativeBukkitConfiguration {
 
         try{
             FileConfiguration.FILE_TYPE = type;
-            Document config = type.getReader().read(configFile);
+            Document config = type.getReader().read(configFile, StandardCharsets.UTF_8);
             Document.loadConfigurationClass(McNativeBukkitConfiguration.class,config);
-            type.getWriter().write(configFile,config);
+            type.getWriter().write(configFile, StandardCharsets.UTF_8,config,true);
         }catch (Exception exception){
             logger.info(McNative.CONSOLE_PREFIX+"Could not load configuration (config."+type.getEnding()+")",exception);
             exception.printStackTrace();
