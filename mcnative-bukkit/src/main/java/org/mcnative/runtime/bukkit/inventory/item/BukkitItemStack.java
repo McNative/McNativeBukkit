@@ -63,21 +63,6 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public boolean hasDurability() {
-        return this.original.getItemMeta() != null &&
-                this.original.getItemMeta() instanceof Damageable &&
-                ((Damageable)this.original.getItemMeta()).hasDamage();
-    }
-
-    @Override
-    public int getDurability() {
-        if(this.original.getItemMeta() != null) {
-            return ((Damageable)this.original.getItemMeta()).getDamage();
-        }
-        return 0;
-    }
-
-    @Override
     public String getDisplayName() {
         return this.original.getItemMeta() != null ? this.original.getItemMeta().getDisplayName() : null;
     }
@@ -116,11 +101,6 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public boolean hasTag() {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
     public boolean hasLore() {
         return this.original.getItemMeta() != null && this.original.getItemMeta().hasLore();
     }
@@ -146,16 +126,6 @@ public class BukkitItemStack implements ItemStack {
     @Override
     public ItemStack setAmount(int amount) {
         this.original.setAmount(amount);
-        return this;
-    }
-
-    @Override
-    public ItemStack setDurability(int durability) {
-        if (this.original.getItemMeta() != null) {
-            ItemMeta meta = this.original.getItemMeta();
-            ((Damageable) meta).setDamage(durability);
-            this.original.setItemMeta(meta);
-        }
         return this;
     }
 
@@ -291,11 +261,10 @@ public class BukkitItemStack implements ItemStack {
         } else if (stack == this) {
             return true;
         } else {
+            //@Todo meta check
             Material comparisonType = getMaterial();
             return comparisonType.equals(stack.getMaterial())
-                    && this.getDurability() == stack.getDurability()
                     && getAmount() == stack.getAmount()
-                    && (!hasDurability() || getDurability() == stack.getDurability())
                     && (!hasDisplayName() || getDisplayName().equals(stack.getDisplayName()))
                     && (!hasLore() || getLore().equals(stack.getLore()))
                     && hasSameFlags(stack)
