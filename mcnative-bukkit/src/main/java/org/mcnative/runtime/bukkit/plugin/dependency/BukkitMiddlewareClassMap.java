@@ -8,20 +8,27 @@ import org.jetbrains.annotations.Nullable;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
 
     private final Map<String, Class<?>> original;
+    private final Map<String, Class<?>> dependencyClasses;
+    private final List<BukkitDependencyClassLoader> dependencyLoaders;
 
     public BukkitMiddlewareClassMap(Map<String, Class<?>> original) {
         this.original = original;
+        this.dependencyClasses = new ConcurrentHashMap<>();
+        this.dependencyLoaders = new ArrayList<>();
     }
 
     public Map<String, Class<?>> getOriginal() {
         return original;
+    }
+
+    public void addDependencyLoader(BukkitDependencyClassLoader loader){
+        this.dependencyLoaders.add(loader);
     }
 
     @Override
@@ -47,7 +54,18 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
     @Override
     public Class<?> get(Object key) {
         System.out.println("CLASS LOOKUP "+key);
-        return original.get(key);
+        Class<?> clazz = original.get(key);
+        if(clazz == null) clazz = this.dependencyClasses.get(key);
+        if(clazz == null){
+            for (BukkitDependencyClassLoader loader : dependencyLoaders) {
+                try {
+                    clazz = loader.findClass((String) key);
+                    this.dependencyClasses.put((String) key,clazz);
+                    return clazz;
+                } catch (ClassNotFoundException ignored) {}
+            }
+        }
+        return clazz;
     }
 
     @Nullable
@@ -87,6 +105,13 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
     @Override
     public Set<Entry<String, Class<?>>> entrySet() {
         return original.entrySet();
+    }
+
+    public void reset(){
+        JavaPluginLoader loader = (JavaPluginLoader) ReflectionUtil.getFieldValue(McNativeLauncher.class.getClassLoader(),"loader");
+        Field field = ReflectionUtil.getField(loader.getClass(),"classes");
+        field.setAccessible(true);
+        ReflectionUtil.setUnsafeObjectFieldValue(loader,field,original);
     }
 
     public static BukkitMiddlewareClassMap inject(){

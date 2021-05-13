@@ -101,6 +101,7 @@ public class McNativeLauncher implements Listener {
     private static BukkitCommandManager COMMAND_MANAGER;
     private static BukkitChannelInjector CHANNEL_INJECTOR;
     private static BukkitEventBus EVENT_BUS;
+    private static BukkitMiddlewareClassMap CLASS_MAP;
 
     public static Plugin getPlugin() {
         return PLUGIN;
@@ -146,7 +147,7 @@ public class McNativeLauncher implements Listener {
         pluginManager.inject();
         logger.info(McNative.CONSOLE_PREFIX+"McNative initialised and injected plugin manager.");
 
-        BukkitMiddlewareClassMap.inject();
+        BukkitMiddlewareClassMap middlewareClassMap = BukkitMiddlewareClassMap.inject();
 
         BukkitEventBus eventBus = new BukkitEventBus(GeneralUtil.getDefaultExecutorService(),pluginManager,getPlugin());
         BukkitCommandManager commandManager = new BukkitCommandManager();
@@ -155,10 +156,11 @@ public class McNativeLauncher implements Listener {
         PLUGIN_MANAGER = pluginManager;
         COMMAND_MANAGER = commandManager;
         EVENT_BUS = eventBus;
+        CLASS_MAP = middlewareClassMap;
 
         McNativeConsoleCredentials credentials = setupCredentials(variables);
         BukkitService localService = new BukkitService(commandManager,playerManager,eventBus);
-        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials);
+        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials,middlewareClassMap);
 
         McNative.setInstance(instance);
         instance.setNetwork(setupNetwork(logger,instance.getExecutorService()));
@@ -236,6 +238,7 @@ public class McNativeLauncher implements Listener {
         if(COMMAND_MANAGER != null) COMMAND_MANAGER.reset();
         if(CHANNEL_INJECTOR != null) CHANNEL_INJECTOR.reset();
         if(EVENT_BUS != null) EVENT_BUS.reset();
+        if(CLASS_MAP != null) CLASS_MAP.reset();
 
         McNative.setInstance(null);
 
