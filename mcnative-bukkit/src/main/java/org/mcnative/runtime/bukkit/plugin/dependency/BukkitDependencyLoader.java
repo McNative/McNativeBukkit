@@ -8,6 +8,6 @@ public class BukkitDependencyLoader implements DependencyClassLoader {
 
     @Override
     public ClassLoader load(ClassLoader classLoader, URL url) {
-        return new BukkitDependencyUrlClassLoader(new URL[]{url});
+        return new BukkitDependencyUrlClassLoader(new URL[]{url},getClass().getClassLoader());
     }
 }

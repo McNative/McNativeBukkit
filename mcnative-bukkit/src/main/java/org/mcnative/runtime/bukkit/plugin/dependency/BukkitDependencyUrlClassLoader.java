@@ -20,8 +20,8 @@ public class BukkitDependencyUrlClassLoader extends URLClassLoader {
 
     private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
 
-    public BukkitDependencyUrlClassLoader(URL[] urls) {
-        super(urls);
+    public BukkitDependencyUrlClassLoader(URL[] urls,ClassLoader parent) {
+        super(urls,parent);
         this.loader = (JavaPluginLoader) ReflectionUtil.getFieldValue(getClass().getClassLoader(),"loader");
 
         try {
