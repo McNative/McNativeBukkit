@@ -68,5 +68,6 @@ public class BukkitDependencyUrlClassLoader extends URLClassLoader {
             throw new RuntimeException(e);
         }
     }
+
 }
 
