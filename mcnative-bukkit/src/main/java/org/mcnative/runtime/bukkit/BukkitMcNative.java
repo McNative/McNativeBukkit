@@ -51,6 +51,7 @@ import org.mcnative.runtime.api.loader.LoaderConfiguration;
 import org.mcnative.runtime.api.network.Network;
 import org.mcnative.runtime.api.player.PlayerDesign;
 import org.mcnative.runtime.api.player.PlayerManager;
+import org.mcnative.runtime.api.player.bossbar.BossBar;
 import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.data.PlayerDataProvider;
 import org.mcnative.runtime.api.player.profile.GameProfileLoader;
@@ -77,10 +78,7 @@ import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
 import org.mcnative.runtime.common.DefaultObjectFactory;
-import org.mcnative.runtime.common.player.DefaultChatChannel;
-import org.mcnative.runtime.common.player.DefaultPlayerDesign;
-import org.mcnative.runtime.common.player.MemoryGameProfileLoader;
-import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
+import org.mcnative.runtime.common.player.*;
 import org.mcnative.runtime.common.player.data.DefaultPlayerDataProvider;
 import org.mcnative.runtime.common.plugin.configuration.DefaultConfigurationProvider;
 import org.mcnative.runtime.common.serviceprovider.McNativePlaceholderProvider;
@@ -316,6 +314,7 @@ public class BukkitMcNative implements McNative {
     protected void registerDefaultCreators(){
         factory.registerCreator(ChatChannel.class, objects -> new DefaultChatChannel());
         factory.registerCreator(Tablist.class, objects -> new BukkitTablist());
+        factory.registerCreator(BossBar.class, objects -> new DefaultBossBar());
         factory.registerCreator(ItemStack.class, new ItemStackCreator());
         factory.registerCreator(Inventory.class, new InventoryCreator());
         factory.registerCreator(org.bukkit.inventory.ItemStack.class, new BukkitItemStackCreator());
