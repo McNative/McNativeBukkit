@@ -53,7 +53,6 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
 
     @Override
     public Class<?> get(Object key) {
-        System.out.println("CLASS LOOKUP "+key);
         Class<?> clazz = original.get(key);
         if(clazz == null) clazz = this.dependencyClasses.get(key);
         if(clazz == null){

@@ -225,6 +225,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     }
 
     private static Object setFinalStatic(Field field, Object newValue) throws Exception {
+        field.setAccessible(true);
         Object oldValue = field.get(null);
         ReflectionUtil.setUnsafeObjectFieldValue(field,newValue);
         return oldValue;
