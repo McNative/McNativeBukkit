@@ -71,6 +71,7 @@ import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.BukkitPluginManager;
 import org.mcnative.runtime.bukkit.plugin.command.BukkitCommandManager;
+import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
 import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
@@ -144,6 +145,8 @@ public class McNativeLauncher implements Listener {
         BukkitPluginManager pluginManager = new BukkitPluginManager();
         pluginManager.inject();
         logger.info(McNative.CONSOLE_PREFIX+"McNative initialised and injected plugin manager.");
+
+        BukkitMiddlewareClassMap.inject();
 
         BukkitEventBus eventBus = new BukkitEventBus(GeneralUtil.getDefaultExecutorService(),pluginManager,getPlugin());
         BukkitCommandManager commandManager = new BukkitCommandManager();
