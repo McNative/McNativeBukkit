@@ -92,11 +92,12 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
     public static BukkitMiddlewareClassMap inject(){
         JavaPluginLoader loader = (JavaPluginLoader) ReflectionUtil.getFieldValue(McNativeLauncher.class.getClassLoader(),"loader");
         Field field = ReflectionUtil.getField(loader.getClass(),"classes");
+        field.setAccessible(true);
         Object original;
         try {
             original = field.get(loader);
             BukkitMiddlewareClassMap middleware = new BukkitMiddlewareClassMap((Map<String, Class<?>>) original);
-            field.set(loader,middleware);
+            ReflectionUtil.setUnsafeObjectFieldValue(loader,field,middleware);
             return middleware;
         } catch (IllegalAccessException e) {
             throw new ReflectException(e);
