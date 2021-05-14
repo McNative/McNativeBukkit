@@ -36,6 +36,7 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.McNativeConsoleCredentials;

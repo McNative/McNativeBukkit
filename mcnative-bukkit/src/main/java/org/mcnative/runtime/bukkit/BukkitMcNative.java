@@ -23,6 +23,7 @@ import net.pretronic.libraries.command.sender.CommandSender;
 import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
 import net.pretronic.libraries.dependency.DependencyManager;
+import net.pretronic.libraries.dependency.loader.LegacyReflectedDependencyClassLoader;
 import net.pretronic.libraries.document.Document;
 import net.pretronic.libraries.document.type.DocumentFileType;
 import net.pretronic.libraries.event.EventPriority;
@@ -129,7 +130,8 @@ public class BukkitMcNative implements McNative {
         this.platform = new BukkitPlatform(this.scheduler);
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
-        this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
+        //this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
+        this.dependencyManager.setDefaultLoader(new LegacyReflectedDependencyClassLoader());
         this.factory = new DefaultObjectFactory();
         this.variables = variables;
 
