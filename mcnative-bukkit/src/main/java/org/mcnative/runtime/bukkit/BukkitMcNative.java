@@ -23,7 +23,6 @@ import net.pretronic.libraries.command.sender.CommandSender;
 import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
 import net.pretronic.libraries.dependency.DependencyManager;
-import net.pretronic.libraries.dependency.loader.LegacyReflectedDependencyClassLoader;
 import net.pretronic.libraries.document.Document;
 import net.pretronic.libraries.document.type.DocumentFileType;
 import net.pretronic.libraries.event.EventPriority;
@@ -75,6 +74,7 @@ import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
 import org.mcnative.runtime.bukkit.plugin.dependency.BukkitDependencyLoader;
 import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
+import org.mcnative.runtime.bukkit.plugin.dependency.LegacyReflectedDependencyClassLoader;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
@@ -131,7 +131,7 @@ public class BukkitMcNative implements McNative {
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
         this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
-        //this.dependencyManager.setDefaultLoader(new LegacyReflectedDependencyClassLoader());
+        this.dependencyManager.setDefaultLoader(new LegacyReflectedDependencyClassLoader());
         this.factory = new DefaultObjectFactory();
         this.variables = variables;
 
