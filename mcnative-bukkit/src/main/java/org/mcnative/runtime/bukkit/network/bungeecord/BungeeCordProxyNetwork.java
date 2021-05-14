@@ -380,6 +380,10 @@ public class BungeeCordProxyNetwork implements Network {
 
         OnlineMinecraftPlayer player = Iterators.removeOne(this.players, player1 -> player1.getUniqueId().equals(uniqueId));
         MinecraftServer server = Iterators.findOne(this.servers, server1 -> server1.getName().equalsIgnoreCase(serverName));
+        if(server == null){
+            McNative.getInstance().getLogger().error("[McNative] (BungeeCord-Network) "+serverName+" is not available on sub server");
+            return;
+        }
         if (player instanceof BungeeCordOnlinePlayer) {
             MinecraftServer from = player.getServer();
             if (player.getServer() instanceof BungeeCordNetworkServer) {
