@@ -177,6 +177,7 @@ public class McNativeLauncher implements Listener {
         instance.registerDefaultDescribers();
         instance.registerDefaultCreators();
         instance.registerPlayerAdapter();
+        MessageComponent.registerDocumentMessageComponentConverter();
 
         registerDefaultListener(eventBus, pluginManager);
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
