@@ -27,10 +27,15 @@ import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
+import org.mcnative.runtime.api.player.client.CustomClient;
+import org.mcnative.runtime.api.player.input.ConfirmResult;
+import org.mcnative.runtime.api.player.input.PlayerTextInputValidator;
+import org.mcnative.runtime.api.player.input.YesNoResult;
 import org.mcnative.runtime.api.protocol.packet.type.MinecraftCustomPayloadPacket;
 import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftSoundEffectPacket;
 import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftStopSoundPacket;
 import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.positioning.Position;
 import org.mcnative.runtime.bukkit.BukkitService;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
@@ -89,6 +94,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, BukkitHumanEntity<org.bukkit.entity.Player> {
 
@@ -180,6 +187,36 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public PlayerClientSettings getClientSettings() {
         throw new UnsupportedOperationException("Currently not supported");
+    }
+
+    @Override
+    public CustomClient getCustomClient() {
+        return null;
+    }
+
+    @Override
+    public <T extends CustomClient> T getCustomClient(Class<T> aClass) {
+        return null;
+    }
+
+    @Override
+    public boolean isCustomClient() {
+        return false;
+    }
+
+    @Override
+    public boolean isCustomClient(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean isCustomClient(Class<? extends CustomClient> aClass) {
+        return false;
+    }
+
+    @Override
+    public void setCustomClient(CustomClient customClient) {
+
     }
 
     @Override
@@ -744,6 +781,56 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
         packet.setUrl(url);
         packet.setHash(hash);
         sendPacket(packet);
+    }
+
+    @Override
+    public void requestTextInput(String s, String s1, Consumer<String> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestBooleanInput(String s, String s1, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestNumberInput(String s, String s1, Consumer<Long> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestDecimalInput(String s, String s1, Consumer<Double> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestColorInput(String s, String s1, Consumer<TextColor> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public <T> void requestObjectInput(String s, String s1, Function<String, T> function, Consumer<T> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestConfirmInput(String s, Consumer<ConfirmResult> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestYesNoInput(String s, Consumer<YesNoResult> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestOkInput(String s, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
+    }
+
+    @Override
+    public void requestButtonInput(String s, String s1, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+
     }
 
     @Override

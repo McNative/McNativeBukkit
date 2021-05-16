@@ -19,7 +19,6 @@ public class ItemStackCreator implements Function<Object[], ItemStack> {
             itemStack = (org.bukkit.inventory.ItemStack) parameters[0];
         } else {
             Material material = (Material) parameters[0];
-            System.out.println(material.getName());
             org.bukkit.Material bukkitMaterial = null;
             for (org.bukkit.Material value : org.bukkit.Material.values()) {
                 if(value.toString().equalsIgnoreCase(material.getName())) {

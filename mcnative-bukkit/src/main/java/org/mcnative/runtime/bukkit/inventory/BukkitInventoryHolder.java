@@ -32,6 +32,10 @@ public class BukkitInventoryHolder implements InventoryHolder {
         this.owner = owner;
     }
 
+    public InventoryOwner getOwner() {
+        return owner;
+    }
+
     @Override
     public Inventory getInventory() {
         return ((BukkitInventory<?>)owner.getLinkedInventory()).getOriginal();

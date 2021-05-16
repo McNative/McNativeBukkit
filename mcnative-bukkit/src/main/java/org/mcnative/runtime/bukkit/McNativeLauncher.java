@@ -55,6 +55,7 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
 import org.mcnative.runtime.api.player.tablist.TablistFormatter;
 import org.mcnative.runtime.api.player.tablist.TablistOverviewFormatter;
+import org.mcnative.runtime.api.service.inventory.gui.Test;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
@@ -218,6 +219,8 @@ public class McNativeLauncher implements Listener {
 
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).delay(2,TimeUnit.SECONDS)
                 .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
+
+        //Test.execute();
     }
 
     public static void shutdown(){
