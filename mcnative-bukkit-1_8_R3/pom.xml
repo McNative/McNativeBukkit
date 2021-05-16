@@ -5,7 +5,7 @@
     <parent>
         <artifactId>McNativeBukkit</artifactId>
         <groupId>org.mcnative.runtime.bukkit</groupId>
-        <version>1.22.1.195-SNAPSHOT</version>
+        <version>1.23.0.197-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
