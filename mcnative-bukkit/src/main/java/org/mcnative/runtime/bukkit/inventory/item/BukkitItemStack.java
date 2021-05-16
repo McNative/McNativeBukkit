@@ -30,9 +30,11 @@ import org.mcnative.runtime.api.service.inventory.item.ItemStack;
 import org.mcnative.runtime.api.service.inventory.item.data.ItemData;
 import org.mcnative.runtime.api.service.inventory.item.material.Enchantment;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
+import org.mcnative.runtime.api.service.inventory.item.material.MaterialData;
 import org.mcnative.runtime.bukkit.BukkitNBTTag;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class BukkitItemStack implements ItemStack {
 
@@ -55,6 +57,11 @@ public class BukkitItemStack implements ItemStack {
     @Override
     public ItemData getData() {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public <T extends MaterialData> ItemStack getData(Class<T> aClass, Consumer<T> consumer) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
