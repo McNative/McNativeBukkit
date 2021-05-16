@@ -130,7 +130,7 @@ public class BukkitMcNative implements McNative {
         this.platform = new BukkitPlatform(this.scheduler);
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
-        this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
+        //this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
         this.dependencyManager.setDefaultLoader(new LegacyReflectedDependencyClassLoader());
         this.factory = new DefaultObjectFactory();
         this.variables = variables;
