@@ -101,14 +101,14 @@ public class VaultEconomyHook implements Economy {
     @Override
     public double getBalance(String playerName) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
-        if(player == null)throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        if(player == null) return 0;
         return this.economyProvider.getPlayerBalance(player);
     }
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
-        if(player == null)throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        if(player == null) return 0;
         return this.economyProvider.getPlayerBalance(player);
     }
 
@@ -125,14 +125,14 @@ public class VaultEconomyHook implements Economy {
     @Override
     public boolean has(String playerName, double amount) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
-        if(player == null) throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        if(player == null) return false;
         return this.economyProvider.hasPlayerBalance(player, amount);
     }
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double amount) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getName());
-        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        if(player == null) return false;
         return this.economyProvider.hasPlayerBalance(McNative.getInstance().getPlayerManager()
                 .getPlayer(offlinePlayer.getUniqueId()), amount);
     }
@@ -150,7 +150,7 @@ public class VaultEconomyHook implements Economy {
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
-        if(player == null) throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        if(player == null) return new EconomyResponse(0,0,EconomyResponse.ResponseType.FAILURE,playerName+" is not registered in McNative");
         org.mcnative.runtime.api.serviceprovider.economy.EconomyResponse response = this.economyProvider.withdrawPlayerBalance(player, amount);
         return mapEconomyResponse(response);
     }
@@ -158,7 +158,7 @@ public class VaultEconomyHook implements Economy {
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, double amount) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
-        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        if(player == null) return new EconomyResponse(0,0,EconomyResponse.ResponseType.FAILURE,offlinePlayer.getName()+" is not registered in McNative");
         org.mcnative.runtime.api.serviceprovider.economy.EconomyResponse response = this.economyProvider
                 .withdrawPlayerBalance(player, amount);
         return mapEconomyResponse(response);
@@ -177,14 +177,14 @@ public class VaultEconomyHook implements Economy {
     @Override
     public EconomyResponse depositPlayer(String playerName, double amount) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(playerName);
-        if(player == null) throw new IllegalArgumentException(playerName+" is not registered in McNative");
+        if(player == null) return new EconomyResponse(0,0,EconomyResponse.ResponseType.FAILURE,playerName+" is not registered in McNative");
         return mapEconomyResponse(this.economyProvider.depositPlayerBalance(player, amount));
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, double amount) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
-        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        if(player == null) return new EconomyResponse(0,0,EconomyResponse.ResponseType.FAILURE,offlinePlayer.getName()+" is not registered in McNative");
         return mapEconomyResponse(this.economyProvider.depositPlayerBalance(player, amount));
     }
 
@@ -201,7 +201,7 @@ public class VaultEconomyHook implements Economy {
     @Override
     public EconomyResponse createBank(String name, String playerName) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(name);
-        if(player == null) throw new IllegalArgumentException(name+" is not registered in McNative");
+        if(player == null) return new EconomyResponse(0,0,EconomyResponse.ResponseType.FAILURE,playerName+" is not registered in McNative");
         boolean success = this.economyProvider.createBank(name,player);
         return new EconomyResponse(0, 0, success ? EconomyResponse.ResponseType.SUCCESS : EconomyResponse.ResponseType.FAILURE, "Failed");
     }
@@ -209,7 +209,7 @@ public class VaultEconomyHook implements Economy {
     @Override
     public EconomyResponse createBank(String name, OfflinePlayer offlinePlayer) {
         MinecraftPlayer player = McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId());
-        if(player == null) throw new IllegalArgumentException(offlinePlayer.getName()+" is not registered in McNative");
+        if(player == null) return new EconomyResponse(0,0,EconomyResponse.ResponseType.FAILURE,offlinePlayer.getName()+" is not registered in McNative");
         boolean success = this.economyProvider.createBank(name, McNative.getInstance().getPlayerManager().getPlayer(offlinePlayer.getUniqueId()));
         return new EconomyResponse(0, 0, success ? EconomyResponse.ResponseType.SUCCESS : EconomyResponse.ResponseType.FAILURE, "Failed");
     }

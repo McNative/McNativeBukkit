@@ -46,14 +46,12 @@ import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
-import org.mcnative.bukkit.v13R1.BukkitAnvilInventory1_13_R1;
-import org.mcnative.bukkit.v18R3.BukkitAnvilInventory1_8_R3;
 import org.mcnative.runtime.api.*;
 import org.mcnative.runtime.api.loader.LoaderConfiguration;
 import org.mcnative.runtime.api.network.Network;
 import org.mcnative.runtime.api.player.PlayerDesign;
 import org.mcnative.runtime.api.player.PlayerManager;
+import org.mcnative.runtime.api.player.bossbar.BossBar;
 import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.data.PlayerDataProvider;
 import org.mcnative.runtime.api.player.profile.GameProfileLoader;
@@ -61,10 +59,7 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.plugin.MinecraftPlugin;
 import org.mcnative.runtime.api.plugin.configuration.ConfigurationProvider;
 import org.mcnative.runtime.api.service.inventory.Inventory;
-import org.mcnative.runtime.api.service.inventory.InventoryOwner;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
-import org.mcnative.runtime.api.service.inventory.item.material.Material;
-import org.mcnative.runtime.api.service.inventory.type.AnvilInventory;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.format.ColoredString;
@@ -72,22 +67,19 @@ import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.creators.BukkitItemStackCreator;
 import org.mcnative.runtime.bukkit.creators.InventoryCreator;
 import org.mcnative.runtime.bukkit.creators.ItemStackCreator;
-import org.mcnative.runtime.bukkit.inventory.BukkitInventoryHolder;
-import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
-import org.mcnative.runtime.bukkit.inventory.type.BukkitChestInventory;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionProvider;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPlayerDesign;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
+import org.mcnative.runtime.bukkit.plugin.dependency.BukkitDependencyLoader;
+import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
+import org.mcnative.runtime.bukkit.plugin.dependency.LegacyReflectedDependencyClassLoader;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
 import org.mcnative.runtime.common.DefaultObjectFactory;
-import org.mcnative.runtime.common.player.DefaultChatChannel;
-import org.mcnative.runtime.common.player.DefaultPlayerDesign;
-import org.mcnative.runtime.common.player.MemoryGameProfileLoader;
-import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
+import org.mcnative.runtime.common.player.*;
 import org.mcnative.runtime.common.player.data.DefaultPlayerDataProvider;
 import org.mcnative.runtime.common.plugin.configuration.DefaultConfigurationProvider;
 import org.mcnative.runtime.common.serviceprovider.McNativePlaceholderProvider;
@@ -120,7 +112,7 @@ public class BukkitMcNative implements McNative {
     private boolean ready;
     private final McNativeConsoleCredentials consoleCredentials;
 
-    protected BukkitMcNative(PluginVersion apiVersion,PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local,Collection<Env> variables, McNativeConsoleCredentials consoleCredentials) {
+    protected BukkitMcNative(PluginVersion apiVersion, PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local, Collection<Env> variables, McNativeConsoleCredentials consoleCredentials, BukkitMiddlewareClassMap middlewareClassMap) {
         this.apiVersion = apiVersion;
         this.implementationVersion = implVersion;
 
@@ -138,6 +130,8 @@ public class BukkitMcNative implements McNative {
         this.platform = new BukkitPlatform(this.scheduler);
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
+        this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
+        this.dependencyManager.setDefaultLoader(new LegacyReflectedDependencyClassLoader());
         this.factory = new DefaultObjectFactory();
         this.variables = variables;
 
@@ -322,6 +316,7 @@ public class BukkitMcNative implements McNative {
     protected void registerDefaultCreators(){
         factory.registerCreator(ChatChannel.class, objects -> new DefaultChatChannel());
         factory.registerCreator(Tablist.class, objects -> new BukkitTablist());
+        factory.registerCreator(BossBar.class, objects -> new DefaultBossBar());
         factory.registerCreator(ItemStack.class, new ItemStackCreator());
         factory.registerCreator(Inventory.class, new InventoryCreator());
         factory.registerCreator(org.bukkit.inventory.ItemStack.class, new BukkitItemStackCreator());
