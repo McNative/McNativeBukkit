@@ -148,7 +148,7 @@ public class McNativeLauncher implements Listener {
         pluginManager.inject();
         logger.info(McNative.CONSOLE_PREFIX+"McNative initialised and injected plugin manager.");
 
-        BukkitMiddlewareClassMap middlewareClassMap = BukkitMiddlewareClassMap.inject();
+        //BukkitMiddlewareClassMap middlewareClassMap = BukkitMiddlewareClassMap.inject();
 
         BukkitEventBus eventBus = new BukkitEventBus(GeneralUtil.getDefaultExecutorService(),pluginManager,getPlugin());
         BukkitCommandManager commandManager = new BukkitCommandManager();
@@ -157,11 +157,11 @@ public class McNativeLauncher implements Listener {
         PLUGIN_MANAGER = pluginManager;
         COMMAND_MANAGER = commandManager;
         EVENT_BUS = eventBus;
-        CLASS_MAP = middlewareClassMap;
+        CLASS_MAP = null;//middlewareClassMap;
 
         McNativeConsoleCredentials credentials = setupCredentials(variables);
         BukkitService localService = new BukkitService(commandManager,playerManager,eventBus);
-        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials,middlewareClassMap);
+        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials,null);
 
         McNative.setInstance(instance);
         instance.setNetwork(setupNetwork(logger,instance.getExecutorService()));
