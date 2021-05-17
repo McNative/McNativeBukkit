@@ -24,6 +24,7 @@ import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.mcnative.runtime.api.service.NBTTag;
 import org.mcnative.runtime.api.service.inventory.item.ItemFlag;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
@@ -32,6 +33,8 @@ import org.mcnative.runtime.api.service.inventory.item.material.Enchantment;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
 import org.mcnative.runtime.api.service.inventory.item.material.MaterialData;
 import org.mcnative.runtime.bukkit.BukkitNBTTag;
+import org.mcnative.runtime.bukkit.inventory.item.data.BukkitItemData;
+import org.mcnative.runtime.bukkit.inventory.item.data.BukkitSkullItemData;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -55,13 +58,21 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public ItemData getData() {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public BukkitItemData<?> getData() {
+        return mapItemData();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends MaterialData> ItemStack getData(Class<T> aClass, Consumer<T> consumer) {
-        throw new UnsupportedOperationException();
+    public <T extends MaterialData> ItemStack getData(Class<T> clazz, Consumer<T> consumer) {
+        Validate.notNull(clazz, clazz);
+        BukkitItemData<?> data = getData();
+        if(data.getClass() != clazz) {
+            throw new IllegalArgumentException("Can't get item data for class " + clazz);
+        }
+        consumer.accept((T) data);
+        original.setItemMeta(data.getOriginal());
+        return this;
     }
 
     @Override
@@ -161,8 +172,26 @@ public class BukkitItemStack implements ItemStack {
 
     @Override
     public ItemStack addEnchantment(Enchantment enchantment, int level) {
-        this.original.addEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getName()), level);
+        Validate.notNull(enchantment);
+        Validate.isTrue(level > 0);
+        org.bukkit.enchantments.Enchantment bukkitEnchantment = org.bukkit.enchantments.Enchantment.getByName(enchantment.getName());
+        Validate.notNull(bukkitEnchantment, "No bukkit enchantment found for " + enchantment.getName());
+        this.original.addUnsafeEnchantment(bukkitEnchantment, level);
         return this;
+    }
+
+    @Override
+    public ItemStack removeEnchantment(Enchantment enchantment) {
+        removeEnchantmentSafe(enchantment);
+        return this;
+    }
+
+    @Override
+    public int removeEnchantmentSafe(Enchantment enchantment) {
+        Validate.notNull(enchantment);
+        org.bukkit.enchantments.Enchantment bukkitEnchantment = org.bukkit.enchantments.Enchantment.getByName(enchantment.getName());
+        Validate.notNull(bukkitEnchantment, "No bukkit enchantment found for " + enchantment.getName());
+        return this.original.removeEnchantment(bukkitEnchantment);
     }
 
     @Override
@@ -250,6 +279,12 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
+    public ItemStack setGlowing(boolean glowing) {
+        if(glowing) return addFlags(ItemFlag.HIDE_ENCHANTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+        return removeFlag(ItemFlag.HIDE_ENCHANTS).removeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if(this == o) return true;
         if(o instanceof ItemStack) {
@@ -299,5 +334,14 @@ public class BukkitItemStack implements ItemStack {
             if(!getFlags().get(i).equals(stack.getFlags().get(i))) return false;
         }
         return true;
+    }
+
+    private BukkitItemData<?> mapItemData() {
+        ItemMeta meta = original.getItemMeta();
+        if(meta == null) return null;
+        if(meta instanceof SkullMeta) {
+            return new BukkitSkullItemData(getMaterial(), (SkullMeta) meta);
+        }
+        throw new IllegalArgumentException("Can't map ItemMeta " + meta.getClass() + " to McNative ItemData");
     }
 }
