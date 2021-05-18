@@ -27,6 +27,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
 import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
+import org.mcnative.runtime.bukkit.entity.living.BukkitHumanEntity;
 import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
@@ -384,13 +385,9 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
         };
     }
 
-    //@Todo for other inventory types
-    public static BukkitInventory<?> mapInventory(org.bukkit.inventory.Inventory inventory) {
+    public static BukkitInventory<?> mapInventory(org.bukkit.inventory.Inventory inventory, HumanEntity player) {
+        if(inventory instanceof PlayerInventory) return new BukkitPlayerInventory(player, (PlayerInventory) inventory);
         return new BukkitInventory<>(mapInventoryHolder(inventory.getHolder()), inventory);
-    }
-
-    public static BukkitInventory<?> mapInventory(org.bukkit.inventory.Inventory inventory, Player holder) {
-        return new BukkitInventory<>(holder, inventory);
     }
 
     public static InventoryOwner mapInventoryHolder(InventoryHolder inventoryHolder) {
@@ -401,6 +398,8 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
             } else {
                 throw new IllegalArgumentException("Can't map inventory holder. Online player is not an entity player.");
             }
+        } else if(inventoryHolder instanceof BukkitInventoryHolder) {
+            return ((BukkitInventoryHolder) inventoryHolder).getOwner();
         }
         return new BukkitInventoryOwner(inventoryHolder);
     }
