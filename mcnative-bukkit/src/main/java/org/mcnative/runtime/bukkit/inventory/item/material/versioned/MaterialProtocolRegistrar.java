@@ -1,5 +1,6 @@
 package org.mcnative.runtime.bukkit.inventory.item.material.versioned;
 
+import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 
 public interface MaterialProtocolRegistrar {
@@ -91,5 +92,7 @@ public interface MaterialProtocolRegistrar {
         if(registrar == null) {
             throw new IllegalArgumentException("Unknown minecraft version " + version + ". Can't register MaterialProtocolIds");
         }
+        registrar.register(version);
+        McNative.getInstance().getLogger().info("Registered protocolIds for materials");
     }
 }
