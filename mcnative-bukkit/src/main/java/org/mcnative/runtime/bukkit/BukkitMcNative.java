@@ -19,6 +19,7 @@
 
 package org.mcnative.runtime.bukkit;
 
+import net.pretronic.libraries.command.command.MainCommand;
 import net.pretronic.libraries.command.sender.CommandSender;
 import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
@@ -59,11 +60,14 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.plugin.MinecraftPlugin;
 import org.mcnative.runtime.api.plugin.configuration.ConfigurationProvider;
 import org.mcnative.runtime.api.service.inventory.Inventory;
+import org.mcnative.runtime.api.service.inventory.gui.GuiManager;
+import org.mcnative.runtime.api.service.inventory.gui.implemen.DefaultGuiManager;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.format.ColoredString;
 import org.mcnative.runtime.api.utils.Env;
+import org.mcnative.runtime.bukkit.commands.GuiOpenCommand;
 import org.mcnative.runtime.bukkit.creators.BukkitItemStackCreator;
 import org.mcnative.runtime.bukkit.creators.InventoryCreator;
 import org.mcnative.runtime.bukkit.creators.ItemStackCreator;
@@ -285,11 +289,14 @@ public class BukkitMcNative implements McNative {
         pluginManager.registerService(this, MessageProvider.class,new DefaultMessageProvider());
         pluginManager.registerService(this, PermissionProvider.class,new BukkitPermissionProvider());
         pluginManager.registerService(this, GameProfileLoader.class,new MemoryGameProfileLoader());
+        pluginManager.registerService(this, GuiManager.class,new DefaultGuiManager());
         pluginManager.registerService(this, PlaceholderProvider.class,new McNativePlaceholderProvider(), EventPriority.LOW);
     }
 
     protected void registerDefaultCommands() {
-        getLocal().getCommandManager().registerCommand(new org.mcnative.runtime.common.commands.McNativeCommand(this,"s","server"));
+        MainCommand command = new org.mcnative.runtime.common.commands.McNativeCommand(this,"s","server");
+        command.registerCommand(new GuiOpenCommand(this));
+        getLocal().getCommandManager().registerCommand(command);
     }
 
     protected void registerDefaultDescribers(){
@@ -330,73 +337,5 @@ public class BukkitMcNative implements McNative {
             return null;
         });
     }
-    /*
-     @SuppressWarnings("unchecked")
-    @Override
-    public <T extends Inventory> T newInventory(InventoryOwner owner, Class<T> inventoryClass, int size, String title) {
-        InventoryHolder holder = new BukkitInventoryHolder(owner);
-        if(inventoryClass == AnvilInventory.class) {
-            DefaultAnvilInventory anvilInventory = new DefaultAnvilInventory(owner);
-            InventoryRegistry.registerInventory(anvilInventory);
-            return (T) anvilInventory;
-        } else if(inventoryClass == BeaconInventory.class) {
-            return (T) new BukkitBeaconInventory(owner, (org.bukkit.inventory.BeaconInventory)
-                    Bukkit.createInventory(holder, InventoryType.BEACON));
-        } else if(inventoryClass == BrewerInventory.class) {
-            return (T) new BukkitBrewerInventory(owner,(org.bukkit.inventory.BrewerInventory)
-                    Bukkit.createInventory(holder, InventoryType.BREWING));
-        } else if(inventoryClass == CartographyInventory.class) {
-            if(McNative.getInstance().getPlatform().getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_14)) {
-                throw new UnsupportedOperationException("Can't create LlamaInventory. Too old version.");
-            }
-            return (T) new BukkitCartographyInventory(owner, (org.bukkit.inventory.CartographyInventory)
-                    Bukkit.createInventory(holder, InventoryType.CARTOGRAPHY));
-        } else if(inventoryClass == ChestInventory.class || inventoryClass == Inventory.class || inventoryClass == DoubleChestInventory.class) {
-            return (T) new BukkitChestInventory<>(owner, Bukkit.createInventory(holder, size, title));
-        } else if(inventoryClass == CraftingInventory.class) {
-            return (T) new BukkitCraftingInventory(owner, (org.bukkit.inventory.CraftingInventory)
-                    Bukkit.createInventory(holder, InventoryType.CRAFTING));
-        } else if(inventoryClass == EnchantingInventory.class) {
-            return (T) new BukkitEnchantingInventory(owner, (org.bukkit.inventory.EnchantingInventory)
-                    Bukkit.createInventory(holder, InventoryType.ENCHANTING));
-        } else if(inventoryClass == FurnaceInventory.class) {
-            return (T) new BukkitFurnaceInventory(owner, (org.bukkit.inventory.FurnaceInventory)
-                    Bukkit.createInventory(holder, InventoryType.FURNACE));
-        } else if(inventoryClass == GrindstoneInventory.class) {
-            if(McNative.getInstance().getPlatform().getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_14)) {
-                throw new UnsupportedOperationException("Can't create LlamaInventory. Too old version.");
-            }
-            return (T) new BukkitGrindstoneInventory(owner, (org.bukkit.inventory.GrindstoneInventory)
-                    Bukkit.createInventory(holder, InventoryType.GRINDSTONE));
-        } else if(inventoryClass == LecternInventory.class) {
-            if(McNative.getInstance().getPlatform().getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_14)) {
-                throw new UnsupportedOperationException("Can't create LlamaInventory. Too old version.");
-            }
-            return (T) new BukkitLecternInventory(owner, (org.bukkit.inventory.LecternInventory)
-                    Bukkit.createInventory(holder, InventoryType.LECTERN));
-        } else if(inventoryClass == LoomInventory.class) {
-            if(McNative.getInstance().getPlatform().getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_14)) {
-                throw new UnsupportedOperationException("Can't create LlamaInventory. Too old version.");
-            }
-            return (T) new BukkitLoomInventory(owner, (org.bukkit.inventory.LoomInventory)
-                    Bukkit.createInventory(holder, InventoryType.LOOM));
-        } else if(inventoryClass == PlayerInventory.class) {
-            return (T) new BukkitPlayerInventory(owner, (org.bukkit.inventory.PlayerInventory)
-                    Bukkit.createInventory(holder, InventoryType.PLAYER));
-        } else if(inventoryClass == StonecutterInventory.class) {
-            if(McNative.getInstance().getPlatform().getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_14)) {
-                throw new UnsupportedOperationException("Can't create LlamaInventory. Too old version.");
-            }
-            return (T) new BukkitStonecutterInventory(owner, (org.bukkit.inventory.StonecutterInventory)
-                    Bukkit.createInventory(holder, InventoryType.STONECUTTER));
-        } else if(inventoryClass == ArmorableHorseInventory.class || inventoryClass == HorseInventory.class
-                || inventoryClass == LlamaInventory.class) {
-            throw new IllegalArgumentException("Not possible to create " + inventoryClass + " on bukkit platform");
-        }
-        throw new IllegalArgumentException("Can't create inventory for " + inventoryClass + ".");
-    }
-
-
-     */
 }
 

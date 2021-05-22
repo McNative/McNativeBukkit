@@ -107,6 +107,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mcnative.runtime</groupId>
+            <artifactId>mcnative-runtime-client-integrations</artifactId>
+            <version>${dependency.mcnative.common}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.mcnative.runtime.bukkit</groupId>
             <artifactId>mcnative-bukkit-shared</artifactId>
             <version>${project.version}</version>

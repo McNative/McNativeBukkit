@@ -32,9 +32,11 @@ import net.pretronic.libraries.plugin.service.ServicePriority;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
+import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.mcnative.runtime.api.ServerPerformance;
+import org.mcnative.runtime.api.player.client.CustomPluginMessageListener;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
 import org.mcnative.runtime.bukkit.serviceprovider.economy.VaultEconomyProvider;
 import org.mcnative.runtime.bukkit.serviceprovider.permission.VaultPermissionProvider;
@@ -60,9 +62,11 @@ import org.mcnative.runtime.common.protocol.DefaultPacketManager;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 public class BukkitService implements MinecraftService, MinecraftServer, VariableObjectToString {
 
@@ -77,6 +81,7 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
 
     private final NetworkIdentifier fallbackIdentifier;
     private final ServerPerformance serverPerformance;
+    private final Collection<BukkitCustomPluginMessage> customPluginMessages;
 
     protected BukkitService(CommandManager commandManager,BukkitPlayerManager playerManager, EventBus eventBus) {
         this.packetManager = new DefaultPacketManager();
@@ -88,6 +93,7 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
 
         fallbackIdentifier = loadReportingId();
         this.serverPerformance = new BukkitServerPerformance();
+        this.customPluginMessages = new ArrayList<>();
     }
 
     private NetworkIdentifier loadReportingId(){
@@ -208,6 +214,19 @@ public class BukkitService implements MinecraftService, MinecraftServer, Variabl
     @Override
     public ServerPerformance getServerPerformance() {
         return this.serverPerformance;
+    }
+
+    @Override
+    public void registerCustomPluginMessageListener(ObjectOwner owner, String channel, CustomPluginMessageListener listener) {
+        BukkitCustomPluginMessage message = new BukkitCustomPluginMessage(owner,channel,listener);
+        this.customPluginMessages.add(message);
+        Bukkit.getMessenger().registerIncomingPluginChannel(McNativeLauncher.getPlugin(),channel,message);
+    }
+
+    @Override
+    public void unregisterCustomPluginMessageListener(CustomPluginMessageListener listener) {
+        BukkitCustomPluginMessage message = Iterators.findOne(this.customPluginMessages, message1 -> message1.getListener().equals(listener));
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(McNativeLauncher.getPlugin(),message.getChannel());
     }
 
     @Override

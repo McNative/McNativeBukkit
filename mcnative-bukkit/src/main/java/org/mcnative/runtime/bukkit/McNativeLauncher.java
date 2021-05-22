@@ -77,6 +77,7 @@ import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
 import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
+import org.mcnative.runtime.client.integrations.ClientIntegration;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceShutdownEvent;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceStartupEvent;
 import org.mcnative.runtime.common.maf.MAFService;
@@ -158,7 +159,7 @@ public class McNativeLauncher implements Listener {
         PLUGIN_MANAGER = pluginManager;
         COMMAND_MANAGER = commandManager;
         EVENT_BUS = eventBus;
-        CLASS_MAP = null;//middlewareClassMap;
+        CLASS_MAP = null;
 
         McNativeConsoleCredentials credentials = setupCredentials(variables);
         BukkitService localService = new BukkitService(commandManager,playerManager,eventBus);
@@ -172,6 +173,7 @@ public class McNativeLauncher implements Listener {
         commandManager.inject();
 
         MinecraftJavaProtocol.register(localService.getPacketManager());
+        ClientIntegration.register();
 
         instance.registerDefaultProviders();
         instance.registerDefaultCommands();
@@ -219,8 +221,6 @@ public class McNativeLauncher implements Listener {
 
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).delay(2,TimeUnit.SECONDS)
                 .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
-
-        //Test.execute();
     }
 
     public static void shutdown(){
@@ -268,6 +268,8 @@ public class McNativeLauncher implements Listener {
     }
 
     private static void setupConfiguredServices(){
+        McNative.getInstance().getLocal().getEventBus().subscribe(ObjectOwner.SYSTEM,new LabyModListener());
+
         if(McNativeBukkitConfiguration.PLAYER_CHAT_ENABLED){
             ChatChannel serverChat = ChatChannel.newChatChannel();
             serverChat.setName("ServerChat");
@@ -349,6 +351,7 @@ public class McNativeLauncher implements Listener {
                 }
             });
         }
+
     }
 
     private static String builtVersionInfo(){

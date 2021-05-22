@@ -26,7 +26,7 @@ public class ItemStackCreator implements Function<Object[], ItemStack> {
                     break;
                 }
             }
-            Validate.notNull(bukkitMaterial, "Can't create item stack for " + material + ".");
+            Validate.notNull(bukkitMaterial, "Can't create item stack for " + material.getName() + ".");
             itemStack = new org.bukkit.inventory.ItemStack(bukkitMaterial);
         }
         return new BukkitItemStack(itemStack);
