@@ -8,6 +8,7 @@ public interface MaterialProtocolRegistrar {
     void register(MinecraftProtocolVersion version);
 
     static void init(MinecraftProtocolVersion version) {
+        McNative.getInstance().getLogger().info("Start registering protocolIds for materials");
         MaterialProtocolRegistrar registrar = null;
         switch (version) {
             case JE_1_8:
