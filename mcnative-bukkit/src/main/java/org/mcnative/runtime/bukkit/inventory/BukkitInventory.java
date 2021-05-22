@@ -225,7 +225,7 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
 
     @Override
     public void setItem(int index, ItemStack item) {
-        this.original.setItem(index, ((BukkitItemStack)item).getOriginal());
+        this.original.setItem(index, item == null ? null : ((BukkitItemStack)item).getOriginal());
     }
 
     @Override

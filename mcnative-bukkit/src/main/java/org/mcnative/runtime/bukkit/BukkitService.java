@@ -35,6 +35,7 @@ import net.pretronic.libraries.utility.annonations.Internal;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.mcnative.runtime.api.ServerPerformance;
+import org.mcnative.runtime.bukkit.inventory.item.material.versioned.MaterialProtocolRegistrar;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
 import org.mcnative.runtime.bukkit.serviceprovider.economy.VaultEconomyProvider;
 import org.mcnative.runtime.bukkit.serviceprovider.permission.VaultPermissionProvider;
