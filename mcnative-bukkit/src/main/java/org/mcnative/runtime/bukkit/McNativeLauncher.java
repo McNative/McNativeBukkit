@@ -64,6 +64,7 @@ import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
+import org.mcnative.runtime.bukkit.inventory.item.material.versioned.MaterialProtocolRegistrar;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV2PlatformListener;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV3PlatformListener;
@@ -159,7 +160,7 @@ public class McNativeLauncher implements Listener {
         PLUGIN_MANAGER = pluginManager;
         COMMAND_MANAGER = commandManager;
         EVENT_BUS = eventBus;
-        CLASS_MAP = null;
+        CLASS_MAP = null;//middlewareClassMap;
 
         McNativeConsoleCredentials credentials = setupCredentials(variables);
         BukkitService localService = new BukkitService(commandManager,playerManager,eventBus);
@@ -174,6 +175,7 @@ public class McNativeLauncher implements Listener {
 
         MinecraftJavaProtocol.register(localService.getPacketManager());
         ClientIntegration.register();
+        MaterialProtocolRegistrar.init(instance.getPlatform().getProtocolVersion());
 
         instance.registerDefaultProviders();
         instance.registerDefaultCommands();
@@ -221,6 +223,8 @@ public class McNativeLauncher implements Listener {
 
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).delay(2,TimeUnit.SECONDS)
                 .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
+
+        //Test.execute();
     }
 
     public static void shutdown(){
@@ -351,7 +355,6 @@ public class McNativeLauncher implements Listener {
                 }
             });
         }
-
     }
 
     private static String builtVersionInfo(){
