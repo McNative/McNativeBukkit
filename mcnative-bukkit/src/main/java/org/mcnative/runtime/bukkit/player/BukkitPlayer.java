@@ -221,7 +221,6 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public void setCustomClient(CustomClient customClient) {
-        System.out.println("New custom client "+customClient);
         if(this.customClient != null) throw new OperationFailedException("A custom client is already registered for this player");
         this.customClient = customClient;
         McNative.getInstance().getLocal().getEventBus().callEvent(MinecraftPlayerCustomClientLoginEvent.class,new BukkitCustomClientLoginEvent(this));

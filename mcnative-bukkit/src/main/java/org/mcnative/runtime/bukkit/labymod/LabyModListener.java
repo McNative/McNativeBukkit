@@ -1,8 +1,9 @@
-package org.mcnative.runtime.bukkit;
+package org.mcnative.runtime.bukkit.labymod;
 
 import net.pretronic.libraries.event.Listener;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerCustomClientLoginEvent;
 import org.mcnative.runtime.api.player.client.LabyModClient;
+import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 
 public class LabyModListener {
 

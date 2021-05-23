@@ -36,7 +36,6 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.McNativeConsoleCredentials;
@@ -55,7 +54,6 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
 import org.mcnative.runtime.api.player.tablist.TablistFormatter;
 import org.mcnative.runtime.api.player.tablist.TablistOverviewFormatter;
-import org.mcnative.runtime.api.service.inventory.gui.Test;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
@@ -63,6 +61,8 @@ import org.mcnative.runtime.api.text.components.MessageKeyComponent;
 import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.Env;
+import org.mcnative.runtime.bukkit.labymod.LabyModListener;
+import org.mcnative.runtime.bukkit.labymod.LabyModSubtitleHandler;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
 import org.mcnative.runtime.bukkit.inventory.item.material.versioned.MaterialProtocolRegistrar;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
@@ -273,6 +273,9 @@ public class McNativeLauncher implements Listener {
 
     private static void setupConfiguredServices(){
         McNative.getInstance().getLocal().getEventBus().subscribe(ObjectOwner.SYSTEM,new LabyModListener());
+        if(McNativeBukkitConfiguration.LABYMOD_SUBTITLE_ENABLED){
+            new LabyModSubtitleHandler(McNativeBukkitConfiguration.LABYMOD_SUBTITLE_SIZE,McNativeBukkitConfiguration.LABYMOD_SUBTITLE_TEXT_COMPONENT);
+        }
 
         if(McNativeBukkitConfiguration.PLAYER_CHAT_ENABLED){
             ChatChannel serverChat = ChatChannel.newChatChannel();
