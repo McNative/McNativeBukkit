@@ -67,9 +67,9 @@ public class BukkitItemStack implements ItemStack {
     public <T extends MaterialData> ItemStack getData(Class<T> clazz, Consumer<T> consumer) {
         Validate.notNull(clazz, clazz);
         BukkitItemData<?> data = getData();
-        if(data.getClass() != clazz) {
+        /*if(clazz.isAssignableFrom(data.getClass())) {
             throw new IllegalArgumentException("Can't get item data for class " + clazz);
-        }
+        }*/
         consumer.accept((T) data);
         original.setItemMeta(data.getOriginal());
         return this;
@@ -280,8 +280,12 @@ public class BukkitItemStack implements ItemStack {
 
     @Override
     public ItemStack setGlowing(boolean glowing) {
-        if(glowing) return addFlags(ItemFlag.HIDE_ENCHANTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-        return removeFlag(ItemFlag.HIDE_ENCHANTS).removeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL);
+        if(glowing) {
+            original.addEnchantment(org.bukkit.enchantments.Enchantment.DURABILITY, 1);
+            return addFlags(ItemFlag.HIDE_ENCHANTS);
+        }
+        original.removeEnchantment(org.bukkit.enchantments.Enchantment.DURABILITY);
+        return removeFlag(ItemFlag.HIDE_ENCHANTS);
     }
 
     @Override

@@ -1,13 +1,16 @@
 package org.mcnative.runtime.bukkit.inventory.item.data;
 
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.MinecraftPlayer;
 import org.mcnative.runtime.api.player.profile.GameProfile;
 import org.mcnative.runtime.api.service.inventory.item.data.SkullItemData;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
+import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,9 +24,11 @@ public class BukkitSkullItemData extends BukkitItemData<SkullMeta> implements Sk
     private static final Constructor<?> GAME_PROFILE_CONSTRUCTOR;
     private static final Field GAME_PROFILE_PROPERTIES_FIELD;
 
+    private static final Class<?> MULTI_MAP_CLASS;
+
     private static final Class<?> PROPERTY_MAP_CLASS;
     private static final Field PROPERTY_MAP_PROPERTIES_FIELD;
-    private static final Method PROPERTY_MAP_PROPERTIES_PUT_METHOD;
+    private static final Method MULTIMAP_PUT_METHOD;
 
     private static final Class<?> PROPERTY_CLASS;
     private static final Constructor<?> PROPERTY_CONSTRUCTOR;
@@ -50,7 +55,14 @@ public class BukkitSkullItemData extends BukkitItemData<SkullMeta> implements Sk
             throw new RuntimeException("Can't get class com.mojang.authlib.properties.PropertyMap", e);
         }
         PROPERTY_MAP_PROPERTIES_FIELD = ReflectionUtil.getField(PROPERTY_MAP_CLASS, "properties");
-        PROPERTY_MAP_PROPERTIES_PUT_METHOD = ReflectionUtil.getMethod(PROPERTY_MAP_CLASS, "put", new Class[]{Object.class, Object.class});
+
+
+        try {
+            MULTI_MAP_CLASS = Class.forName("com.google.common.collect.Multimap");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Can't get class com.google.common.collect.Multimap", e);
+        }
+        MULTIMAP_PUT_METHOD = ReflectionUtil.getMethod(MULTI_MAP_CLASS, "put", new Class[]{Object.class, Object.class});
 
 
         try {
@@ -93,8 +105,7 @@ public class BukkitSkullItemData extends BukkitItemData<SkullMeta> implements Sk
 
     @Override
     public SkullItemData setGameProfile(GameProfile gameProfile) {
-        Class<?> headMetaClass = getOriginal().getClass();
-        ReflectionUtil.changeFieldValue(headMetaClass, "profile", mapGameProfile(gameProfile));
+        ReflectionUtil.changeFieldValue(getOriginal(),"profile", mapGameProfile(gameProfile));
         return this;
     }
 
@@ -116,7 +127,7 @@ public class BukkitSkullItemData extends BukkitItemData<SkullMeta> implements Sk
             }
             Object mappedProperty = newProperty(property);
             try {
-                PROPERTY_MAP_PROPERTIES_PUT_METHOD.invoke(propertyMapProperties, property.getName(), mappedProperty);
+                MULTIMAP_PUT_METHOD.invoke(propertyMapProperties, property.getName(), mappedProperty);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException("Can't invoke put method for GameProfile property map");
             }

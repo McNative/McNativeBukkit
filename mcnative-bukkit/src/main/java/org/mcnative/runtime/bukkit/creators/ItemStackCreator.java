@@ -26,7 +26,7 @@ public class ItemStackCreator implements Function<Object[], ItemStack> {
             itemStack = (org.bukkit.inventory.ItemStack) parameters[0];
         } else {
             Material material = (Material) parameters[0];
-            org.bukkit.Material bukkitMaterial = null;
+            org.bukkit.Material bukkitMaterial;
             if(McNative.getInstance().getPlatform().getProtocolVersion().isLegacy()) {
                 MaterialProtocolId protocolId = material.getProtocolIds().get(McNative.getInstance().getPlatform().getProtocolVersion());
                 Validate.notNull(protocolId, "Can't get protocol id for material " + material.getName());
@@ -48,7 +48,7 @@ public class ItemStackCreator implements Function<Object[], ItemStack> {
 
     private org.bukkit.Material getLegacyBukkitMaterial(int id) {
         if(BUKKIT_LEGACY_MATERIAL_BY_ID == null) {
-            BUKKIT_LEGACY_MATERIAL_BY_ID = ReflectionUtil.getMethod(org.bukkit.Material.class, "getMaterial");
+            BUKKIT_LEGACY_MATERIAL_BY_ID = ReflectionUtil.getMethod(org.bukkit.Material.class, "getMaterial", new Class[]{int.class});
             Validate.notNull(BUKKIT_LEGACY_MATERIAL_BY_ID, "Can't get method getMaterial for bukkit legacy material");
         }
         Object value = ReflectionUtil.invokeMethod(BUKKIT_LEGACY_MATERIAL_BY_ID, null, id);
