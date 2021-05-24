@@ -134,12 +134,6 @@ public class McNativeBridgeEventHandler {
         eventBus.registerMappedClass(MinecraftPlayerCommandPreprocessEvent.class, PlayerCommandPreprocessEvent.class);
         eventBus.registerManagedEvent(PlayerCommandPreprocessEvent.class, this::handleCommandEvent);
 
-        if(McNative.getInstance().getPlatform().getProtocolVersion().isOlder(MinecraftProtocolVersion.JE_1_12)){
-            eventBus.registerMappedClass(MinecraftPlayerTabCompleteEvent.class, PlayerChatTabCompleteEvent.class);
-            eventBus.registerManagedEvent(PlayerChatTabCompleteEvent.class, this::handleLegacyTabComplete);
-        }
-
-
         /* Inventory */
 
         //Inventory click
@@ -336,6 +330,7 @@ public class McNativeBridgeEventHandler {
     }
 
     private void handleLegacyTabComplete(McNativeHandlerList handler, PlayerChatTabCompleteEvent event){
+        System.out.println("BUKKIT TAB COMPLETE");
         ConnectedMinecraftPlayer player = playerManager.getMappedPlayer(event.getPlayer());
         BukkitLegacyTabCompleteEvent mcnativeEvent = new BukkitLegacyTabCompleteEvent(event,player);
         handler.callEvents(event,mcnativeEvent);

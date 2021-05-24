@@ -25,8 +25,12 @@ import net.pretronic.libraries.concurrent.TaskScheduler;
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler;
 import net.pretronic.libraries.dependency.DependencyManager;
 import net.pretronic.libraries.document.Document;
+import net.pretronic.libraries.document.DocumentRegistry;
+import net.pretronic.libraries.document.injection.DependencyInjectionObjectInstanceFactory;
 import net.pretronic.libraries.document.type.DocumentFileType;
 import net.pretronic.libraries.event.EventPriority;
+import net.pretronic.libraries.event.injection.DefaultInjectorService;
+import net.pretronic.libraries.event.injection.InjectorService;
 import net.pretronic.libraries.logging.Debug;
 import net.pretronic.libraries.logging.PretronicLogger;
 import net.pretronic.libraries.logging.bridge.JdkPretronicLogger;
@@ -41,6 +45,7 @@ import net.pretronic.libraries.plugin.description.PluginDescription;
 import net.pretronic.libraries.plugin.description.PluginVersion;
 import net.pretronic.libraries.plugin.loader.DefaultPluginLoader;
 import net.pretronic.libraries.plugin.manager.PluginManager;
+import net.pretronic.libraries.plugin.service.ServiceClassRegistry;
 import net.pretronic.libraries.plugin.service.ServiceRegistry;
 import net.pretronic.libraries.utility.GeneralUtil;
 import net.pretronic.libraries.utility.Iterators;
@@ -110,6 +115,7 @@ public class BukkitMcNative implements McNative {
     private final DependencyManager dependencyManager;
     private final PlayerManager playerManager;
     private final LocalService local;
+    private final InjectorService injector;
 
     private Network network;
     private final Document serverProperties;
@@ -148,6 +154,9 @@ public class BukkitMcNative implements McNative {
         this.serverProperties = DocumentFileType.PROPERTIES.getReader().read(new File("server.properties"));
         this.loaderConfiguration = DefaultLoaderConfiguration.load(new File("plugins/McNative/loader.yml"));
         SLF4JStaticBridge.trySetLogger(logger);
+
+        this.injector = new DefaultInjectorService(new ServiceClassRegistry(pluginManager));
+        DocumentRegistry.setInstanceFactory(new DependencyInjectionObjectInstanceFactory(injector));
     }
 
     @Override
@@ -251,6 +260,11 @@ public class BukkitMcNative implements McNative {
     @Override
     public ExecutorService getExecutorService() {
         return GeneralUtil.getDefaultExecutorService();
+    }
+
+    @Override
+    public InjectorService getInjector() {
+        return injector;
     }
 
     @Override

@@ -54,7 +54,6 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
 import org.mcnative.runtime.api.player.tablist.TablistFormatter;
 import org.mcnative.runtime.api.player.tablist.TablistOverviewFormatter;
-import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
@@ -62,11 +61,10 @@ import org.mcnative.runtime.api.text.components.MessageKeyComponent;
 import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.Env;
-import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler_1_12;
-import org.mcnative.runtime.bukkit.labymod.LabyModListener;
-import org.mcnative.runtime.bukkit.labymod.LabyModSubtitleHandler;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
 import org.mcnative.runtime.bukkit.inventory.item.material.versioned.MaterialProtocolRegistrar;
+import org.mcnative.runtime.bukkit.labymod.LabyModListener;
+import org.mcnative.runtime.bukkit.labymod.LabyModSubtitleHandler;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV2PlatformListener;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV3PlatformListener;
@@ -153,8 +151,6 @@ public class McNativeLauncher implements Listener {
         pluginManager.inject();
         logger.info(McNative.CONSOLE_PREFIX+"McNative initialised and injected plugin manager.");
 
-        //BukkitMiddlewareClassMap middlewareClassMap = BukkitMiddlewareClassMap.inject();
-
         BukkitEventBus eventBus = new BukkitEventBus(GeneralUtil.getDefaultExecutorService(),pluginManager,getPlugin());
         BukkitCommandManager commandManager = new BukkitCommandManager();
         BukkitPlayerManager playerManager = new BukkitPlayerManager();
@@ -188,10 +184,6 @@ public class McNativeLauncher implements Listener {
 
         registerDefaultListener(eventBus, pluginManager);
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
-
-        if(instance.getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_12)) {
-            new McNativeBridgeEventHandler_1_12(eventBus,playerManager);
-        }
 
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
 
