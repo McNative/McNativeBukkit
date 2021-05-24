@@ -62,6 +62,7 @@ import org.mcnative.runtime.api.text.components.MessageKeyComponent;
 import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.Env;
+import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler_1_12;
 import org.mcnative.runtime.bukkit.labymod.LabyModListener;
 import org.mcnative.runtime.bukkit.labymod.LabyModSubtitleHandler;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
@@ -189,7 +190,7 @@ public class McNativeLauncher implements Listener {
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
 
         if(instance.getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_12)) {
-            new McNativeBridgeEventHandler(injector,eventBus,playerManager);
+            new McNativeBridgeEventHandler_1_12(eventBus,playerManager);
         }
 
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
