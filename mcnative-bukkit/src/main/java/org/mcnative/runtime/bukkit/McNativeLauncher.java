@@ -54,6 +54,7 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
 import org.mcnative.runtime.api.player.tablist.TablistFormatter;
 import org.mcnative.runtime.api.player.tablist.TablistOverviewFormatter;
+import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
@@ -186,6 +187,11 @@ public class McNativeLauncher implements Listener {
 
         registerDefaultListener(eventBus, pluginManager);
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
+
+        if(instance.getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_12)) {
+            new McNativeBridgeEventHandler(injector,eventBus,playerManager);
+        }
+
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
 
         registerDependencyHooks(logger,pluginManager,playerManager);

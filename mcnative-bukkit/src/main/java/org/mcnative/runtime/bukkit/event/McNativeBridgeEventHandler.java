@@ -33,7 +33,10 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.server.TabCompleteEvent;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
-import org.mcnative.runtime.api.event.player.*;
+import org.mcnative.runtime.api.event.player.MinecraftPlayerChatEvent;
+import org.mcnative.runtime.api.event.player.MinecraftPlayerCommandPreprocessEvent;
+import org.mcnative.runtime.api.event.player.MinecraftPlayerLogoutEvent;
+import org.mcnative.runtime.api.event.player.MinecraftPlayerTabCompleteResponseEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginConfirmEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerPostLoginEvent;
@@ -67,12 +70,10 @@ import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.common.event.player.DefaultMinecraftPlayerLoginConfirmEvent;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 public class McNativeBridgeEventHandler {
 
@@ -133,11 +134,7 @@ public class McNativeBridgeEventHandler {
         eventBus.registerMappedClass(MinecraftPlayerChatEvent.class, AsyncPlayerChatEvent.class);
         eventBus.registerManagedEvent(AsyncPlayerChatEvent.class, this::handleChatEvent);
 
-
         if(McNative.getInstance().getPlatform().getProtocolVersion().isNewerOrSame(MinecraftProtocolVersion.JE_1_12)){
-            eventBus.registerMappedClass(MinecraftPlayerTabCompleteEvent.class, PlayerChatTabCompleteEvent.class);
-            eventBus.registerManagedEvent(PlayerChatTabCompleteEvent.class, this::handleLegacyTabComplete);
-        }else{
             eventBus.registerMappedClass(MinecraftPlayerCommandPreprocessEvent.class, PlayerCommandPreprocessEvent.class);
             eventBus.registerManagedEvent(PlayerCommandPreprocessEvent.class, this::handleCommandEvent);
         }
@@ -341,13 +338,6 @@ public class McNativeBridgeEventHandler {
         ConnectedMinecraftPlayer player = null;
         if(event.getSender() instanceof Player) player = playerManager.getMappedPlayer((Player) event.getSender());
         BukkitTabCompleteEvent mcnativeEvent = new BukkitTabCompleteEvent(event,player);
-        handler.callEvents(event,mcnativeEvent);
-        this.eventBus.callEvent(MinecraftPlayerTabCompleteResponseEvent.class, mcnativeEvent);
-    }
-
-    private void handleLegacyTabComplete(McNativeHandlerList handler, PlayerChatTabCompleteEvent event){
-        ConnectedMinecraftPlayer player = playerManager.getMappedPlayer(event.getPlayer());
-        BukkitLegacyTabCompleteEvent mcnativeEvent = new BukkitLegacyTabCompleteEvent(event,player);
         handler.callEvents(event,mcnativeEvent);
         this.eventBus.callEvent(MinecraftPlayerTabCompleteResponseEvent.class, mcnativeEvent);
     }
