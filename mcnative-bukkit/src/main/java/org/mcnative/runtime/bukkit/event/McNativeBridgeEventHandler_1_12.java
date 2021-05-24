@@ -20,11 +20,12 @@
 
 package org.mcnative.runtime.bukkit.event;
 
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.entity.Player;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerTabCompleteEvent;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerTabCompleteResponseEvent;
 import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
-import org.mcnative.runtime.bukkit.event.player.BukkitLegacyTabCompleteEvent;
+import org.mcnative.runtime.bukkit.event.player.BukkitTabCompleteEvent;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.plugin.event.McNativeHandlerList;
@@ -42,13 +43,14 @@ public class McNativeBridgeEventHandler_1_12 {
 
     private void setup(){
         /* Lifecycle */
-        eventBus.registerMappedClass(MinecraftPlayerTabCompleteEvent.class, PlayerChatTabCompleteEvent.class);
-        eventBus.registerManagedEvent(PlayerChatTabCompleteEvent.class, this::handleLegacyTabComplete);
+        eventBus.registerMappedClass(MinecraftPlayerTabCompleteEvent.class, TabCompleteEvent.class);
+        eventBus.registerManagedEvent(TabCompleteEvent.class, this::handleTabComplete);
     }
 
-    private void handleLegacyTabComplete(McNativeHandlerList handler, PlayerChatTabCompleteEvent event){
-        ConnectedMinecraftPlayer player = playerManager.getMappedPlayer(event.getPlayer());
-        BukkitLegacyTabCompleteEvent mcnativeEvent = new BukkitLegacyTabCompleteEvent(event,player);
+    private void handleTabComplete(McNativeHandlerList handler, TabCompleteEvent event){
+        ConnectedMinecraftPlayer player = null;
+        if(event.getSender() instanceof Player) player = playerManager.getMappedPlayer((Player) event.getSender());
+        BukkitTabCompleteEvent mcnativeEvent = new BukkitTabCompleteEvent(event,player);
         handler.callEvents(event,mcnativeEvent);
         this.eventBus.callEvent(MinecraftPlayerTabCompleteResponseEvent.class, mcnativeEvent);
     }
