@@ -30,11 +30,10 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
-import org.mcnative.runtime.api.event.player.MinecraftPlayerChatEvent;
-import org.mcnative.runtime.api.event.player.MinecraftPlayerCommandPreprocessEvent;
-import org.mcnative.runtime.api.event.player.MinecraftPlayerLogoutEvent;
+import org.mcnative.runtime.api.event.player.*;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginConfirmEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerLoginEvent;
 import org.mcnative.runtime.api.event.player.login.MinecraftPlayerPostLoginEvent;
@@ -136,6 +135,8 @@ public class McNativeBridgeEventHandler {
         eventBus.registerMappedClass(MinecraftPlayerCommandPreprocessEvent.class, PlayerCommandPreprocessEvent.class);
         eventBus.registerManagedEvent(PlayerCommandPreprocessEvent.class, this::handleCommandEvent);
 
+        eventBus.registerMappedClass(MinecraftPlayerTabCompleteEvent.class, TabCompleteEvent.class);
+        eventBus.registerManagedEvent(TabCompleteEvent.class, this::handleTabComplete);
 
         /* Inventory */
 
@@ -330,6 +331,14 @@ public class McNativeBridgeEventHandler {
             }
             McNative.getInstance().getLogger().info("["+mcnativeEvent.getChannel().getName()+"] "+player.getName()+": "+event.getMessage());
         }
+    }
+
+    private void handleTabComplete(McNativeHandlerList handler, TabCompleteEvent event){
+        ConnectedMinecraftPlayer player = null;
+        if(event.getSender() instanceof Player) player = playerManager.getMappedPlayer((Player) event.getSender());
+        BukkitTabCompleteEvent mcnativeEvent = new BukkitTabCompleteEvent(event,player);
+        handler.callEvents(event,mcnativeEvent);
+        this.eventBus.callEvent(MinecraftPlayerTabCompleteResponseEvent.class, mcnativeEvent);
     }
 
     private void handleCommandEvent(McNativeHandlerList handler, PlayerCommandPreprocessEvent event){
