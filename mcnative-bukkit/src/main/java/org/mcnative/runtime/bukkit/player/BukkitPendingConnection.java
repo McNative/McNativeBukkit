@@ -31,6 +31,7 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
+import org.mcnative.runtime.api.connection.MinecraftConnection;
 import org.mcnative.runtime.api.connection.MinecraftOutputStream;
 import org.mcnative.runtime.api.connection.PendingConnection;
 import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
@@ -276,12 +277,13 @@ public class BukkitPendingConnection implements PendingConnection {
                     ,new MinecraftProtocolRewriteEncoder(McNative.getInstance().getLocal().getPacketManager()
                             ,Endpoint.UPSTREAM, PacketDirection.OUTGOING,this){
                         @Override
-                        public void handleInternalPacketManipulation(int packetId, ByteBuf buffer) {
-                            if(packetId == 0x10){//Force to legacy tab completion architecture
+                        public void handleInternalPacketManipulation(MinecraftConnection connection,int packetId, ByteBuf buffer) {
+                            if(LegacyTabCompleteForce.isDeclarePacket(connection.getProtocolVersion(),packetId)){
+                                //Force to legacy tab completion architecture
                                 buffer.clear();
                                 LegacyTabCompleteForce.rewrite(buffer);
                             }
-                            super.handleInternalPacketManipulation(packetId, buffer);
+                            super.handleInternalPacketManipulation(connection,packetId, buffer);
                         }
                     });
 
