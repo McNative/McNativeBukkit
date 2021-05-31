@@ -2,6 +2,7 @@ package org.mcnative.runtime.bukkit.plugin.dependency;
 
 import net.pretronic.libraries.dependency.loader.DependencyClassLoader;
 import net.pretronic.libraries.utility.reflect.ReflectException;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +16,7 @@ public class LegacyReflectedDependencyClassLoader implements DependencyClassLoad
     }
 
     public ClassLoader load(ClassLoader parent, URL location) {
+        if(parent == null) parent = Bukkit.class.getClassLoader();
         try {
             METHOD_ADD_URL.invoke(getClass().getClassLoader(), location);
             return parent;

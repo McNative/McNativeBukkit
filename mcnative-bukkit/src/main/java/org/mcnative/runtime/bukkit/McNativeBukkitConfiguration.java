@@ -20,6 +20,7 @@
 package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.document.Document;
+import net.pretronic.libraries.document.annotations.DocumentIgnored;
 import net.pretronic.libraries.document.annotations.DocumentKey;
 import net.pretronic.libraries.document.type.DocumentFileType;
 import net.pretronic.libraries.logging.PretronicLogger;
@@ -36,10 +37,7 @@ import org.mcnative.runtime.common.plugin.configuration.FileConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class McNativeBukkitConfiguration {
 
@@ -98,6 +96,20 @@ public class McNativeBukkitConfiguration {
     public static transient MessageComponent<?> SERVER_STATUS_DESCRIPTION_LINE1_COMPILED;
     public static transient MessageComponent<?> SERVER_STATUS_DESCRIPTION_LINE2_COMPILED;
 
+    public static boolean LABYMOD_WATERMARK_ENABLED = false;
+    public static boolean LABYMOD_VOICECHAT_ENABLED = true;
+    public static boolean LABYMOD_BANNER_ENABLED = false;
+    public static String LABYMOD_BANNER_URL = "https://content.pretronic.net/products/mcnative/banner.png";
+    public static boolean LABYMOD_ALERT_ENABLED = false;
+    public static String LABYMOD_ALERT_GAMEMODE = "McNative powered server";
+
+    public static boolean LABYMOD_SUBTITLE_ENABLED = false;
+    public static double LABYMOD_SUBTITLE_SIZE = 1.6d;
+    public static String LABYMOD_SUBTITLE_TEXT = "{design.prefix}";
+
+    @DocumentIgnored
+    public static MessageComponent<?> LABYMOD_SUBTITLE_TEXT_COMPONENT;
+
     static {
         PLAYER_COLORS_COLORS.put("mcnative.player.color.administrator","&4");
         PLAYER_COLORS_COLORS.put("mcnative.player.color.moderator","&c");
@@ -150,6 +162,8 @@ public class McNativeBukkitConfiguration {
 
         SERVER_STATUS_DESCRIPTION_LINE1_COMPILED = new MessageKeyComponent(parseCustomMessage(SERVER_STATUS_DESCRIPTION_LINE1));
         SERVER_STATUS_DESCRIPTION_LINE2_COMPILED = new MessageKeyComponent(parseCustomMessage(SERVER_STATUS_DESCRIPTION_LINE2));
+
+        LABYMOD_SUBTITLE_TEXT_COMPONENT = new MessageKeyComponent(parseCustomMessage(LABYMOD_SUBTITLE_TEXT));
 
         OfflineMinecraftPlayer.DISPLAY_NAME_FORMAT = PLAYER_DISPLAY_NAME_FORMAT;
         return true;

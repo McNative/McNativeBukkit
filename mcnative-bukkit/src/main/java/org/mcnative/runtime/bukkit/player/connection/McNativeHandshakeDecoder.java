@@ -96,6 +96,9 @@ public class McNativeHandshakeDecoder extends MessageToMessageDecoder<ByteBuf> {
                 return;
             }
             list.add(out);
+        }catch (IndexOutOfBoundsException exception){
+            //Received wrong data, closing the channel
+            context.channel().close();
         }catch (Exception exception){
             exception.printStackTrace();
         }

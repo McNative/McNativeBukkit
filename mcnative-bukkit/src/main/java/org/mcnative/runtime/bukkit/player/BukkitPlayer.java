@@ -25,33 +25,14 @@ import net.pretronic.libraries.concurrent.Task;
 import net.pretronic.libraries.message.bml.variable.VariableSet;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
+import net.pretronic.libraries.utility.exception.OperationFailedException;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
-import org.mcnative.runtime.api.player.client.CustomClient;
-import org.mcnative.runtime.api.player.input.ConfirmResult;
-import org.mcnative.runtime.api.player.input.PlayerTextInputValidator;
-import org.mcnative.runtime.api.player.input.YesNoResult;
-import org.mcnative.runtime.api.protocol.packet.type.MinecraftCustomPayloadPacket;
-import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftSoundEffectPacket;
-import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftStopSoundPacket;
-import org.mcnative.runtime.api.service.world.location.Location;
-import org.mcnative.runtime.api.text.format.TextColor;
-import org.mcnative.runtime.api.utils.positioning.Position;
-import org.mcnative.runtime.bukkit.BukkitService;
-import org.mcnative.runtime.bukkit.McNativeLauncher;
-import org.mcnative.runtime.bukkit.entity.BukkitEntity;
-import org.mcnative.runtime.bukkit.entity.living.BukkitHumanEntity;
-import org.mcnative.runtime.bukkit.inventory.BukkitInventory;
-import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
-import org.mcnative.runtime.bukkit.location.BukkitLocation;
-import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionHandler;
-import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
-import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
-import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
 import org.mcnative.runtime.api.connection.MinecraftOutputStream;
 import org.mcnative.runtime.api.connection.PendingConnection;
+import org.mcnative.runtime.api.event.player.login.MinecraftPlayerCustomClientLoginEvent;
 import org.mcnative.runtime.api.network.component.server.MinecraftServer;
 import org.mcnative.runtime.api.network.component.server.ProxyServer;
 import org.mcnative.runtime.api.network.component.server.ServerConnectReason;
@@ -60,7 +41,11 @@ import org.mcnative.runtime.api.player.*;
 import org.mcnative.runtime.api.player.bossbar.BossBar;
 import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.chat.ChatPosition;
+import org.mcnative.runtime.api.player.client.CustomClient;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
+import org.mcnative.runtime.api.player.input.ConfirmResult;
+import org.mcnative.runtime.api.player.input.PlayerTextInputValidator;
+import org.mcnative.runtime.api.player.input.YesNoResult;
 import org.mcnative.runtime.api.player.scoreboard.BelowNameInfo;
 import org.mcnative.runtime.api.player.scoreboard.sidebar.Sidebar;
 import org.mcnative.runtime.api.player.sound.SoundCategory;
@@ -69,12 +54,11 @@ import org.mcnative.runtime.api.player.tablist.TablistEntry;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.protocol.packet.MinecraftPacket;
 import org.mcnative.runtime.api.protocol.packet.type.MinecraftChatPacket;
+import org.mcnative.runtime.api.protocol.packet.type.MinecraftCustomPayloadPacket;
 import org.mcnative.runtime.api.protocol.packet.type.MinecraftResourcePackSendPacket;
 import org.mcnative.runtime.api.protocol.packet.type.MinecraftTitlePacket;
-import org.mcnative.runtime.api.service.world.Effect;
-import org.mcnative.runtime.api.serviceprovider.permission.PermissionHandler;
-import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
-import org.mcnative.runtime.api.text.components.MessageComponent;
+import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftSoundEffectPacket;
+import org.mcnative.runtime.api.protocol.packet.type.sound.MinecraftStopSoundPacket;
 import org.mcnative.runtime.api.service.GameMode;
 import org.mcnative.runtime.api.service.MinecraftService;
 import org.mcnative.runtime.api.service.advancement.AdvancementProgress;
@@ -82,6 +66,25 @@ import org.mcnative.runtime.api.service.entity.Entity;
 import org.mcnative.runtime.api.service.entity.living.Player;
 import org.mcnative.runtime.api.service.inventory.Inventory;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
+import org.mcnative.runtime.api.service.world.Effect;
+import org.mcnative.runtime.api.service.world.location.Location;
+import org.mcnative.runtime.api.serviceprovider.permission.PermissionHandler;
+import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
+import org.mcnative.runtime.api.text.components.MessageComponent;
+import org.mcnative.runtime.api.text.format.TextColor;
+import org.mcnative.runtime.api.utils.positioning.Position;
+import org.mcnative.runtime.bukkit.BukkitService;
+import org.mcnative.runtime.bukkit.McNativeLauncher;
+import org.mcnative.runtime.bukkit.entity.BukkitEntity;
+import org.mcnative.runtime.bukkit.entity.living.BukkitHumanEntity;
+import org.mcnative.runtime.bukkit.event.player.BukkitCustomClientLoginEvent;
+import org.mcnative.runtime.bukkit.inventory.BukkitInventory;
+import org.mcnative.runtime.bukkit.inventory.item.BukkitItemStack;
+import org.mcnative.runtime.bukkit.location.BukkitLocation;
+import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionHandler;
+import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
+import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
+import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.common.player.DefaultBossBar;
 import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
 import org.mcnative.runtime.common.utils.PlayerRegisterAble;
@@ -104,11 +107,12 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     private ChatChannel chatChannel;
     private Tablist tablist;
-    private Collection<BossBar> bossBars;
+    private final Collection<BossBar> bossBars;
 
     private BukkitWorld world;
     private boolean permissibleInjected;
     private boolean joining;
+    private CustomClient customClient;
 
     private final Map<TablistEntry,String> tablistTeamNames;
     private int tablistTeamIndex;
@@ -191,32 +195,35 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public CustomClient getCustomClient() {
-        return null;
+        return customClient;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends CustomClient> T getCustomClient(Class<T> aClass) {
-        return null;
+        return (T) customClient;
     }
 
     @Override
     public boolean isCustomClient() {
-        return false;
+        return customClient != null;
     }
 
     @Override
-    public boolean isCustomClient(String s) {
-        return false;
+    public boolean isCustomClient(String name) {
+        return customClient != null && customClient.getName().equalsIgnoreCase(name);
     }
 
     @Override
     public boolean isCustomClient(Class<? extends CustomClient> aClass) {
-        return false;
+        return customClient != null && customClient.getClass().equals(aClass);
     }
 
     @Override
     public void setCustomClient(CustomClient customClient) {
-
+        if(this.customClient != null) throw new OperationFailedException("A custom client is already registered for this player");
+        this.customClient = customClient;
+        McNative.getInstance().getLocal().getEventBus().callEvent(MinecraftPlayerCustomClientLoginEvent.class,new BukkitCustomClientLoginEvent(this));
     }
 
     @Override
@@ -509,7 +516,6 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
         org.bukkit.GameMode bukkitGameMode = org.bukkit.GameMode.valueOf(mode.name());
         this.original.setGameMode(bukkitGameMode);
     }
-
 
     @Override
     public Location getCompassTarget() {

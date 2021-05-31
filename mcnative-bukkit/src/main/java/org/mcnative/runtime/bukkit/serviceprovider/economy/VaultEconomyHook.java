@@ -90,12 +90,12 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public boolean hasAccount(String playerName, String ignored) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return hasAccount(playerName);
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer, String ignored) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return hasAccount(offlinePlayer);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public double getBalance(String playerName, String ignored) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return getBalance(playerName);
     }
 
     @Override
@@ -139,12 +139,12 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public boolean has(String playerName, String ignored, double amount) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return has(playerName, amount);
     }
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, String ignored, double amount) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return has(offlinePlayer,amount);
     }
 
     @Override
@@ -166,12 +166,12 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String playerName, String worldName, double amount) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return withdrawPlayer(playerName,amount);
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, String worldName, double amount) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        return withdrawPlayer(offlinePlayer,amount);
     }
 
     @Override
@@ -189,13 +189,13 @@ public class VaultEconomyHook implements Economy {
     }
 
     @Override
-    public EconomyResponse depositPlayer(String playerName, String s1, double amount) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+    public EconomyResponse depositPlayer(String playerName, String ignored, double amount) {
+        return depositPlayer(playerName,amount);
     }
 
     @Override
-    public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, String s, double amount) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+    public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, String ignored, double amount) {
+        return depositPlayer(offlinePlayer,amount);
     }
 
     @Override
@@ -275,22 +275,22 @@ public class VaultEconomyHook implements Economy {
 
     @Override
     public boolean createPlayerAccount(String name) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        throw new UnsupportedOperationException("EconomyProvider does not allow to create player accounts, players are managed by "+economyProvider.getName()+" by itself");
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        throw new UnsupportedOperationException("EconomyProvider does not allow to create player accounts, players are managed by "+economyProvider.getName()+" by itself");
     }
 
     @Override
     public boolean createPlayerAccount(String name, String s1) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        throw new UnsupportedOperationException("EconomyProvider does not allow to create player accounts, players are managed by "+economyProvider.getName()+" by itself");
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer, String s) {
-        throw new UnsupportedOperationException("EconomyProvider does not support this");
+        throw new UnsupportedOperationException("EconomyProvider does not allow to create player accounts, players are managed by "+economyProvider.getName()+" by itself");
     }
 
     private EconomyResponse mapEconomyResponse(org.mcnative.runtime.api.serviceprovider.economy.EconomyResponse response) {

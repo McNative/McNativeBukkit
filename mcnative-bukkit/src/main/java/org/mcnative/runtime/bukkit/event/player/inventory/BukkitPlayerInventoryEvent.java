@@ -21,10 +21,10 @@
 package org.mcnative.runtime.bukkit.event.player.inventory;
 
 import org.bukkit.event.inventory.InventoryEvent;
-import org.mcnative.runtime.bukkit.inventory.BukkitInventory;
 import org.mcnative.runtime.api.service.entity.living.Player;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryEvent;
 import org.mcnative.runtime.api.service.inventory.Inventory;
+import org.mcnative.runtime.bukkit.inventory.BukkitInventory;
 
 public class BukkitPlayerInventoryEvent<T extends InventoryEvent> implements MinecraftPlayerInventoryEvent {
 

@@ -30,12 +30,12 @@ public interface BukkitHumanEntity<E extends org.bukkit.entity.HumanEntity> exte
 
     @Override
     default PlayerInventory getInventory() {
-        return (PlayerInventory) BukkitInventory.mapInventory(getOriginal().getInventory(), this);
+        return (PlayerInventory) BukkitInventory.mapInventory(getOriginal().getInventory(),this);
     }
 
     @Override
     default Inventory getOpenInventory() {
-        return BukkitInventory.mapInventory(getOriginal().getOpenInventory().getTopInventory(), this);
+        return BukkitInventory.mapInventory(getOriginal().getOpenInventory().getTopInventory(),this);
     }
 
     @Override

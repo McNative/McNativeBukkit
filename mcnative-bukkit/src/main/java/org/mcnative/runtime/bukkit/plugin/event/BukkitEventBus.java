@@ -38,6 +38,7 @@ import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
+import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.bukkit.plugin.BukkitPluginManager;
 import org.mcnative.runtime.common.network.event.NetworkEventHandler;
 
@@ -88,6 +89,7 @@ public class BukkitEventBus implements EventBus {
             }
             listenerClass = listenerClass.getSuperclass();
         }
+        McNative.getInstance().getInjector().inject(listener);
     }
 
     @Override

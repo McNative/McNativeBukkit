@@ -33,6 +33,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.mcnative.runtime.api.McNative;
+import org.mcnative.runtime.api.text.components.ExtraAbleComponent;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
@@ -132,8 +133,10 @@ public class PlaceHolderApiProvider implements PlaceholderProvider, OwnerUnregis
             String newTest = replacePlaceholders(player,((TextComponent) rawComponent).getText());
             ((TextComponent) rawComponent).setText(newTest);
         }
-        for (MessageComponent<?> extra : rawComponent.getExtras()) {
-            replacePlaceholders(player,extra);
+        if(rawComponent instanceof ExtraAbleComponent<?>){
+            for (MessageComponent<?> extra : ((ExtraAbleComponent<?>) rawComponent).getExtras()) {
+                replacePlaceholders(player,extra);
+            }
         }
     }
 

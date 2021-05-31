@@ -34,6 +34,7 @@ import org.mcnative.runtime.api.player.chat.ChatPosition;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
 import org.mcnative.runtime.api.player.sound.SoundCategory;
 import org.mcnative.runtime.api.protocol.packet.MinecraftPacket;
+import org.mcnative.runtime.api.stream.StreamOptional;
 import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.common.player.OfflineMinecraftPlayer;
 import org.mcnative.runtime.network.integrations.McNativePlayerExecutor;
