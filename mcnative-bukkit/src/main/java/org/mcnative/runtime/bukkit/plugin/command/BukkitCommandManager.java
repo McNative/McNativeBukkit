@@ -123,6 +123,7 @@ public class BukkitCommandManager implements CommandManager {
         }
         this.commandMap.register(command.getOwner().getName().toLowerCase(),new McNativeCommand(this, command));
         this.commands.add(command);
+        McNative.getInstance().getInjector().inject(command);
     }
 
     @Override

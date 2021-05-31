@@ -40,4 +40,11 @@ public class BukkitInventoryHolder implements InventoryHolder {
     public Inventory getInventory() {
         return ((BukkitInventory<?>)owner.getLinkedInventory()).getOriginal();
     }
+
+    @Override
+    public String toString() {
+        return "BukkitInventoryHolder{" +
+                "owner=" + owner +
+                '}';
+    }
 }

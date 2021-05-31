@@ -225,7 +225,7 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
 
     @Override
     public void setItem(int index, ItemStack item) {
-        this.original.setItem(index, ((BukkitItemStack)item).getOriginal());
+        this.original.setItem(index, item == null ? null : ((BukkitItemStack)item).getOriginal());
     }
 
     @Override
@@ -387,16 +387,20 @@ public class BukkitInventory<I extends org.bukkit.inventory.Inventory> implement
 
     public static BukkitInventory<?> mapInventory(org.bukkit.inventory.Inventory inventory, HumanEntity player) {
         if(inventory instanceof PlayerInventory) return new BukkitPlayerInventory(player, (PlayerInventory) inventory);
-        return new BukkitInventory<>(mapInventoryHolder(inventory.getHolder()), inventory);
+        return new BukkitInventory<>(mapInventoryHolder(inventory.getHolder(),player), inventory);
     }
 
-    public static InventoryOwner mapInventoryHolder(InventoryHolder inventoryHolder) {
+    public static InventoryOwner mapInventoryHolder(InventoryHolder inventoryHolder, HumanEntity player) {
         if(inventoryHolder instanceof org.bukkit.entity.Player) {
-            ConnectedMinecraftPlayer player = MinecraftService.getInstance().getConnectedPlayer(((org.bukkit.entity.Player)inventoryHolder).getUniqueId());
-            if(player instanceof Player) {
-                return (Player) player;
-            } else {
-                throw new IllegalArgumentException("Can't map inventory holder. Online player is not an entity player.");
+            if(player == null){
+                ConnectedMinecraftPlayer newPlayer = MinecraftService.getInstance().getConnectedPlayer(((org.bukkit.entity.Player)inventoryHolder).getUniqueId());
+                if(newPlayer instanceof Player) {
+                    return (Player) newPlayer;
+                } else {
+                    throw new IllegalArgumentException("Can't map inventory holder. Online player is not an entity player.");
+                }
+            }else{
+                return player;
             }
         } else if(inventoryHolder instanceof BukkitInventoryHolder) {
             return ((BukkitInventoryHolder) inventoryHolder).getOwner();

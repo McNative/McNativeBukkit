@@ -20,6 +20,7 @@
 package org.mcnative.runtime.bukkit.player;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -30,10 +31,10 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
+import org.mcnative.runtime.api.connection.MinecraftConnection;
 import org.mcnative.runtime.api.connection.MinecraftOutputStream;
 import org.mcnative.runtime.api.connection.PendingConnection;
 import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
-import org.mcnative.runtime.api.player.OnlineMinecraftPlayer;
 import org.mcnative.runtime.api.player.profile.GameProfile;
 import org.mcnative.runtime.api.protocol.Endpoint;
 import org.mcnative.runtime.api.protocol.MinecraftEdition;
@@ -42,6 +43,8 @@ import org.mcnative.runtime.api.protocol.packet.MinecraftPacket;
 import org.mcnative.runtime.api.protocol.packet.PacketDirection;
 import org.mcnative.runtime.api.protocol.packet.type.MinecraftDisconnectPacket;
 import org.mcnative.runtime.api.text.components.MessageComponent;
+import org.mcnative.runtime.protocol.java.MinecraftProtocolUtil;
+import org.mcnative.runtime.protocol.java.codec.LegacyTabCompleteForce;
 import org.mcnative.runtime.protocol.java.netty.MinecraftProtocolEncoder;
 import org.mcnative.runtime.protocol.java.netty.rewrite.MinecraftProtocolRewriteDecoder;
 import org.mcnative.runtime.protocol.java.netty.rewrite.MinecraftProtocolRewriteEncoder;
@@ -260,22 +263,38 @@ public class BukkitPendingConnection implements PendingConnection {
 
         }else{
             //Encoder
-            this.channel.pipeline().addAfter("encoder","mcnative-packet-encoder"
+            MessageToByteEncoder<Object> originalEncoder = extractEncoder(channel.pipeline().get("encoder"));
+
+            this.channel.pipeline().replace("encoder","encoder"
                     ,new MinecraftProtocolEncoder(McNative.getInstance().getLocal().getPacketManager()
                             , Endpoint.UPSTREAM, PacketDirection.OUTGOING,this));
 
-            this.channel.pipeline().addAfter("mcnative-packet-encoder","mcnative-packet-rewrite-encoder"
+            if(originalEncoder != null){
+                channel.pipeline().addAfter("encoder","minecraft-encoder",new McNativeMessageEncoderIgnoreWrapper(originalEncoder));
+            }
+
+            this.channel.pipeline().addAfter("encoder","mcnative-packet-rewrite-encoder"
                     ,new MinecraftProtocolRewriteEncoder(McNative.getInstance().getLocal().getPacketManager()
-                            ,Endpoint.UPSTREAM, PacketDirection.OUTGOING,this));
+                            ,Endpoint.UPSTREAM, PacketDirection.OUTGOING,this){
+                        @Override
+                        public void handleInternalPacketManipulation(MinecraftConnection connection,int packetId, ByteBuf buffer) {
+                            if(LegacyTabCompleteForce.isDeclarePacket(connection.getProtocolVersion(),packetId)){
+                                //Force to legacy tab completion architecture
+                                buffer.clear();
+                                LegacyTabCompleteForce.rewrite(buffer);
+                            }
+                            super.handleInternalPacketManipulation(connection,packetId, buffer);
+                        }
+                    });
 
             //Decoder
-            ByteToMessageDecoder original = extractDecoder(channel.pipeline().get("decoder"));
+            ByteToMessageDecoder originalDecoder = extractDecoder(channel.pipeline().get("decoder"));
             this.channel.pipeline().replace("decoder","decoder"
                     ,new MinecraftProtocolRewriteDecoder(McNative.getInstance().getLocal().getPacketManager()
                             ,Endpoint.UPSTREAM, PacketDirection.INCOMING,this));
 
-            if(original != null){
-                channel.pipeline().addAfter("decoder","minecraft-decoder",new McNativeMessageDecoderIgnoreWrapper(original));
+            if(originalDecoder != null){
+                channel.pipeline().addAfter("decoder","minecraft-decoder",new McNativeMessageDecoderIgnoreWrapper(originalDecoder));
             }
         }
     }
@@ -289,6 +308,18 @@ public class BukkitPendingConnection implements PendingConnection {
         }else if(decoder.getClass().getName().equals(MinecraftProtocolRewriteDecoder.class.getName())){
             original = null;
         }else throw new IllegalArgumentException("Invalid handler, contact the McNative developer team ("+decoder.getClass()+")");
+        return original;
+    }
+
+    private MessageToByteEncoder<Object> extractEncoder(Object encoder){
+        MessageToByteEncoder<Object> original;
+        if(encoder instanceof McNativeMessageEncoderIgnoreWrapper){
+            original = ((McNativeMessageEncoderIgnoreWrapper) encoder).getOriginal();
+        }else if(encoder instanceof MessageToByteEncoder<?>){
+            original = (MessageToByteEncoder<Object>) encoder;
+        }else if(encoder.getClass().getName().equals(MinecraftProtocolRewriteEncoder.class.getName())){
+            original = null;
+        }else throw new IllegalArgumentException("Invalid handler, contact the McNative developer team ("+encoder.getClass()+")");
         return original;
     }
 }

@@ -36,7 +36,6 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.McNativeConsoleCredentials;
@@ -55,7 +54,6 @@ import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
 import org.mcnative.runtime.api.player.tablist.TablistFormatter;
 import org.mcnative.runtime.api.player.tablist.TablistOverviewFormatter;
-import org.mcnative.runtime.api.service.inventory.gui.Test;
 import org.mcnative.runtime.api.serviceprovider.placeholder.PlaceholderProvider;
 import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
@@ -64,6 +62,9 @@ import org.mcnative.runtime.api.text.components.TargetMessageKeyComponent;
 import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.Env;
 import org.mcnative.runtime.bukkit.event.McNativeBridgeEventHandler;
+import org.mcnative.runtime.bukkit.inventory.item.material.versioned.MaterialProtocolRegistrar;
+import org.mcnative.runtime.bukkit.labymod.LabyModListener;
+import org.mcnative.runtime.bukkit.labymod.LabyModSubtitleHandler;
 import org.mcnative.runtime.bukkit.network.bungeecord.BungeeCordProxyNetwork;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV2PlatformListener;
 import org.mcnative.runtime.bukkit.network.cloudnet.CloudNetV3PlatformListener;
@@ -77,6 +78,8 @@ import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
 import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
+import org.mcnative.runtime.client.integrations.ClientIntegration;
+import org.mcnative.runtime.common.McNativeTabCompleteEventHandler;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceShutdownEvent;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceStartupEvent;
 import org.mcnative.runtime.common.maf.MAFService;
@@ -149,8 +152,6 @@ public class McNativeLauncher implements Listener {
         pluginManager.inject();
         logger.info(McNative.CONSOLE_PREFIX+"McNative initialised and injected plugin manager.");
 
-        //BukkitMiddlewareClassMap middlewareClassMap = BukkitMiddlewareClassMap.inject();
-
         BukkitEventBus eventBus = new BukkitEventBus(GeneralUtil.getDefaultExecutorService(),pluginManager,getPlugin());
         BukkitCommandManager commandManager = new BukkitCommandManager();
         BukkitPlayerManager playerManager = new BukkitPlayerManager();
@@ -172,6 +173,8 @@ public class McNativeLauncher implements Listener {
         commandManager.inject();
 
         MinecraftJavaProtocol.register(localService.getPacketManager());
+        ClientIntegration.register();
+        MaterialProtocolRegistrar.init(instance.getPlatform().getProtocolVersion());
 
         instance.registerDefaultProviders();
         instance.registerDefaultCommands();
@@ -182,6 +185,8 @@ public class McNativeLauncher implements Listener {
 
         registerDefaultListener(eventBus, pluginManager);
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
+        new McNativeTabCompleteEventHandler(eventBus, localService.getPacketManager());
+
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
 
         registerDependencyHooks(logger,pluginManager,playerManager);
@@ -268,6 +273,11 @@ public class McNativeLauncher implements Listener {
     }
 
     private static void setupConfiguredServices(){
+        McNative.getInstance().getLocal().getEventBus().subscribe(ObjectOwner.SYSTEM,new LabyModListener());
+        if(McNativeBukkitConfiguration.LABYMOD_SUBTITLE_ENABLED){
+            new LabyModSubtitleHandler(McNativeBukkitConfiguration.LABYMOD_SUBTITLE_SIZE,McNativeBukkitConfiguration.LABYMOD_SUBTITLE_TEXT_COMPONENT);
+        }
+
         if(McNativeBukkitConfiguration.PLAYER_CHAT_ENABLED){
             ChatChannel serverChat = ChatChannel.newChatChannel();
             serverChat.setName("ServerChat");

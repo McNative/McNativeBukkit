@@ -128,6 +128,15 @@ public class BungeeCordProxyNetwork implements Network {
     }
 
     @Override
+    public NetworkIdentifier getIdentifier(UUID uuid) {
+        if(proxy.getUniqueId().equals(uuid)) return proxy.getIdentifier();
+        for (MinecraftServer server : getServers()) {
+            if(server.getUniqueId().equals(uuid)) return server.getIdentifier();
+        }
+        return null;
+    }
+
+    @Override
     public Collection<ProxyServer> getProxies() {
         return Collections.singleton(proxy);
     }

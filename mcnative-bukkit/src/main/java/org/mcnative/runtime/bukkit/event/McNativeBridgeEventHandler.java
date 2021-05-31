@@ -67,12 +67,10 @@ import org.mcnative.runtime.bukkit.world.BukkitWorld;
 import org.mcnative.runtime.common.event.player.DefaultMinecraftPlayerLoginConfirmEvent;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 public class McNativeBridgeEventHandler {
 
@@ -135,7 +133,6 @@ public class McNativeBridgeEventHandler {
 
         eventBus.registerMappedClass(MinecraftPlayerCommandPreprocessEvent.class, PlayerCommandPreprocessEvent.class);
         eventBus.registerManagedEvent(PlayerCommandPreprocessEvent.class, this::handleCommandEvent);
-
 
         /* Inventory */
 
