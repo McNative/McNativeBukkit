@@ -32,6 +32,7 @@ import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.profile.GameProfile;
+import org.mcnative.runtime.bukkit.utils.GameProfileUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -246,7 +247,27 @@ public class BukkitChannelInjector {
     public static GameProfile extractGameProfile(Object profile) throws Exception{//@Todo extract properties
         UUID uniqueId = (UUID) UUID_GAME_PROFILE_FIELD.get(profile);
         String name = (String) NAME_GAME_PROFILE_FIELD.get(profile);
-        return new GameProfile(uniqueId,name,new GameProfile.Property[]{});
+
+        Object propertyMap;
+        try {
+            propertyMap = GameProfileUtil.getGameProfilePropertiesField().get(profile);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Can't get properties field for class com.mojang.authlib.GameProfile", e);
+        }
+
+        Map<String, Collection<Object>> properties = GameProfileUtil.getPropertyMapEntries(propertyMap);
+        GameProfile.Property[] copiedProperties = new GameProfile.Property[properties.size()];
+
+        int index = 0;
+        for (Map.Entry<String, Collection<Object>> entry : properties.entrySet()) {
+            for (Object property : entry.getValue()) {
+                copiedProperties[index] = GameProfileUtil.mapProperty(property);
+                break;
+            }
+            index++;
+        }
+
+        return new GameProfile(uniqueId,name,copiedProperties);
     }
 
     public static GameProfile extractPsGameProfile(Object profile) throws Exception{//@Todo extract properties
@@ -254,6 +275,4 @@ public class BukkitChannelInjector {
         String name = (String) PS_NAME_GAME_PROFILE_FIELD.get(profile);
         return new GameProfile(uniqueId,name,new GameProfile.Property[]{});
     }
-
-
 }
