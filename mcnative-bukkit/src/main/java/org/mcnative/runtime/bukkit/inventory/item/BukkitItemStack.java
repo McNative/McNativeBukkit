@@ -25,6 +25,7 @@ import net.pretronic.libraries.utility.Validate;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.service.NBTTag;
 import org.mcnative.runtime.api.service.inventory.item.ItemFlag;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
@@ -32,6 +33,7 @@ import org.mcnative.runtime.api.service.inventory.item.data.ItemData;
 import org.mcnative.runtime.api.service.inventory.item.material.Enchantment;
 import org.mcnative.runtime.api.service.inventory.item.material.Material;
 import org.mcnative.runtime.api.service.inventory.item.material.MaterialData;
+import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.bukkit.BukkitNBTTag;
 import org.mcnative.runtime.bukkit.inventory.item.data.BukkitItemData;
 import org.mcnative.runtime.bukkit.inventory.item.data.BukkitSkullItemData;
@@ -148,10 +150,10 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public ItemStack setDisplayName(String name) {
+    public ItemStack setDisplayName(MessageComponent<?> name) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
-            meta.setDisplayName(name);
+            meta.setDisplayName(name.compileToString(MinecraftProtocolVersion.JE_1_7));
             this.original.setItemMeta(meta);
         }
         return this;
@@ -195,26 +197,31 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public ItemStack setLore(List<String> lore) {
+    public ItemStack setLore(List<MessageComponent<?>> lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
-            meta.setLore(lore);
+
+            List<String> copiedLore = new ArrayList<>(lore.size());
+            for (MessageComponent<?> lore0 : lore) {
+                copiedLore.add(lore0.compileToString(MinecraftProtocolVersion.JE_1_7));
+            }
+            meta.setLore(copiedLore);
             this.original.setItemMeta(meta);
         }
         return this;
     }
 
     @Override
-    public ItemStack setLore(String... lore) {
+    public ItemStack setLore(MessageComponent<?>... lore) {
         return setLore(Arrays.asList(lore));
     }
 
     @Override
-    public ItemStack setLore(int index, String lore) {
+    public ItemStack setLore(int index, MessageComponent<?> lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             List<String> newLore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
-            newLore.add(index, lore);
+            newLore.add(index, lore.compileToString(MinecraftProtocolVersion.JE_1_7));
             meta.setLore(newLore);
             this.original.setItemMeta(meta);
         }
@@ -222,11 +229,15 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public ItemStack addLore(List<String> lore) {
+    public ItemStack addLore(List<MessageComponent<?>> lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             List<String> newLore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
-            newLore.addAll(lore);
+
+            for (MessageComponent<?> lore0 : lore) {
+                newLore.add(lore0.compileToString(MinecraftProtocolVersion.JE_1_7));
+            }
+
             meta.setLore(newLore);
             this.original.setItemMeta(meta);
         }
@@ -234,12 +245,12 @@ public class BukkitItemStack implements ItemStack {
     }
 
     @Override
-    public ItemStack addLore(String... lore) {
+    public ItemStack addLore(MessageComponent<?>... lore) {
         return addLore(Arrays.asList(lore));
     }
 
     @Override
-    public ItemStack addLore(String lore) {
+    public ItemStack addLore(MessageComponent<?> lore) {
         return addLore(Collections.singletonList(lore));
     }
 
