@@ -25,6 +25,7 @@ import net.pretronic.libraries.utility.Validate;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.service.NBTTag;
 import org.mcnative.runtime.api.service.inventory.item.ItemFlag;
 import org.mcnative.runtime.api.service.inventory.item.ItemStack;
@@ -152,7 +153,7 @@ public class BukkitItemStack implements ItemStack {
     public ItemStack setDisplayName(MessageComponent<?> name) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
-            //meta.setDisplayName(name);@Todo
+            meta.setDisplayName(name.compileToString(MinecraftProtocolVersion.JE_1_7));
             this.original.setItemMeta(meta);
         }
         return this;
@@ -199,7 +200,12 @@ public class BukkitItemStack implements ItemStack {
     public ItemStack setLore(List<MessageComponent<?>> lore) {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
-            //meta.setLore(lore);@Todo
+
+            List<String> copiedLore = new ArrayList<>(lore.size());
+            for (MessageComponent<?> lore0 : lore) {
+                copiedLore.add(lore0.compileToString(MinecraftProtocolVersion.JE_1_7));
+            }
+            meta.setLore(copiedLore);
             this.original.setItemMeta(meta);
         }
         return this;
@@ -215,7 +221,7 @@ public class BukkitItemStack implements ItemStack {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             List<String> newLore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
-            //newLore.add(index, lore);@Todo
+            newLore.add(index, lore.compileToString(MinecraftProtocolVersion.JE_1_7));
             meta.setLore(newLore);
             this.original.setItemMeta(meta);
         }
@@ -227,7 +233,11 @@ public class BukkitItemStack implements ItemStack {
         if(this.original.getItemMeta() != null) {
             ItemMeta meta = this.original.getItemMeta();
             List<String> newLore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
-            //newLore.addAll(lore);@Todo
+
+            for (MessageComponent<?> lore0 : lore) {
+                newLore.add(lore0.compileToString(MinecraftProtocolVersion.JE_1_7));
+            }
+
             meta.setLore(newLore);
             this.original.setItemMeta(meta);
         }
