@@ -1,4 +1,4 @@
-package org.mcnative.runtime.bukkit.plugin.dependency;
+package org.mcnative.runtime.bukkit.plugin.dependency.legacy;
 
 import net.pretronic.libraries.utility.reflect.ReflectException;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mcnative.runtime.bukkit.McNativeLauncher;
+import org.mcnative.runtime.bukkit.plugin.dependency.URLDependencyClassLoader;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -15,7 +16,7 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
 
     private final Map<String, Class<?>> original;
     private final Map<String, Class<?>> dependencyClasses;
-    private final List<BukkitDependencyClassLoader> dependencyLoaders;
+    private final List<URLDependencyClassLoader> dependencyLoaders;
 
     public BukkitMiddlewareClassMap(Map<String, Class<?>> original) {
         this.original = original;
@@ -27,7 +28,7 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
         return original;
     }
 
-    public void addDependencyLoader(BukkitDependencyClassLoader loader){
+    public void addDependencyLoader(URLDependencyClassLoader loader){
         this.dependencyLoaders.add(loader);
     }
 
@@ -56,7 +57,7 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
         Class<?> clazz = original.get(key);
         if(clazz == null) clazz = this.dependencyClasses.get(key);
         if(clazz == null){
-            for (BukkitDependencyClassLoader loader : dependencyLoaders) {
+            for (URLDependencyClassLoader loader : dependencyLoaders) {
                 try {
                     clazz = loader.findClass((String) key);
                     this.dependencyClasses.put((String) key,clazz);
@@ -107,21 +108,20 @@ public class BukkitMiddlewareClassMap implements Map<String, Class<?>> {
     }
 
     public void reset(){
-        JavaPluginLoader loader = (JavaPluginLoader) ReflectionUtil.getFieldValue(McNativeLauncher.class.getClassLoader(),"loader");
-        Field field = ReflectionUtil.getField(loader.getClass(),"classes");
+        Field field = ReflectionUtil.getField(McNativeLauncher.class.getClassLoader().getClass(),"classes");
         field.setAccessible(true);
-        ReflectionUtil.setUnsafeObjectFieldValue(loader,field,original);
+        ReflectionUtil.setUnsafeObjectFieldValue(McNativeLauncher.class.getClassLoader(),field,original);
     }
 
+    @SuppressWarnings("unchecked")
     public static BukkitMiddlewareClassMap inject(){
-        JavaPluginLoader loader = (JavaPluginLoader) ReflectionUtil.getFieldValue(McNativeLauncher.class.getClassLoader(),"loader");
-        Field field = ReflectionUtil.getField(loader.getClass(),"classes");
+        Field field = ReflectionUtil.getField(McNativeLauncher.class.getClassLoader().getClass(),"classes");
         field.setAccessible(true);
         Object original;
         try {
-            original = field.get(loader);
+            original = field.get(McNativeLauncher.class.getClassLoader());
             BukkitMiddlewareClassMap middleware = new BukkitMiddlewareClassMap((Map<String, Class<?>>) original);
-            ReflectionUtil.setUnsafeObjectFieldValue(loader,field,middleware);
+            ReflectionUtil.setUnsafeObjectFieldValue(McNativeLauncher.class.getClassLoader(),field,middleware);
             return middleware;
         } catch (IllegalAccessException e) {
             throw new ReflectException(e);

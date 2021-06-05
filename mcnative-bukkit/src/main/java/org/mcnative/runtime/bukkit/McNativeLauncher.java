@@ -22,6 +22,7 @@ package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.command.command.configuration.CommandConfiguration;
 import net.pretronic.libraries.command.command.configuration.DefaultCommandConfiguration;
+import net.pretronic.libraries.dependency.DependencyManager;
 import net.pretronic.libraries.document.Document;
 import net.pretronic.libraries.document.DocumentRegistry;
 import net.pretronic.libraries.document.type.DocumentFileType;
@@ -31,6 +32,7 @@ import net.pretronic.libraries.message.bml.variable.VariableSet;
 import net.pretronic.libraries.plugin.description.PluginVersion;
 import net.pretronic.libraries.utility.GeneralUtil;
 import net.pretronic.libraries.utility.Iterators;
+import net.pretronic.libraries.utility.interfaces.Destroyable;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.bukkit.Bukkit;
@@ -74,7 +76,7 @@ import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.BukkitPluginManager;
 import org.mcnative.runtime.bukkit.plugin.command.BukkitCommandManager;
-import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
+import org.mcnative.runtime.bukkit.plugin.dependency.legacy.BukkitMiddlewareClassMap;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
 import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
@@ -106,7 +108,6 @@ public class McNativeLauncher implements Listener {
     private static BukkitCommandManager COMMAND_MANAGER;
     private static BukkitChannelInjector CHANNEL_INJECTOR;
     private static BukkitEventBus EVENT_BUS;
-    private static BukkitMiddlewareClassMap CLASS_MAP;
 
     public static Plugin getPlugin() {
         return PLUGIN;
@@ -156,16 +157,13 @@ public class McNativeLauncher implements Listener {
         BukkitCommandManager commandManager = new BukkitCommandManager();
         BukkitPlayerManager playerManager = new BukkitPlayerManager();
 
-        BukkitMiddlewareClassMap middlewareClassMap = BukkitMiddlewareClassMap.inject();
-
         PLUGIN_MANAGER = pluginManager;
         COMMAND_MANAGER = commandManager;
         EVENT_BUS = eventBus;
-        CLASS_MAP = middlewareClassMap;
 
         McNativeConsoleCredentials credentials = setupCredentials(variables);
         BukkitService localService = new BukkitService(commandManager,playerManager,eventBus);
-        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials,middlewareClassMap);
+        BukkitMcNative instance = new BukkitMcNative(apiVersion,implementationVersion,pluginManager,playerManager,localService,variables,credentials);
 
         McNative.setInstance(instance);
         instance.setNetwork(setupNetwork(logger,instance.getExecutorService()));
@@ -233,7 +231,7 @@ public class McNativeLauncher implements Listener {
         Logger logger = Bukkit.getLogger();
         logger.info(McNative.CONSOLE_PREFIX+"McNative is stopping, please wait...");
         McNative instance = McNative.getInstance();
-
+        DependencyManager dependencyManager = null;
         if(instance != null){
             EVENT_BUS.callEvent(LocalServiceShutdownEvent.class,new DefaultLocalServiceShutdownEvent());
 
@@ -242,15 +240,17 @@ public class McNativeLauncher implements Listener {
             instance.getExecutorService().shutdown();
             instance.getPluginManager().shutdown();
             ((BukkitMcNative)instance).setReady(false);
+            dependencyManager = instance.getDependencyManager();
         }
 
         if(PLUGIN_MANAGER != null) PLUGIN_MANAGER.reset();
         if(COMMAND_MANAGER != null) COMMAND_MANAGER.reset();
         if(CHANNEL_INJECTOR != null) CHANNEL_INJECTOR.reset();
         if(EVENT_BUS != null) EVENT_BUS.reset();
-        if(CLASS_MAP != null) CLASS_MAP.reset();
 
         McNative.setInstance(null);
+
+        if(dependencyManager instanceof Destroyable) ((Destroyable) dependencyManager).destroy();
 
         logger.info(McNative.CONSOLE_PREFIX+"McNative successfully stopped.");
     }

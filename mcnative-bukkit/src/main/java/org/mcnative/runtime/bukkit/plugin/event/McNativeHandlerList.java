@@ -250,7 +250,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
 
         @Override
         public void throwException(Throwable throwable, Object location) {
-            System.out.println("Could not execute subscription " + location);
+            McNative.getInstance().getLogger().error("Could not execute subscription " + location);
             throwable.printStackTrace();
         }
     }
