@@ -89,6 +89,7 @@ public class McNativePluginWrapperLoader implements PluginLoader {
     private void registerMethods(Plugin plugin, EventBus eventBus, Class<?> eventsClass, Listener listener, Map<Class<? extends Event>, Set<RegisteredListener>> result, boolean useTimings) {
 
         for (final Method method : eventsClass.getDeclaredMethods()) {
+            if(method.getName().equals("finalize") || method.getName().equals("clone")) continue;
             method.setAccessible(true);
             final EventHandler eventHandler = method.getAnnotation(EventHandler.class);
             if (eventHandler != null && !method.isBridge() && !method.isSynthetic() && method.getParameterTypes().length == 1) {

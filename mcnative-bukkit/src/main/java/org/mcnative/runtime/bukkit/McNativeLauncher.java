@@ -226,8 +226,6 @@ public class McNativeLauncher implements Listener {
 
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).delay(2,TimeUnit.SECONDS)
                 .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
-
-        //Test.execute();
     }
 
     public static void shutdown(){
