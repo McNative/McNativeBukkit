@@ -52,7 +52,7 @@
 
         <!-- Dependency version -->
         <dependency.mcnative.api>1.5.18.174-SNAPSHOT</dependency.mcnative.api>
-        <dependency.mcnative.common>1.14.20.173-SNAPSHOT</dependency.mcnative.common>
+        <dependency.mcnative.common>1.14.24.178-SNAPSHOT</dependency.mcnative.common>
         <dependency.netty>4.1.56.Final</dependency.netty>
 
         <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>
@@ -62,7 +62,7 @@
 
         <dependency.placeholderapi>2.10.9</dependency.placeholderapi>
         <dependency.valut>1.7</dependency.valut>
-        <dependency.viaversion>2.2.3-SNAPSHOT</dependency.viaversion>
+        <dependency.viaversion>4.0.0-21w16a</dependency.viaversion>
 
         <dependency.hikaricp>3.4.1</dependency.hikaricp>
         <dependency.slf4j>1.7.25</dependency.slf4j>
