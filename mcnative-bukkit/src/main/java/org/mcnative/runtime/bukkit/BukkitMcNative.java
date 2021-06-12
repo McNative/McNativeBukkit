@@ -81,9 +81,7 @@ import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionProvider;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPlayerDesign;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
-import org.mcnative.runtime.bukkit.plugin.dependency.BukkitDependencyLoader;
-import org.mcnative.runtime.bukkit.plugin.dependency.BukkitMiddlewareClassMap;
-import org.mcnative.runtime.bukkit.plugin.dependency.LegacyReflectedDependencyClassLoader;
+import org.mcnative.runtime.bukkit.plugin.dependency.legacy.BukkitLegacyDependencyLoader;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
@@ -122,7 +120,7 @@ public class BukkitMcNative implements McNative {
     private boolean ready;
     private final McNativeConsoleCredentials consoleCredentials;
 
-    protected BukkitMcNative(PluginVersion apiVersion, PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local, Collection<Env> variables, McNativeConsoleCredentials consoleCredentials, BukkitMiddlewareClassMap middlewareClassMap) {
+    protected BukkitMcNative(PluginVersion apiVersion, PluginVersion implVersion, PluginManager pluginManager, PlayerManager playerManager, LocalService local, Collection<Env> variables, McNativeConsoleCredentials consoleCredentials) {
         this.apiVersion = apiVersion;
         this.implementationVersion = implVersion;
 
@@ -140,8 +138,7 @@ public class BukkitMcNative implements McNative {
         this.platform = new BukkitPlatform(this.scheduler);
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
-        //this.dependencyManager.setDefaultLoader(new BukkitDependencyLoader(middlewareClassMap));
-        this.dependencyManager.setDefaultLoader(new LegacyReflectedDependencyClassLoader());
+        this.dependencyManager.setDefaultLoader(new BukkitLegacyDependencyLoader());
         this.factory = new DefaultObjectFactory();
         this.variables = variables;
 

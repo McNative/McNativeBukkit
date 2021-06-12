@@ -820,22 +820,22 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     }
 
     @Override
-    public void requestConfirmInput(String s, Consumer<ConfirmResult> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+    public void requestConfirmInput(String s, Consumer<ConfirmResult> consumer) {
 
     }
 
     @Override
-    public void requestYesNoInput(String s, Consumer<YesNoResult> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+    public void requestYesNoInput(String s, Consumer<YesNoResult> consumer) {
 
     }
 
     @Override
-    public void requestOkInput(String s, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+    public void requestOkInput(String s, Consumer<Boolean> consumer) {
 
     }
 
     @Override
-    public void requestButtonInput(String s, String s1, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+    public void requestButtonInput(String s, String s1, Consumer<Boolean> consumer) {
 
     }
 

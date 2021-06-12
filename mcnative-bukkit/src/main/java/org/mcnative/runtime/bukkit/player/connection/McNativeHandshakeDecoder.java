@@ -38,6 +38,7 @@ import org.mcnative.runtime.protocol.java.MinecraftProtocolUtil;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 //@Todo implement legacy < 1.6 status ping
 public class McNativeHandshakeDecoder extends MessageToMessageDecoder<ByteBuf> {
@@ -111,7 +112,9 @@ public class McNativeHandshakeDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
         if(VIA_VERSION){
             connection.getChannel().pipeline().remove("encoder");
-            connection.getChannel().pipeline().remove("viaversion_packet_handler");
+            try {
+                connection.getChannel().pipeline().remove("viaversion_packet_handler");
+            }catch (NoSuchElementException ignored){}
         }
         if(PROTOCOL_SUPPORT){
             connection.getChannel().pipeline().remove("encoder");
