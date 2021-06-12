@@ -20,9 +20,9 @@
 
 package org.mcnative.runtime.bukkit.utils;
 
+import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.mcnative.runtime.api.protocol.MinecraftEdition;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
-import us.myles.ViaVersion.api.protocol.ProtocolRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +30,17 @@ import java.util.SortedSet;
 
 public class ViaVersionExtensionUtil {
 
+    @SuppressWarnings("unchecked")
     public static Collection<MinecraftProtocolVersion> getVersions(){
         Collection<MinecraftProtocolVersion> versions = new ArrayList<>();
-        SortedSet<Integer> supported = ProtocolRegistry.getSupportedVersions();
+
+        SortedSet<Integer> supported;
+        try {
+            supported = (SortedSet<Integer>) ReflectionUtil.invokeMethod(Class.forName("us.myles.ViaVersion.api.protocol.ProtocolRegistry"),"getSupportedVersions");
+        } catch (Throwable e) {
+            supported = ViaVersionV4ExtensionUtil.getVersions();
+        }
+
         for (Integer supportedVersion : supported) {
             try{
                 versions.add(MinecraftProtocolVersion.of(MinecraftEdition.JAVA,supportedVersion));
