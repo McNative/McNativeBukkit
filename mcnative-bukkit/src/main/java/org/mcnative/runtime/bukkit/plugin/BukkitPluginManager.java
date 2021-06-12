@@ -62,7 +62,6 @@ import java.util.function.Supplier;
 public class BukkitPluginManager implements PluginManager {
 
     private final static String LOADER_CLASS_NAME = "BukkitMcNativePluginBootstrap";
-    private final static String DUMMY_CLASS_NAME = "McNativeDummyPlugin";
     private final static String PLUGIN_CLASS_NAME = "BukkitDummyPlugin";
 
     private final ServicesManager serviceManager;
@@ -209,8 +208,13 @@ public class BukkitPluginManager implements PluginManager {
     }
 
     @Override
-    public void provideLoader(PluginLoader pluginLoader) {
-        this.loaders.add(pluginLoader);
+    public void provideLoader(PluginLoader loader) {
+        if(loaders.contains(loader)) throw new IllegalArgumentException("Loader is already registered.");
+        this.loaders.add(loader);
+        if(loader.isInstanceAvailable()) {
+            Iterators.removeOne(this.plugins, plugin -> plugin.getName().equals(loader.getDescription().getName()));
+            this.plugins.add(loader.getInstance());
+        }
     }
 
     @Override
@@ -324,7 +328,8 @@ public class BukkitPluginManager implements PluginManager {
     //    && !plugin.getClass().getSimpleName().equals(DUMMY_CLASS_NAME)
     protected void registerBukkitPlugin(org.bukkit.plugin.Plugin plugin){
         if(!plugin.getClass().getSimpleName().equals(LOADER_CLASS_NAME)
-                && !plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME)){
+                && !plugin.getClass().getSimpleName().equals(PLUGIN_CLASS_NAME)
+                && !plugin.getDescription().getMain().equals("reflected")){
 
             PluginLoader loader = Iterators.findOne(this.loaders, loader1
                     -> loader1 instanceof BukkitPluginLoader
