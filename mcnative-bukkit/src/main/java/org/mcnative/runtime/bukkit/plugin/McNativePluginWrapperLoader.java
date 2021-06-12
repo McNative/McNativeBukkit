@@ -114,6 +114,8 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                             method.invoke(listener1, event);
                         } catch (InvocationTargetException ex) {
                             throw new EventException(ex.getCause());
+                        }catch (NoClassDefFoundError e) {
+                            plugin.getLogger().severe("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for " + listener.getClass() + " because " + e.getMessage() + " does not exist.");
                         } catch (Throwable t) {
                             throw new EventException(t);
                         }
