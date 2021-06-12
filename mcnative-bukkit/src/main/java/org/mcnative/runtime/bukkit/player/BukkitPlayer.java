@@ -840,26 +840,6 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     }
 
     @Override
-    public void requestConfirmInput(String s, Consumer<ConfirmResult> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
-    }
-
-    @Override
-    public void requestYesNoInput(String s, Consumer<YesNoResult> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
-    }
-
-    @Override
-    public void requestOkInput(String s, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
-    }
-
-    @Override
-    public void requestButtonInput(String s, String s1, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
-    }
-
-    @Override
     public void openInventory(Inventory inventory) {
         if(isJoining()) {
             Bukkit.getScheduler().runTask(McNativeLauncher.getPlugin(), () -> openInventory(inventory));
