@@ -38,6 +38,7 @@ public class BukkitReflectionUtil {
     private static final Map<String,MinecraftProtocolVersion> protocolVersionsByServerVersion = new HashMap<>();
 
     public static final String SERVER_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
+    private static boolean NMS_OBFUSCATED = true;
 
     static {
         protocolVersionsByServerVersion.put("1_7_R4",MinecraftProtocolVersion.JE_1_7_10);
@@ -56,6 +57,11 @@ public class BukkitReflectionUtil {
         protocolVersionsByServerVersion.put("1_16_R2",MinecraftProtocolVersion.JE_1_16_3);
         protocolVersionsByServerVersion.put("1_16_R3",MinecraftProtocolVersion.JE_1_16_4);
         protocolVersionsByServerVersion.put("1_17_R1",MinecraftProtocolVersion.JE_1_17);
+
+        try {
+            Class.forName("net.minecraft.network.NetworkManager");
+            NMS_OBFUSCATED = false;
+        }catch (Throwable ignored){}
     }
 
     public static Class<?> getClass(String className){
@@ -76,7 +82,11 @@ public class BukkitReflectionUtil {
 
     public static Class<?> getMNSClass(String className){
         try {
-            return Class.forName(NMS_BASE + "." + className);
+            if(NMS_OBFUSCATED){
+                return Class.forName(NMS_BASE + "." + className.substring(className.lastIndexOf(".")+1));
+            }else{
+                return Class.forName(className);
+            }
         } catch (ClassNotFoundException e) {
             throw new ReflectException(e);
         }
@@ -84,7 +94,7 @@ public class BukkitReflectionUtil {
 
     public static Object getServerConnection()  {
         try{
-            Class<?> serverClazz = BukkitReflectionUtil.getMNSClass("MinecraftServer");
+            Class<?> serverClazz = BukkitReflectionUtil.getMNSClass("net.minecraft.server.MinecraftServer");
             Object server = serverClazz.getDeclaredMethod("getServer").invoke(null);
             for (Method method : serverClazz.getDeclaredMethods() ) {
                 if (method.getReturnType() != null
@@ -108,7 +118,7 @@ public class BukkitReflectionUtil {
 
     public static Object getGameProfile(Player player){
         Object entityPlayer = ReflectionUtil.invokeMethod(player,"getHandle");
-        return ReflectionUtil.invokeMethod(getMNSClass("EntityHuman") ,entityPlayer,"getProfile",new Object[]{});
+        return ReflectionUtil.invokeMethod(getMNSClass("net.minecraft.world.entity.player.EntityHuman") ,entityPlayer,"getProfile",new Object[]{});
     }
 
     public static int getPing(Player player){
@@ -149,7 +159,7 @@ public class BukkitReflectionUtil {
 
     public static double[] getRecentTps() {
         try {
-            Class<?> serverClass = getMNSClass("MinecraftServer");
+            Class<?> serverClass = getMNSClass("net.minecraft.server.MinecraftServer");
             Object server = serverClass.getDeclaredMethod("getServer").invoke(null);
             return ReflectionUtil.getFieldValue(serverClass, server, "recentTps", double[].class);
         } catch (Exception exception) {
