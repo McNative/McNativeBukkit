@@ -44,9 +44,9 @@ import java.util.function.Consumer;
 public class BukkitChannelInjector {
 
     @SuppressWarnings("unchecked")
-    private final static Class<? extends ChannelInitializer<?>> PACKET_HANDLER_CLASS = (Class<? extends ChannelInitializer<?>>) BukkitReflectionUtil.getMNSClass("NetworkManager");
+    private final static Class<? extends ChannelInitializer<?>> PACKET_HANDLER_CLASS = (Class<? extends ChannelInitializer<?>>) BukkitReflectionUtil.getMNSClass("net.minecraft.network.NetworkManager");
     private final static Class<?> GAME_PROFILE_CLASS = BukkitReflectionUtil.getClass("com.mojang.authlib.GameProfile");
-    private final static Class<?> LOGIN_LISTENER_CLASS = BukkitReflectionUtil.getMNSClass("LoginListener");
+    private final static Class<?> LOGIN_LISTENER_CLASS = BukkitReflectionUtil.getMNSClass("net.minecraft.server.network.LoginListener");
     private final static String PS_LOGIN_LISTENER_CLASS = "protocolsupport.zplatform.impl.spigot.network.handler.SpigotLoginListener";
     private final static String PS_CONNECTION_CLASS = "protocolsupport.api.Connection";
     private final static String PS_PROFILE_CLASS = "protocolsupport.protocol.utils.authlib.LoginProfile";
