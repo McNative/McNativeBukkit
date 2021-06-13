@@ -81,7 +81,8 @@ import org.mcnative.runtime.bukkit.player.permission.BukkitPermissionProvider;
 import org.mcnative.runtime.bukkit.player.permission.BukkitPlayerDesign;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
-import org.mcnative.runtime.bukkit.plugin.dependency.legacy.BukkitLegacyDependencyLoader;
+import org.mcnative.runtime.bukkit.plugin.dependency.BukkitDependencyLoader;
+import org.mcnative.runtime.bukkit.plugin.dependency.legacy.LegacyReflectedDependencyClassLoader;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
@@ -138,7 +139,7 @@ public class BukkitMcNative implements McNative {
         this.platform = new BukkitPlatform(this.scheduler);
         this.dependencyManager = new DependencyManager(this.logger,new File("plugins/McNative/lib/dependencies/"));
         this.dependencyManager.setLoggerPrefix("[McNative] (Dependency-Manager) ");
-        this.dependencyManager.setDefaultLoader(new BukkitLegacyDependencyLoader());
+        this.dependencyManager.setDefaultLoader(BukkitDependencyLoader.get(this));
         this.factory = new DefaultObjectFactory();
         this.variables = variables;
 

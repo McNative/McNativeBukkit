@@ -34,7 +34,7 @@ public class McNativeChannelInitializer extends ChannelInitializer<SocketChannel
 
     @SuppressWarnings("unchecked")
     private final static Class<? extends ChannelInitializer<?>> PACKET_HANDLER_CLASS =
-            (Class<? extends ChannelInitializer<?>>) BukkitReflectionUtil.getMNSClass("NetworkManager");
+            (Class<? extends ChannelInitializer<?>>) BukkitReflectionUtil.getMNSClass("net.minecraft.network.NetworkManager");
 
     private final BukkitChannelInjector injector;
     private final ChannelInitializer<SocketChannel> original;
