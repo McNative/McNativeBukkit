@@ -20,6 +20,7 @@
 
 package org.mcnative.runtime.bukkit.event;
 
+import net.pretronic.libraries.message.bml.variable.VariableSet;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
@@ -50,6 +51,7 @@ import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerIn
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryCloseEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryDragEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryOpenEvent;
+import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.event.player.*;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryClickEvent;
@@ -59,6 +61,7 @@ import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryO
 import org.mcnative.runtime.bukkit.player.BukkitPendingConnection;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
+import org.mcnative.runtime.bukkit.player.PlayerTextInput;
 import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
 import org.mcnative.runtime.bukkit.player.connection.ChannelConnection;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
@@ -314,7 +317,23 @@ public class McNativeBridgeEventHandler {
     }
 
     private void handleChatEvent(McNativeHandlerList handler, AsyncPlayerChatEvent event){
-        ConnectedMinecraftPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+        BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+
+        PlayerTextInput<?> input = player.getCurrentInput();
+        if(input != null) {
+            event.setCancelled(true);
+            MessageComponent<?> error = input.validate(event.getMessage());
+            if(error != null) {
+                player.sendMessage(error, VariableSet.create()
+                        .addDescribed("player", player)
+                        .add("value", event.getMessage()));
+                return;
+            }
+            input.callCallback(event.getMessage());
+            player.finishInput();
+            return;
+        }
+
         BukkitChatEvent mcnativeEvent = new BukkitChatEvent(event,player);
         handler.callEvents(mcnativeEvent,event);
         if(event.isCancelled()) return;

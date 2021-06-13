@@ -22,9 +22,7 @@ package org.mcnative.runtime.bukkit.inventory.item;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.service.NBTTag;
 import org.mcnative.runtime.api.service.inventory.item.ItemFlag;
@@ -36,6 +34,8 @@ import org.mcnative.runtime.api.service.inventory.item.material.MaterialData;
 import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.bukkit.BukkitNBTTag;
 import org.mcnative.runtime.bukkit.inventory.item.data.BukkitItemData;
+import org.mcnative.runtime.bukkit.inventory.item.data.BukkitLeatherArmorItemData;
+import org.mcnative.runtime.bukkit.inventory.item.data.BukkitPotionItemData;
 import org.mcnative.runtime.bukkit.inventory.item.data.BukkitSkullItemData;
 
 import java.util.*;
@@ -356,6 +356,10 @@ public class BukkitItemStack implements ItemStack {
         if(meta == null) return null;
         if(meta instanceof SkullMeta) {
             return new BukkitSkullItemData(getMaterial(), (SkullMeta) meta);
+        } else if(meta instanceof PotionMeta) {
+            return new BukkitPotionItemData(getMaterial(), (PotionMeta) meta);
+        } else if(meta instanceof LeatherArmorMeta) {
+            return new BukkitLeatherArmorItemData(getMaterial(), (LeatherArmorMeta) meta);
         }
         throw new IllegalArgumentException("Can't map ItemMeta " + meta.getClass() + " to McNative ItemData");
     }
