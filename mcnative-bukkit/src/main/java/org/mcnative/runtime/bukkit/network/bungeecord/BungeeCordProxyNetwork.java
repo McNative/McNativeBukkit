@@ -161,6 +161,16 @@ public class BungeeCordProxyNetwork implements Network {
     }
 
     @Override
+    public ProxyServer getLeaderProxy() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isLeaderProxy(ProxyServer proxyServer) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Collection<MinecraftServer> getServers() {
         return servers;
     }
