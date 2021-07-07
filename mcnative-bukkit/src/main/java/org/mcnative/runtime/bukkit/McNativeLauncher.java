@@ -227,7 +227,6 @@ public class McNativeLauncher implements Listener {
                 .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
 
         eventBus.subscribe(McNative.getInstance(), new GuiListener());
-        eventBus.subscribe(McNative.getInstance(), new Test());
     }
 
     public static void shutdown(){
