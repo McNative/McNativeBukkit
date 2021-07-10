@@ -44,10 +44,7 @@ import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
 import org.mcnative.runtime.api.player.data.PlayerDataProvider;
 import org.mcnative.runtime.api.player.tablist.Tablist;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerInteractEvent;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerJoinEvent;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerQuitEvent;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerWorldChangedEvent;
+import org.mcnative.runtime.api.service.event.player.*;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryClickEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryCloseEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryDragEvent;
@@ -156,8 +153,13 @@ public class McNativeBridgeEventHandler {
         eventBus.registerMappedClass(MinecraftPlayerInventoryOpenEvent.class, InventoryOpenEvent.class);
         eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpenEvent);
 
+        //Interact
         eventBus.registerMappedClass(MinecraftPlayerInteractEvent.class, PlayerInteractEvent.class);
         eventBus.registerManagedEvent(PlayerInteractEvent.class, this::handlePlayerInteractEvent);
+
+        //Drop item
+        eventBus.registerMappedClass(MinecraftPlayerDropItemEvent.class, PlayerDropItemEvent.class);
+        eventBus.registerManagedEvent(PlayerDropItemEvent.class, this::handlePlayerDropItemEvent);
     }
 
     private void handlePreLoginEvent(McNativeHandlerList handler, AsyncPlayerPreLoginEvent event) {
@@ -387,6 +389,12 @@ public class McNativeBridgeEventHandler {
     private void handlePlayerInteractEvent(McNativeHandlerList handler, PlayerInteractEvent event) {
         BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
         MinecraftPlayerInteractEvent mcnativeEvent = new BukkitMinecraftPlayerInteractEvent(event, player);
+        handler.callEvents(event,mcnativeEvent);
+    }
+
+    private void handlePlayerDropItemEvent(McNativeHandlerList handler, PlayerDropItemEvent event) {
+        BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+        MinecraftPlayerDropItemEvent mcnativeEvent = new BukkitMinecraftPlayerDropItemEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
     }
 }
