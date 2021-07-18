@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 public class BungeeCordProxyNetwork implements Network {
@@ -423,5 +424,10 @@ public class BungeeCordProxyNetwork implements Network {
     @Override
     public NetworkIdentifier getIdentifier() {
         return new NetworkIdentifier(getName(),networkId);
+    }
+
+    @Override
+    public CompletableFuture<Document> sendQueryMessageAsync(String s, Document document) {
+        throw new UnsupportedOperationException();
     }
 }
