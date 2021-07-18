@@ -57,7 +57,7 @@ public class BukkitReflectionUtil {
         protocolVersionsByServerVersion.put("1_16_R1",MinecraftProtocolVersion.JE_1_16_1);
         protocolVersionsByServerVersion.put("1_16_R2",MinecraftProtocolVersion.JE_1_16_3);
         protocolVersionsByServerVersion.put("1_16_R3",MinecraftProtocolVersion.JE_1_16_4);
-        protocolVersionsByServerVersion.put("1_17_R1",MinecraftProtocolVersion.JE_1_17);
+        protocolVersionsByServerVersion.put("1_17_R1",MinecraftProtocolVersion.JE_1_17_1);
 
         try {
             Class.forName("net.minecraft.network.NetworkManager");
