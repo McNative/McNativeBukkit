@@ -82,7 +82,6 @@ import org.mcnative.runtime.bukkit.player.permission.BukkitPlayerDesign;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
 import org.mcnative.runtime.bukkit.plugin.dependency.BukkitDependencyLoader;
-import org.mcnative.runtime.bukkit.plugin.dependency.legacy.LegacyReflectedDependencyClassLoader;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;

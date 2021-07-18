@@ -313,7 +313,7 @@ public class MaterialProtocolRegistrar1_13 implements MaterialProtocolRegistrar 
         ACACIA_STAIRS.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(301));
         DARK_OAK_STAIRS.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(302));
         SLIME_BLOCK.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(303));
-        GRASS_PATH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(304));
+        //GRASS_PATH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(304));
         SUNFLOWER.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(305));
         LILAC.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(306));
         ROSE_BUSH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(307));
@@ -699,7 +699,7 @@ public class MaterialProtocolRegistrar1_13 implements MaterialProtocolRegistrar 
         WOLF_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(680));
         ZOMBIE_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(681));
         ZOMBIE_HORSE_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(682));
-        ZOMBIE_PIGMAN_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(683));
+        //ZOMBIE_PIGMAN_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(683));
         ZOMBIE_VILLAGER_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(684));
         EXPERIENCE_BOTTLE.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(685));
         FIRE_CHARGE.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13, new DefaultMaterialProtocolId(686));

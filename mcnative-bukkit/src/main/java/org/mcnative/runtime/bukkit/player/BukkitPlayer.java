@@ -23,6 +23,7 @@ package org.mcnative.runtime.bukkit.player;
 import io.netty.buffer.ByteBuf;
 import net.pretronic.libraries.concurrent.Task;
 import net.pretronic.libraries.message.bml.variable.VariableSet;
+import net.pretronic.libraries.utility.Convert;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.annonations.Internal;
 import net.pretronic.libraries.utility.exception.OperationFailedException;
@@ -42,10 +43,12 @@ import org.mcnative.runtime.api.player.bossbar.BossBar;
 import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.chat.ChatPosition;
 import org.mcnative.runtime.api.player.client.CustomClient;
+import org.mcnative.runtime.api.player.client.LabyModClient;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
 import org.mcnative.runtime.api.player.input.ConfirmResult;
 import org.mcnative.runtime.api.player.input.PlayerTextInputValidator;
 import org.mcnative.runtime.api.player.input.YesNoResult;
+import org.mcnative.runtime.api.player.input.types.MaxStringLengthPlayerTextInputValidator;
 import org.mcnative.runtime.api.player.scoreboard.BelowNameInfo;
 import org.mcnative.runtime.api.player.scoreboard.sidebar.Sidebar;
 import org.mcnative.runtime.api.player.sound.SoundCategory;
@@ -70,6 +73,7 @@ import org.mcnative.runtime.api.service.world.Effect;
 import org.mcnative.runtime.api.service.world.location.Location;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionHandler;
 import org.mcnative.runtime.api.serviceprovider.permission.PermissionProvider;
+import org.mcnative.runtime.api.text.Text;
 import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.api.text.format.TextColor;
 import org.mcnative.runtime.api.utils.positioning.Position;
@@ -91,10 +95,7 @@ import org.mcnative.runtime.common.utils.PlayerRegisterAble;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -117,6 +118,9 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     private final Map<TablistEntry,String> tablistTeamNames;
     private int tablistTeamIndex;
 
+    private final Deque<PlayerTextInput<?>> inputs;
+    private PlayerTextInput<?> currentInput;
+
     public BukkitPlayer(org.bukkit.entity.Player original, PendingConnection connection,MinecraftPlayerData playerData) {
         super(playerData);
         this.original = original;
@@ -127,6 +131,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
         this.tablistTeamNames = new HashMap<>();
         this.tablistTeamIndex = 0;
         this.bossBars = new ArrayList<>();
+        this.inputs = new ArrayDeque<>();
     }
 
     @Override
@@ -216,7 +221,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
 
     @Override
     public boolean isCustomClient(Class<? extends CustomClient> aClass) {
-        return customClient != null && customClient.getClass().equals(aClass);
+        return customClient != null && aClass.isAssignableFrom(customClient.getClass());
     }
 
     @Override
@@ -473,7 +478,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public boolean canSee(OnlineMinecraftPlayer forPlayer) {
         org.bukkit.entity.Player player = Bukkit.getPlayer(forPlayer.getUniqueId());
-       return player != null && this.original.canSee(player);
+        return player != null && this.original.canSee(player);
     }
 
     @Override
@@ -790,33 +795,64 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     }
 
     @Override
-    public void requestTextInput(String s, String s1, Consumer<String> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
+    public void requestTextInput(String label, String placeholder, Consumer<String> callback, PlayerTextInputValidator... validators) {
+        requestObjectInput(label, placeholder, null, callback, validators);
     }
 
     @Override
-    public void requestBooleanInput(String s, String s1, Consumer<Boolean> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
+    public void requestBooleanInput(String label, String placeholder, Consumer<Boolean> callback, PlayerTextInputValidator... validators) {
+        requestObjectInput(label, placeholder, Convert::toBoolean, callback, appendArray(validators, PlayerTextInputValidator.BOOLEAN));
     }
 
     @Override
-    public void requestNumberInput(String s, String s1, Consumer<Long> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
+    public void requestNumberInput(String label, String placeholder, Consumer<Long> callback, PlayerTextInputValidator... validators) {
+        requestObjectInput(label, placeholder, Convert::toLong, callback, appendArray(validators, PlayerTextInputValidator.NUMBER));
     }
 
     @Override
-    public void requestDecimalInput(String s, String s1, Consumer<Double> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
+    public void requestDecimalInput(String label, String placeholder, Consumer<Double> callback, PlayerTextInputValidator... validators) {
+        requestObjectInput(label, placeholder, Convert::toDouble, callback, appendArray(validators, PlayerTextInputValidator.DECIMAL));
     }
 
     @Override
-    public void requestColorInput(String s, String s1, Consumer<TextColor> consumer, PlayerTextInputValidator... playerTextInputValidators) {
-
+    public void requestColorInput(String label, String placeholder, Consumer<TextColor> callback, PlayerTextInputValidator... validators) {
+        requestObjectInput(label, placeholder, TextColor::make, callback, appendArray(validators, PlayerTextInputValidator.COLOR));
     }
 
     @Override
-    public <T> void requestObjectInput(String s, String s1, Function<String, T> function, Consumer<T> consumer, PlayerTextInputValidator... playerTextInputValidators) {
+    public <T> void requestObjectInput(String label, String placeholder, Function<String, T> converter, Consumer<T> callback, PlayerTextInputValidator... validators) {
+        requestObjectInput(label, placeholder, "", converter, callback, validators);
+    }
 
+    private <T> void requestObjectInput(String label, String placeholder, String defaultValue, Function<String, T> converter, Consumer<T> callback, PlayerTextInputValidator... validators) {
+        PlayerTextInput<T> input = new PlayerTextInput<>(callback, converter, validators);
+
+        if(isCustomClient(CustomClient.LABYMOD)) {
+            LabyModClient client = getCustomClient(CustomClient.LABYMOD);
+            client.sendInput(label, placeholder, defaultValue,getValidatorMaxLength(validators), value -> {
+                MessageComponent<?> error = input.validate(value);
+                if(error != null) {
+                    sendMessage(error, VariableSet.create()
+                            .addDescribed("player", this)
+                            .add("value", validators));
+                    requestObjectInput(label, placeholder, value, converter, callback, validators);
+                    return;
+                }
+                input.callCallback(value);
+            });
+        } else {
+            sendMessage(Text.parse(label));
+            this.inputs.add(input);
+        }
+    }
+
+    private int getValidatorMaxLength(PlayerTextInputValidator... validators) {
+        for (PlayerTextInputValidator validator : validators) {
+            if(validator instanceof MaxStringLengthPlayerTextInputValidator) {
+                return ((MaxStringLengthPlayerTextInputValidator) validator).getMaxLength();
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -825,7 +861,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     }
 
     @Override
-    public void requestYesNoInput(String s, Consumer<YesNoResult> consumer) {
+    public void requestYesNoInput(String label, Consumer<YesNoResult> callback) {
 
     }
 
@@ -849,7 +885,6 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
         if(inventory instanceof PlayerRegisterAble) {
             Bukkit.getScheduler().runTask(McNativeLauncher.getPlugin(), ()-> {
                 ((PlayerRegisterAble)inventory).registerPlayer(this);
-                //getOriginal().openInventory(bukkitInventory);
             });
         } else {
             org.bukkit.inventory.Inventory bukkitInventory = ((BukkitInventory<?>)inventory).getOriginal();
@@ -886,5 +921,25 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     @Override
     public Position getPosition() {
         return getLocation();
+    }
+
+    @Internal
+    public PlayerTextInput<?> getCurrentInput() {
+        if(this.currentInput == null) {
+            this.currentInput = this.inputs.poll();
+        }
+        return this.currentInput;
+    }
+
+    @Internal
+    public void finishInput() {
+        this.currentInput = null;
+    }
+
+    private static <T> T[] appendArray(T[] array, T element) {
+        final int N = array.length;
+        array = Arrays.copyOf(array, N + 1);
+        array[N] = element;
+        return array;
     }
 }

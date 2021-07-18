@@ -77,7 +77,7 @@ public class BukkitPendingConnection implements PendingConnection {
         this.virtualHost = virtualHost;
         this.version = MinecraftProtocolVersion.of(MinecraftEdition.JAVA,protocolVersion);
         if(this.version == MinecraftProtocolVersion.UNKNOWN){
-            McNative.getInstance().getLogger().error("Could not find protocol version ("+protocolVersion+") of player "+player.getName());
+            McNative.getInstance().getLogger().error("Could not find protocol version ("+protocolVersion+") of player "+(gameProfile != null ? gameProfile.getName() : "Unknown"));
         }
         this.state = ConnectionState.LOGIN;
         injectPacketCoders();

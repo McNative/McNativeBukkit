@@ -313,7 +313,7 @@ public class MaterialProtocolRegistrar1_13_1 implements MaterialProtocolRegistra
         ACACIA_STAIRS.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(301));
         DARK_OAK_STAIRS.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(302));
         SLIME_BLOCK.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(303));
-        GRASS_PATH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(304));
+        //GRASS_PATH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(304));
         SUNFLOWER.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(305));
         LILAC.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(306));
         ROSE_BUSH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(307));
@@ -705,7 +705,7 @@ public class MaterialProtocolRegistrar1_13_1 implements MaterialProtocolRegistra
         WOLF_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(685));
         ZOMBIE_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(686));
         ZOMBIE_HORSE_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(687));
-        ZOMBIE_PIGMAN_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(688));
+        //ZOMBIE_PIGMAN_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(688));
         ZOMBIE_VILLAGER_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(689));
         EXPERIENCE_BOTTLE.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(690));
         FIRE_CHARGE.getProtocolIds().put(MinecraftProtocolVersion.JE_1_13_1, new DefaultMaterialProtocolId(691));
