@@ -381,7 +381,7 @@ public class MaterialProtocolRegistrar1_16_2 implements MaterialProtocolRegistra
         ACACIA_STAIRS.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(369));
         DARK_OAK_STAIRS.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(370));
         SLIME_BLOCK.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(371));
-        GRASS_PATH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(372));
+        //GRASS_PATH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(372));
         SUNFLOWER.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(373));
         LILAC.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(374));
         ROSE_BUSH.getProtocolIds().put(MinecraftProtocolVersion.JE_1_16_2, new DefaultMaterialProtocolId(375));

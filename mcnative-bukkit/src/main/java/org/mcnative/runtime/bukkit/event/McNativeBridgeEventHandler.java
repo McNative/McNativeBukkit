@@ -20,6 +20,7 @@
 
 package org.mcnative.runtime.bukkit.event;
 
+import net.pretronic.libraries.message.bml.variable.VariableSet;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
@@ -43,13 +44,12 @@ import org.mcnative.runtime.api.player.chat.ChatChannel;
 import org.mcnative.runtime.api.player.data.MinecraftPlayerData;
 import org.mcnative.runtime.api.player.data.PlayerDataProvider;
 import org.mcnative.runtime.api.player.tablist.Tablist;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerJoinEvent;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerQuitEvent;
-import org.mcnative.runtime.api.service.event.player.MinecraftPlayerWorldChangedEvent;
+import org.mcnative.runtime.api.service.event.player.*;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryClickEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryCloseEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryDragEvent;
 import org.mcnative.runtime.api.service.event.player.inventory.MinecraftPlayerInventoryOpenEvent;
+import org.mcnative.runtime.api.text.components.MessageComponent;
 import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.event.player.*;
 import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryClickEvent;
@@ -59,6 +59,7 @@ import org.mcnative.runtime.bukkit.event.player.inventory.BukkitPlayerInventoryO
 import org.mcnative.runtime.bukkit.player.BukkitPendingConnection;
 import org.mcnative.runtime.bukkit.player.BukkitPlayer;
 import org.mcnative.runtime.bukkit.player.BukkitPlayerManager;
+import org.mcnative.runtime.bukkit.player.PlayerTextInput;
 import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
 import org.mcnative.runtime.bukkit.player.connection.ChannelConnection;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
@@ -138,19 +139,27 @@ public class McNativeBridgeEventHandler {
 
         //Inventory click
         eventBus.registerMappedClass(MinecraftPlayerInventoryClickEvent.class, InventoryClickEvent.class);
-        eventBus.registerManagedEvent(InventoryClickEvent.class, this::handleInventoryClick);
+        eventBus.registerManagedEvent(InventoryClickEvent.class, this::handleInventoryClickEvent);
 
         //Inventory close
         eventBus.registerMappedClass(MinecraftPlayerInventoryCloseEvent.class, InventoryCloseEvent.class);
-        eventBus.registerManagedEvent(InventoryCloseEvent.class, this::handleInventoryClose);
+        eventBus.registerManagedEvent(InventoryCloseEvent.class, this::handleInventoryCloseEvent);
 
         //Inventory drag
         eventBus.registerMappedClass(MinecraftPlayerInventoryDragEvent.class, InventoryDragEvent.class);
-        eventBus.registerManagedEvent(InventoryDragEvent.class, this::handleInventoryDrag);
+        eventBus.registerManagedEvent(InventoryDragEvent.class, this::handleInventoryDragEvent);
 
         //Inventory open
         eventBus.registerMappedClass(MinecraftPlayerInventoryOpenEvent.class, InventoryOpenEvent.class);
-        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpen);
+        eventBus.registerManagedEvent(InventoryOpenEvent.class, this::handleInventoryOpenEvent);
+
+        //Interact
+        eventBus.registerMappedClass(MinecraftPlayerInteractEvent.class, PlayerInteractEvent.class);
+        eventBus.registerManagedEvent(PlayerInteractEvent.class, this::handlePlayerInteractEvent);
+
+        //Drop item
+        eventBus.registerMappedClass(MinecraftPlayerDropItemEvent.class, PlayerDropItemEvent.class);
+        eventBus.registerManagedEvent(PlayerDropItemEvent.class, this::handlePlayerDropItemEvent);
     }
 
     private void handlePreLoginEvent(McNativeHandlerList handler, AsyncPlayerPreLoginEvent event) {
@@ -314,7 +323,23 @@ public class McNativeBridgeEventHandler {
     }
 
     private void handleChatEvent(McNativeHandlerList handler, AsyncPlayerChatEvent event){
-        ConnectedMinecraftPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+        BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+
+        PlayerTextInput<?> input = player.getCurrentInput();
+        if(input != null) {
+            event.setCancelled(true);
+            MessageComponent<?> error = input.validate(event.getMessage());
+            if(error != null) {
+                player.sendMessage(error, VariableSet.create()
+                        .addDescribed("player", player)
+                        .add("value", event.getMessage()));
+                return;
+            }
+            input.callCallback(event.getMessage());
+            player.finishInput();
+            return;
+        }
+
         BukkitChatEvent mcnativeEvent = new BukkitChatEvent(event,player);
         handler.callEvents(mcnativeEvent,event);
         if(event.isCancelled()) return;
@@ -335,13 +360,13 @@ public class McNativeBridgeEventHandler {
         handler.callEvents(event,mcnativeEvent);
     }
 
-    private void handleInventoryClick(McNativeHandlerList handler, InventoryClickEvent event) {
+    private void handleInventoryClickEvent(McNativeHandlerList handler, InventoryClickEvent event) {
         BukkitPlayer player = playerManager.getMappedPlayer((org.bukkit.entity.Player) event.getWhoClicked());
         MinecraftPlayerInventoryClickEvent mcnativeEvent = new BukkitPlayerInventoryClickEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
     }
 
-    private void handleInventoryClose(McNativeHandlerList handler, InventoryCloseEvent event) {
+    private void handleInventoryCloseEvent(McNativeHandlerList handler, InventoryCloseEvent event) {
         if(!McNative.getInstance().isReady() || !firstPlayerConnected) return;
         BukkitPlayer player = Iterators.findOne(this.disconnectingPlayers.values(), player1 -> player1.getUniqueId().equals(event.getPlayer().getUniqueId()));
         if(player == null) player = playerManager.getMappedPlayer((org.bukkit.entity.Player) event.getPlayer());
@@ -349,15 +374,27 @@ public class McNativeBridgeEventHandler {
         handler.callEvents(event,mcnativeEvent);
     }
 
-    private void handleInventoryDrag(McNativeHandlerList handler, InventoryDragEvent event) {
+    private void handleInventoryDragEvent(McNativeHandlerList handler, InventoryDragEvent event) {
         BukkitPlayer player = playerManager.getMappedPlayer((org.bukkit.entity.Player) event.getWhoClicked());
         MinecraftPlayerInventoryDragEvent mcnativeEvent = new BukkitPlayerInventoryDragEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
     }
 
-    private void handleInventoryOpen(McNativeHandlerList handler, InventoryOpenEvent event) {
+    private void handleInventoryOpenEvent(McNativeHandlerList handler, InventoryOpenEvent event) {
         BukkitPlayer player = playerManager.getMappedPlayer((org.bukkit.entity.Player) event.getPlayer());
         MinecraftPlayerInventoryOpenEvent mcnativeEvent = new BukkitPlayerInventoryOpenEvent(event, player);
+        handler.callEvents(event,mcnativeEvent);
+    }
+
+    private void handlePlayerInteractEvent(McNativeHandlerList handler, PlayerInteractEvent event) {
+        BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+        MinecraftPlayerInteractEvent mcnativeEvent = new BukkitMinecraftPlayerInteractEvent(event, player);
+        handler.callEvents(event,mcnativeEvent);
+    }
+
+    private void handlePlayerDropItemEvent(McNativeHandlerList handler, PlayerDropItemEvent event) {
+        BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
+        MinecraftPlayerDropItemEvent mcnativeEvent = new BukkitMinecraftPlayerDropItemEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
     }
 }
