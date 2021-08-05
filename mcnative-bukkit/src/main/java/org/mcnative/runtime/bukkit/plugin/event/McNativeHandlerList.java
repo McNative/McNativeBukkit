@@ -138,7 +138,6 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     public void callEvents(Object... objects){
         for (EventExecutor executor : new ArrayList<>(executors)) {
             try {
-                System.out.println("Executed event "+eventClass+" "+executor.toString());
                 executor.execute(DUMMY_EXECUTION, objects);
             } catch (AuthorNagException ex) {
                 if (executor instanceof BukkitEventExecutor) {
