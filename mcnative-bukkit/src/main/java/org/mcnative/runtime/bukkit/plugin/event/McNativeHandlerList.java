@@ -24,6 +24,7 @@ import net.pretronic.libraries.event.executor.ConsumerEventExecutor;
 import net.pretronic.libraries.event.executor.EventExecutor;
 import net.pretronic.libraries.event.executor.MethodEventExecutor;
 import net.pretronic.libraries.event.network.EventOrigin;
+import net.pretronic.libraries.logging.Debug;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
@@ -210,6 +211,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
                     List<HandlerList> handlers = getStaticHandlerRegistry();
                     handlers.remove(original);
                     handlers.add(override);
+                    Debug.print("Injected McNativeHandlerList for "+eventClass+" and transformed "+original.getRegisteredListeners().length);
                     return;
                 }
             }
