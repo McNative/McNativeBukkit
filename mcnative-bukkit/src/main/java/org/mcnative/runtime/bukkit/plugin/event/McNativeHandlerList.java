@@ -34,6 +34,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.AuthorNagException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
@@ -69,7 +70,9 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
 
     @Override
     public void registerAll(Collection<RegisteredListener> listeners) {
-        for (RegisteredListener listener : listeners) register(listener);
+        for (RegisteredListener listener : listeners){
+            register(listener);
+        }
     }
 
     @Override
@@ -135,6 +138,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
     public void callEvents(Object... objects){
         for (EventExecutor executor : new ArrayList<>(executors)) {
             try {
+                System.out.println("Executed event "+eventClass+" "+executor.toString());
                 executor.execute(DUMMY_EXECUTION, objects);
             } catch (AuthorNagException ex) {
                 if (executor instanceof BukkitEventExecutor) {
@@ -211,7 +215,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
                     List<HandlerList> handlers = getStaticHandlerRegistry();
                     handlers.remove(original);
                     handlers.add(override);
-                    Debug.print("Injected McNativeHandlerList for "+eventClass+" and transformed "+original.getRegisteredListeners().length);
+                    Debug.print("Injected McNativeHandlerList for "+eventClass+" and transferred "+original.getRegisteredListeners().length+" events");
                     return;
                 }
             }

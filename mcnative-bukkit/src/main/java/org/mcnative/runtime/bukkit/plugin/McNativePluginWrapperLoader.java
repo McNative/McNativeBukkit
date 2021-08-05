@@ -105,7 +105,7 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                         mappedOwner = new BukkitPluginOwner(plugin);
                     }
 
-                    Debug.print("Registered McNative event "+eventClass+" with priority "+eventHandler.priority()+" for "+plugin.getName());
+                    Debug.print("Registered McNative event "+eventClass.getSimpleName()+" with priority "+eventHandler.priority()+" for "+listener.getClass()+" ("+plugin.getName()+")");
                     eventBus.addExecutor(mappedClass, new MethodEventExecutor(mappedOwner, mapPriority(eventHandler.priority()), ExecutionType.BLOCKING, listener, eventClass, method));
                 } else { //Bukkit Event
                     Class<? extends Event> directClass = eventClass.asSubclass(Event.class);
@@ -122,7 +122,7 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                             throw new EventException(t);
                         }
                     };
-                    Debug.print("Registered Bukkit event "+directClass+" with priority "+eventHandler.priority()+" for "+plugin.getName());
+                    Debug.print("Registered Bukkit event "+directClass.getSimpleName()+" with priority "+eventHandler.priority()+" for "+listener.getClass()+" ("+plugin.getName()+")");
                     if (useTimings) {
                         eventSet.add(new TimedRegisteredListener(listener, executor, eventHandler.priority(), plugin, eventHandler.ignoreCancelled()));
                     } else {

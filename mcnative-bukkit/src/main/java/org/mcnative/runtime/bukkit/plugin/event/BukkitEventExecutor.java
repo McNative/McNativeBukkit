@@ -88,10 +88,11 @@ public class BukkitEventExecutor implements EventExecutor {
     }
 
     private byte mapPriority(EventPriority priority){
-        if(priority == EventPriority.HIGHEST || priority == EventPriority.MONITOR) return 127;
+        if(priority == EventPriority.MONITOR) return 127;
+        else if(priority == EventPriority.HIGHEST) return 126;
         else if(priority == EventPriority.HIGH) return 100;
         else if(priority == EventPriority.LOW) return 0;
-        else if(priority == EventPriority.LOWEST) return 127;
+        else if(priority == EventPriority.LOWEST) return -127;
         return 50;
     }
 
