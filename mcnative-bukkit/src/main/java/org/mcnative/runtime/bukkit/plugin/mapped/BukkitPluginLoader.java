@@ -162,6 +162,11 @@ public class BukkitPluginLoader implements PluginLoader {
     }
 
     @Override
+    public void reload() {
+        //unused
+    }
+
+    @Override
     public void shutdown() {
         Bukkit.getPluginManager().disablePlugin(original);
     }
