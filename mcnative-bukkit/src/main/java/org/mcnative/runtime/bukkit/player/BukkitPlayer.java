@@ -277,6 +277,10 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
         }
     }
 
+    @Override
+    public void kickLocal(MessageComponent<?> messageComponent, VariableSet variableSet) {
+        disconnect(messageComponent,variableSet);
+    }
 
     @Override
     public void performCommand(String command) {
