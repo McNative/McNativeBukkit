@@ -23,6 +23,7 @@ package org.mcnative.runtime.bukkit.plugin;
 import net.pretronic.libraries.event.EventBus;
 import net.pretronic.libraries.event.execution.ExecutionType;
 import net.pretronic.libraries.event.executor.MethodEventExecutor;
+import net.pretronic.libraries.logging.Debug;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
@@ -87,7 +88,6 @@ public class McNativePluginWrapperLoader implements PluginLoader {
     }
 
     private void registerMethods(Plugin plugin, EventBus eventBus, Class<?> eventsClass, Listener listener, Map<Class<? extends Event>, Set<RegisteredListener>> result, boolean useTimings) {
-
         for (final Method method : eventsClass.getDeclaredMethods()) {
             if(method.getName().equals("finalize") || method.getName().equals("clone")) continue;
             method.setAccessible(true);
@@ -104,6 +104,8 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                     } else {
                         mappedOwner = new BukkitPluginOwner(plugin);
                     }
+
+                    Debug.print("Registered McNative event "+eventClass.getSimpleName()+" with priority "+eventHandler.priority()+" for "+listener.getClass()+" ("+plugin.getName()+")");
                     eventBus.addExecutor(mappedClass, new MethodEventExecutor(mappedOwner, mapPriority(eventHandler.priority()), ExecutionType.BLOCKING, listener, eventClass, method));
                 } else { //Bukkit Event
                     Class<? extends Event> directClass = eventClass.asSubclass(Event.class);
@@ -120,6 +122,7 @@ public class McNativePluginWrapperLoader implements PluginLoader {
                             throw new EventException(t);
                         }
                     };
+                    Debug.print("Registered Bukkit event "+directClass.getSimpleName()+" with priority "+eventHandler.priority()+" for "+listener.getClass()+" ("+plugin.getName()+")");
                     if (useTimings) {
                         eventSet.add(new TimedRegisteredListener(listener, executor, eventHandler.priority(), plugin, eventHandler.ignoreCancelled()));
                     } else {

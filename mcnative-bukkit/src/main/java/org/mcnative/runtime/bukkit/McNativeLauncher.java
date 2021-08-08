@@ -387,11 +387,16 @@ public class McNativeLauncher implements Listener {
         }else if(!Bukkit.getOnlineMode()){
             File spigotConfigFile = new File("spigot.yml");
             if(spigotConfigFile.exists()){
-                Document spigotConfig = DocumentFileType.YAML.getReader().read(spigotConfigFile);
-                if(!spigotConfig.getBoolean("settings.bungeecord")){
-                    logger.warning(McNative.CONSOLE_PREFIX+"(Network) Online mode is enabled, but BungeeCord is disabled in spigot.yml");
-                    logger.warning(McNative.CONSOLE_PREFIX+"(Network) If you are using BungeeCord, make sure to set bungeecord to 'true' in your spigt.yml config");
-                    return null;
+                try {
+                    Document spigotConfig = DocumentFileType.YAML.getReader().read(spigotConfigFile);
+                    if(!spigotConfig.getBoolean("settings.bungeecord")){
+                        logger.warning(McNative.CONSOLE_PREFIX+"(Network) Online mode is enabled, but BungeeCord is disabled in spigot.yml");
+                        logger.warning(McNative.CONSOLE_PREFIX+"(Network) If you are using BungeeCord, make sure to set bungeecord to 'true' in your spigt.yml config");
+                        return null;
+                    }
+                }catch (Exception e){
+                    logger.log(Level.SEVERE,McNative.CONSOLE_PREFIX+"(Network) Could not read the spigot.yml configuration and detect the network setup");
+                    logger.log(Level.SEVERE,McNative.CONSOLE_PREFIX+"(Network) Error: "+e.getMessage());
                 }
             }
             logger.info(McNative.CONSOLE_PREFIX+"(Network) Initialized BungeeCord networking technology");
