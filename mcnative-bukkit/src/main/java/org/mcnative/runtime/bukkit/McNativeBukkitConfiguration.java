@@ -59,7 +59,7 @@ public class McNativeBukkitConfiguration {
     @DocumentKey("player.displayName.applyOnBukkit")
     public static boolean PLAYER_DISPLAY_APPLY_ON_BUKKIT = false;
 
-    public static Map<String,String> PLAYER_COLORS_COLORS = new LinkedHashMap<>();
+    public static LinkedHashMap<String,String> PLAYER_COLORS_COLORS = new LinkedHashMap<>();
     public static String PLAYER_COLORS_DEFAULT = "&7";
 
 

@@ -24,6 +24,7 @@ import net.pretronic.libraries.event.executor.ConsumerEventExecutor;
 import net.pretronic.libraries.event.executor.EventExecutor;
 import net.pretronic.libraries.event.executor.MethodEventExecutor;
 import net.pretronic.libraries.event.network.EventOrigin;
+import net.pretronic.libraries.logging.Debug;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.Validate;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
@@ -33,6 +34,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.AuthorNagException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
@@ -68,7 +70,9 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
 
     @Override
     public void registerAll(Collection<RegisteredListener> listeners) {
-        for (RegisteredListener listener : listeners) register(listener);
+        for (RegisteredListener listener : listeners){
+            register(listener);
+        }
     }
 
     @Override
@@ -210,6 +214,7 @@ public class McNativeHandlerList extends HandlerList implements org.bukkit.plugi
                     List<HandlerList> handlers = getStaticHandlerRegistry();
                     handlers.remove(original);
                     handlers.add(override);
+                    Debug.print("Injected McNativeHandlerList for "+eventClass+" and transferred "+original.getRegisteredListeners().length+" events");
                     return;
                 }
             }
