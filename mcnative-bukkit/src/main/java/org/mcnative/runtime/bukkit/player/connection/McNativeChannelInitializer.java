@@ -25,6 +25,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 
 import java.lang.reflect.Method;
@@ -66,7 +67,9 @@ public class McNativeChannelInitializer extends ChannelInitializer<SocketChannel
         ChannelConnection connection = new ChannelConnection(channel,networkManager,connectionUnregisterListener);
         this.injector.registerConnection(connection);
 
-        channel.pipeline().addBefore("decoder","mcnative-handshake-decoder",new McNativeHandshakeDecoder(connection));
+        if(McNativeBukkitConfiguration.NETWORK_PACKET_MANIPULATION_DISABLE_HANDSHAKE_INJECTION){
+            channel.pipeline().addBefore("decoder","mcnative-handshake-decoder",new McNativeHandshakeDecoder(connection));
+        }
         channel.closeFuture().addListener(connectionUnregisterListener);
     }
 }
