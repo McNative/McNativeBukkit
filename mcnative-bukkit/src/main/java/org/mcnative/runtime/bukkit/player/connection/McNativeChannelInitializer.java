@@ -67,7 +67,7 @@ public class McNativeChannelInitializer extends ChannelInitializer<SocketChannel
         ChannelConnection connection = new ChannelConnection(channel,networkManager,connectionUnregisterListener);
         this.injector.registerConnection(connection);
 
-        if(McNativeBukkitConfiguration.NETWORK_PACKET_MANIPULATION_DISABLE_HANDSHAKE_INJECTION){
+        if(McNativeBukkitConfiguration.NETWORK_PACKET_MANIPULATION_HANDSHAKE_INJECTION){
             channel.pipeline().addBefore("decoder","mcnative-handshake-decoder",new McNativeHandshakeDecoder(connection));
         }
         channel.closeFuture().addListener(connectionUnregisterListener);

@@ -107,8 +107,8 @@ public class McNativeBukkitConfiguration {
     public static double LABYMOD_SUBTITLE_SIZE = 1.6d;
     public static String LABYMOD_SUBTITLE_TEXT = "{design.prefix}";
 
-    @DocumentKey("network.messaging.packetManipulation.disableHandshakeInjection")
-    public static boolean NETWORK_PACKET_MANIPULATION_DISABLE_HANDSHAKE_INJECTION = false;
+    @DocumentKey("network.messaging.packetManipulation.handshakeInjection")
+    public static boolean NETWORK_PACKET_MANIPULATION_HANDSHAKE_INJECTION = true;
 
     @DocumentIgnored
     public static MessageComponent<?> LABYMOD_SUBTITLE_TEXT_COMPONENT;
