@@ -68,6 +68,9 @@ public class McNativeBukkitConfiguration {
     public static String PLAYER_TABLIST_PREFIX = "{design.prefix}";
     public static String PLAYER_TABLIST_SUFFIX = "{design.suffix}";
 
+    public static boolean PLAYER_TABLIST_DELAY_ENABLED = false;
+    public static long PLAYER_TABLIST_DELAY_MILLISECONDS = 700;
+
     public static boolean PLAYER_TABLIST_OVERVIEW_ENABLED = false;
     public static String PLAYER_TABLIST_OVERVIEW_HEADER = "&4Header";
     public static String PLAYER_TABLIST_OVERVIEW_FOOTER = "&8Footer";

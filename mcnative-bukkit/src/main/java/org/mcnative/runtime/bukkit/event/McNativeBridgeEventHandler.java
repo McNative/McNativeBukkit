@@ -257,6 +257,11 @@ public class McNativeBridgeEventHandler {
         if(serverTablist != null){
             serverTablist.addEntry(player);
             player.setTablist(serverTablist);
+            if(McNativeBukkitConfiguration.PLAYER_TABLIST_DELAY_ENABLED){//workaround to fix some incompatibilities with other plugins
+                McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM)
+                        .delay(McNativeBukkitConfiguration.PLAYER_TABLIST_DELAY_MILLISECONDS,TimeUnit.MILLISECONDS)
+                        .execute(() -> serverTablist.updateEntries(player));
+            }
         }
 
         BukkitJoinEvent mcnativeEvent = new BukkitJoinEvent(event,player);
