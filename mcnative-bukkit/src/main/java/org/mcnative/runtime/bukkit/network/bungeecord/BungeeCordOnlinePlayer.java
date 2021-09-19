@@ -132,6 +132,11 @@ public class BungeeCordOnlinePlayer extends OfflineMinecraftPlayer implements On
     }
 
     @Override
+    public void kickLocal(MessageComponent<?> messageComponent, VariableSet variableSet) {
+        McNativePlayerExecutor.kickLocal(uniqueId,messageComponent,variableSet);
+    }
+
+    @Override
     public void performCommand(String command) {
         McNativePlayerExecutor.performCommand(uniqueId,command);
     }
