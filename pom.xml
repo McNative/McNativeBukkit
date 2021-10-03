@@ -25,7 +25,7 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.31.9.337-BETA</version>
+    <version>1.31.9.339</version>
     <packaging>pom</packaging>
     <modules>
         <module>mcnative-bukkit</module>
