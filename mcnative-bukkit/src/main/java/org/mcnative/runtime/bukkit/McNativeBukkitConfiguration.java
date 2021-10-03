@@ -113,6 +113,9 @@ public class McNativeBukkitConfiguration {
     @DocumentKey("network.messaging.packetManipulation.handshakeInjection")
     public static boolean NETWORK_PACKET_MANIPULATION_HANDSHAKE_INJECTION = true;
 
+    @DocumentKey("network.messaging.packetManipulation.legacyTabComplete")
+    public static boolean NETWORK_PACKET_MANIPULATION_LEGACY_TAB_COMPLETE = true;
+
     @DocumentIgnored
     public static MessageComponent<?> LABYMOD_SUBTITLE_TEXT_COMPONENT;
 
