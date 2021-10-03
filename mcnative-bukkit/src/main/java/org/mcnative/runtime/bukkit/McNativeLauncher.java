@@ -253,6 +253,8 @@ public class McNativeLauncher implements Listener {
 
         if(dependencyManager instanceof Destroyable) ((Destroyable) dependencyManager).destroy();
 
+        Bukkit.getPluginManager().registerEvents(new Test(),McNativeLauncher.getPlugin());
+
         logger.info(McNative.CONSOLE_PREFIX+"McNative successfully stopped.");
     }
 
