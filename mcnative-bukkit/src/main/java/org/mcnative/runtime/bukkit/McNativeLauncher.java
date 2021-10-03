@@ -185,7 +185,7 @@ public class McNativeLauncher implements Listener {
 
         registerDefaultListener(eventBus, pluginManager);
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
-        new McNativeTabCompleteEventHandler(eventBus, localService.getPacketManager(),true);
+        new McNativeTabCompleteEventHandler(eventBus, localService.getPacketManager(),McNativeBukkitConfiguration.NETWORK_PACKET_MANIPULATION_LEGACY_TAB_COMPLETE);
 
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
 
