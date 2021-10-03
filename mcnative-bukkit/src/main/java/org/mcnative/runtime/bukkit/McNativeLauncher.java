@@ -77,7 +77,6 @@ import org.mcnative.runtime.bukkit.player.connection.BukkitChannelInjector;
 import org.mcnative.runtime.bukkit.player.tablist.BukkitTablist;
 import org.mcnative.runtime.bukkit.plugin.BukkitPluginManager;
 import org.mcnative.runtime.bukkit.plugin.command.BukkitCommandManager;
-import org.mcnative.runtime.bukkit.plugin.dependency.legacy.BukkitMiddlewareClassMap;
 import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
 import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
@@ -186,7 +185,7 @@ public class McNativeLauncher implements Listener {
 
         registerDefaultListener(eventBus, pluginManager);
         new McNativeBridgeEventHandler(injector,eventBus,playerManager);
-        new McNativeTabCompleteEventHandler(eventBus, localService.getPacketManager());
+        new McNativeTabCompleteEventHandler(eventBus, localService.getPacketManager(),McNativeBukkitConfiguration.NETWORK_PACKET_MANIPULATION_LEGACY_TAB_COMPLETE);
 
         logger.info(McNative.CONSOLE_PREFIX+"McNative has overwritten default bukkit events.");
 
