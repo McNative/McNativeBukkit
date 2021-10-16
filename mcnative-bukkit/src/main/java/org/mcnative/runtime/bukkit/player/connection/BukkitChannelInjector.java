@@ -23,15 +23,14 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.socket.SocketChannel;
 import net.pretronic.libraries.logging.Debug;
 import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import net.pretronic.libraries.utility.reflect.ReflectException;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
-import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.player.profile.GameProfile;
+import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 import org.mcnative.runtime.bukkit.utils.GameProfileUtil;
 
 import java.lang.reflect.Field;
@@ -192,7 +191,7 @@ public class BukkitChannelInjector {
         try {
             List<String> names = future.channel().pipeline().names();
             ChannelHandler oldHandler = null;
-            ChannelInitializer<SocketChannel> oldInitializer = null;
+            ChannelInitializer<Channel> oldInitializer = null;
 
             //Search the best handler
             for (String name : names) {
@@ -204,7 +203,7 @@ public class BukkitChannelInjector {
                         if(field != null && field.getType().equals(ChannelHandler.class)){
                             field.setAccessible(true);
                             oldHandler = handler;
-                            oldInitializer = (ChannelInitializer<SocketChannel>) field.get(handler);
+                            oldInitializer = (ChannelInitializer<Channel>) field.get(handler);
                         }
                     }catch (ReflectException ignored){}
                 }
@@ -215,7 +214,7 @@ public class BukkitChannelInjector {
                     oldHandler = future.channel().pipeline().first();
                     Field field = ReflectionUtil.getField(oldHandler.getClass(), "childHandler");
                     field.setAccessible(true);
-                    oldInitializer = (ChannelInitializer<SocketChannel>) field.get(oldHandler);
+                    oldInitializer = (ChannelInitializer<Channel>) field.get(oldHandler);
                 }catch (ReflectException exception){
                     exception.printStackTrace();
                     throw new UnsupportedOperationException("Could not override channel adapter. It seams like Mcnative " +

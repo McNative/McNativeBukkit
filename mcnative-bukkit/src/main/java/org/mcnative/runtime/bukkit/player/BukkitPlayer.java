@@ -467,7 +467,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     public void hide(OnlineMinecraftPlayer forPlayer) {
         org.bukkit.entity.Player player = Bukkit.getPlayer(forPlayer.getUniqueId());
         if(player != null) {
-            this.original.hidePlayer(McNativeLauncher.getPlugin(), player);
+            this.original.hidePlayer(player);//Switched to deprecated method to support legacy Minecraft versions
         }
     }
 
@@ -475,7 +475,7 @@ public class BukkitPlayer extends OfflineMinecraftPlayer implements Player, Bukk
     public void show(OnlineMinecraftPlayer forPlayer) {
         org.bukkit.entity.Player player = Bukkit.getPlayer(forPlayer.getUniqueId());
         if(player != null) {
-            this.original.showPlayer(McNativeLauncher.getPlugin(), player);
+            this.original.showPlayer(player);//Switched to deprecated method to support legacy Minecraft versions
         }
     }
 
