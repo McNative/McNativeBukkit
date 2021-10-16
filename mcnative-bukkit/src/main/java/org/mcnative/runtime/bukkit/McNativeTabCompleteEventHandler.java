@@ -22,6 +22,7 @@ package org.mcnative.runtime.bukkit;
 
 import net.pretronic.libraries.event.EventBus;
 import net.pretronic.libraries.utility.Iterators;
+import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.PendingConnection;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerTabCompleteEvent;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerTabCompleteResponseEvent;
@@ -37,6 +38,7 @@ import org.mcnative.runtime.api.protocol.packet.type.player.complete.MinecraftPl
 import org.mcnative.runtime.common.event.player.complete.DefaultMinecraftPlayerTabCompleteEvent;
 import org.mcnative.runtime.common.event.player.complete.DefaultMinecraftPlayerTabCompleteResponseEvent;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,10 +47,12 @@ public class McNativeTabCompleteEventHandler implements MinecraftPacketListener 
 
     private final EventBus eventBus;
     private final Map<UUID,String> cursors;
+    private final boolean interceptBaseCompletion;
 
-    public McNativeTabCompleteEventHandler(EventBus eventBus, PacketManager packetManager) {
+    public McNativeTabCompleteEventHandler(EventBus eventBus, PacketManager packetManager, boolean interceptBaseCompletion) {
         this.eventBus = eventBus;
         this.cursors = new ConcurrentHashMap<>();
+        this.interceptBaseCompletion = interceptBaseCompletion;
 
         packetManager.registerPacketListener(Endpoint.UPSTREAM, PacketDirection.INCOMING, MinecraftPlayerTabCompletePacket.class,this);
         packetManager.registerPacketListener(Endpoint.UPSTREAM, PacketDirection.OUTGOING, MinecraftPlayerTabCompleteResponsePacket.class,this);
@@ -60,8 +64,6 @@ public class McNativeTabCompleteEventHandler implements MinecraftPacketListener 
         if(event.getPacket().getClass().equals(MinecraftPlayerTabCompletePacket.class)){
             MinecraftPlayerTabCompletePacket packet = event.getPacket(MinecraftPlayerTabCompletePacket.class);
 
-            System.out.println("REQUEST: "+packet.getCursor());
-
             cursors.put(((PendingConnection) event.getConnection()).getUniqueId(),packet.getCursor());
 
             ConnectedMinecraftPlayer player = ((PendingConnection) event.getConnection()).getPlayer();
@@ -70,13 +72,31 @@ public class McNativeTabCompleteEventHandler implements MinecraftPacketListener 
 
             if(mcnativeEvent.isCancelled()) event.setCancelled(true);
             else event.setRewrite(true);
+
+            if(this.interceptBaseCompletion && !mcnativeEvent.isCancelled() && packet.getCursor() != null
+                    && packet.getCursor().charAt(0) == '/' && packet.getCursor().length() == 1){
+                event.setCancelled(true);
+
+                String rawCursor = packet.getCursor().substring(1).trim().toLowerCase();
+                List<String> suggestions = Iterators.map(McNative.getInstance().getLocal().getCommandManager().getCommands()
+                        ,command -> command.getConfiguration().getName().toLowerCase()
+                        ,command -> (command.getConfiguration().getPermission() == null
+                                || ((PendingConnection)event.getConnection()).getPlayer().hasPermission(command.getConfiguration().getPermission()))
+                                && command.getConfiguration().getName().toLowerCase().startsWith(rawCursor));
+
+                MinecraftPlayerTabCompleteResponsePacket responsePacket = new MinecraftPlayerTabCompleteResponsePacket();
+                responsePacket.setSuggestions(suggestions);
+                responsePacket.setTransactionId(packet.getTransactionId());
+                responsePacket.setLength(packet.getCursor().length());
+                responsePacket.setStart(1);
+                event.getConnection().sendPacket(responsePacket);
+            }
+
         }else if(event.getPacket().getClass().equals(MinecraftPlayerTabCompleteResponsePacket.class)){
-            System.out.println("RESPONSE waiting");
             MinecraftPlayerTabCompleteResponsePacket packet = event.getPacket(MinecraftPlayerTabCompleteResponsePacket.class);
 
             ConnectedMinecraftPlayer player = ((PendingConnection) event.getConnection()).getPlayer();
             String cursor = cursors.remove(player.getUniqueId());
-            System.out.println("RESPONSE: "+cursor);
 
             MinecraftPlayerTabCompleteResponseEvent mcnativeEvent = new DefaultMinecraftPlayerTabCompleteResponseEvent(packet,cursor,player);
             eventBus.callEvent(MinecraftPlayerTabCompleteResponseEvent.class,mcnativeEvent);
