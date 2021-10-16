@@ -81,6 +81,7 @@ import org.mcnative.runtime.bukkit.plugin.event.BukkitEventBus;
 import org.mcnative.runtime.bukkit.serviceprovider.VaultServiceListener;
 import org.mcnative.runtime.bukkit.serviceprovider.placeholder.PlaceHolderApiProvider;
 import org.mcnative.runtime.client.integrations.ClientIntegration;
+import org.mcnative.runtime.common.McNativeTabCompleteEventHandler;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceShutdownEvent;
 import org.mcnative.runtime.common.event.service.local.DefaultLocalServiceStartupEvent;
 import org.mcnative.runtime.common.maf.MAFService;
