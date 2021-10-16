@@ -20,28 +20,25 @@
 package org.mcnative.runtime.bukkit.player.connection;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.mcnative.runtime.bukkit.McNativeBukkitConfiguration;
 import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 
-public class McNativeChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class McNativeChannelInitializer extends ChannelInitializer<Channel> {
 
     @SuppressWarnings("unchecked")
     private final static Class<? extends ChannelInitializer<?>> PACKET_HANDLER_CLASS =
             (Class<? extends ChannelInitializer<?>>) BukkitReflectionUtil.getMNSClass("net.minecraft.network.NetworkManager");
 
     private final BukkitChannelInjector injector;
-    private final ChannelInitializer<SocketChannel> original;
+    private final ChannelInitializer<Channel> original;
     private final Method method;
 
-    public McNativeChannelInitializer(BukkitChannelInjector injector, ChannelInitializer<SocketChannel> original) {
+    public McNativeChannelInitializer(BukkitChannelInjector injector, ChannelInitializer<Channel> original) {
         this.injector = injector;
         this.original = original;
         Method method = null;
@@ -54,12 +51,12 @@ public class McNativeChannelInitializer extends ChannelInitializer<SocketChannel
         this.method = method;
     }
 
-    public ChannelInitializer<SocketChannel> getOriginal() {
+    public ChannelInitializer<Channel> getOriginal() {
         return original;
     }
 
     @Override
-    protected void initChannel(SocketChannel channel) throws Exception {
+    protected void initChannel(Channel channel) throws Exception {
         this.method.invoke(this.original, channel);
         Object networkManager = channel.pipeline().get(PACKET_HANDLER_CLASS);
         GenericFutureListener<Future<? super Void>> connectionUnregisterListener = future -> injector.unregisterConnection(channel);
