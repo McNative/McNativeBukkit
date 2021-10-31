@@ -51,6 +51,7 @@ import org.mcnative.runtime.api.network.component.server.ServerStatusResponse;
 import org.mcnative.runtime.api.network.component.server.ServerVersion;
 import org.mcnative.runtime.api.player.ConnectedMinecraftPlayer;
 import org.mcnative.runtime.api.player.chat.ChatChannel;
+import org.mcnative.runtime.api.player.chat.ChatFormatter;
 import org.mcnative.runtime.api.player.chat.GroupChatFormatter;
 import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.player.tablist.TablistEntry;
@@ -283,11 +284,14 @@ public class McNativeLauncher implements Listener {
         if(McNativeBukkitConfiguration.PLAYER_CHAT_ENABLED){
             ChatChannel serverChat = ChatChannel.newChatChannel();
             serverChat.setName("ServerChat");
-            serverChat.setMessageFormatter((GroupChatFormatter) (sender, variables, message) -> McNativeBukkitConfiguration.PLAYER_CHAT);
+            serverChat.setMessageFormatter((receiver, sender, variables, message) ->{
+                if(sender instanceof MinecraftConnection) return new TargetMessageKeyComponent((MinecraftConnection)sender,McNativeBukkitConfiguration.PLAYER_CHAT);
+                else return new MessageKeyComponent(McNativeBukkitConfiguration.PLAYER_CHAT);
+            });
             McNative.getInstance().getLocal().setServerChat(serverChat);
         }
 
-        if(McNativeBukkitConfiguration.PLAYER_TABLIST_ENABLED){
+        if(McNativeBukkitConfiguration.PLAYFER_TABLIST_ENABLED){
             Tablist tablist = new BukkitTablist();
             tablist.setFormatter(new TablistFormatter() {
                 @Override
