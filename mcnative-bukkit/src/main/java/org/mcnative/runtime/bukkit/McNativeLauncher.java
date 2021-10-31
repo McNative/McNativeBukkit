@@ -291,7 +291,7 @@ public class McNativeLauncher implements Listener {
             McNative.getInstance().getLocal().setServerChat(serverChat);
         }
 
-        if(McNativeBukkitConfiguration.PLAYFER_TABLIST_ENABLED){
+        if(McNativeBukkitConfiguration.PLAYER_TABLIST_ENABLED){
             Tablist tablist = new BukkitTablist();
             tablist.setFormatter(new TablistFormatter() {
                 @Override
