@@ -48,7 +48,7 @@ public abstract class BukkitAnvilInventory implements AnvilInventory, PlayerRegi
 
     @Override
     public ItemStack getInputLeft() {
-        return null;
+        return null; 
     }
 
     @Override

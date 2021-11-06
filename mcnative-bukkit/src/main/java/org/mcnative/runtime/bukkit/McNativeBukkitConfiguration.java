@@ -81,7 +81,7 @@ public class McNativeBukkitConfiguration {
 
     public static transient Message PLAYER_TABLIST_PREFIX_LOADED;
     public static transient Message PLAYER_TABLIST_SUFFIX_LOADED;
-    public static transient MessageComponent<?> PLAYER_CHAT;
+    public static transient Message PLAYER_CHAT;
     public static transient MessageComponent<?> PLAYER_TABLIST_OVERVIEW_HEADER_LOADED;
     public static transient MessageComponent<?> PLAYER_TABLIST_OVERVIEW_FOOTER_LOADED;
 
@@ -162,7 +162,7 @@ public class McNativeBukkitConfiguration {
     }
 
     public static boolean postLoad(){
-        PLAYER_CHAT = new MessageKeyComponent(parseCustomMessage(PLAYER_CHAT_FORMAT));
+        PLAYER_CHAT = parseCustomMessage(PLAYER_CHAT_FORMAT);
         PLAYER_TABLIST_PREFIX_LOADED = parseCustomMessage(PLAYER_TABLIST_PREFIX);
         PLAYER_TABLIST_SUFFIX_LOADED = parseCustomMessage(PLAYER_TABLIST_SUFFIX);
 
