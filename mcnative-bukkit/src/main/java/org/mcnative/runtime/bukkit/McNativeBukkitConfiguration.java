@@ -50,8 +50,8 @@ public class McNativeBukkitConfiguration {
     @DocumentKey("console.secret")
     public static String CONSOLE_SECRET = "00000-00000-00000";
 
-    @DocumentKey("console.mafEnabled")
-    public static boolean CONSOLE_MAF_ENABLED = true;
+ //   @DocumentKey("console.mafEnabled")
+ //   public static boolean CONSOLE_MAF_ENABLED = true;
 
     @DocumentKey("player.displayName.format")
     public static String PLAYER_DISPLAY_NAME_FORMAT = "{design.color}{name}";
