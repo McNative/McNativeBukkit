@@ -219,9 +219,12 @@ public class McNativeLauncher implements Listener {
         setupConfiguredServices();
 
         ResourceMessageExtractor.extractMessages(McNativeLauncher.class.getClassLoader(),"system-messages/","McNative");
+
+        /*
         if(McNativeBukkitConfiguration.CONSOLE_MAF_ENABLED && McNative.getInstance().getConsoleCredentials() != null){
             MAFService.start();
         }
+         */
 
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).delay(2,TimeUnit.SECONDS)
                 .execute(() -> eventBus.callEvent(LocalServiceStartupEvent.class,new DefaultLocalServiceStartupEvent()));
