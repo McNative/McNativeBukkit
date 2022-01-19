@@ -392,6 +392,7 @@ public class McNativeBridgeEventHandler {
     }
 
     private void handlePlayerInteractEvent(McNativeHandlerList handler, PlayerInteractEvent event) {
+        System.out.println("INTERNAL " + event.getMaterial() + ":" + event.getAction() + ":" + event.getHand());
         BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
         MinecraftPlayerInteractEvent mcnativeEvent = new BukkitMinecraftPlayerInteractEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
