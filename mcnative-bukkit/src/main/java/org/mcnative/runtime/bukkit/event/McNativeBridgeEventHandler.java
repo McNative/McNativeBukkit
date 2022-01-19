@@ -25,12 +25,14 @@ import net.pretronic.libraries.utility.Iterators;
 import net.pretronic.libraries.utility.interfaces.ObjectOwner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.connection.ConnectionState;
 import org.mcnative.runtime.api.event.player.MinecraftPlayerChatEvent;
@@ -84,12 +86,16 @@ public class McNativeBridgeEventHandler {
     //For preventing McNative mapping error.
     private boolean firstPlayerConnected;
 
+    //For preventing player interact spigot bug, where action RIGHT_CLICK_BLOCK is called twice
+    private final Map<UUID, Long> playerInteractRightClick;
+
     public McNativeBridgeEventHandler(BukkitChannelInjector injector, BukkitEventBus eventBus, BukkitPlayerManager playerManager) {
         this.injector = injector;
         this.eventBus = eventBus;
         this.playerManager = playerManager;
         this.pendingConnections = new ConcurrentHashMap<>();
         this.disconnectingPlayers = new ConcurrentHashMap<>();
+        this.playerInteractRightClick = new ConcurrentHashMap<>();
         firstPlayerConnected = false;
         setup();
         McNative.getInstance().getScheduler().createTask(ObjectOwner.SYSTEM).async()
@@ -392,6 +398,15 @@ public class McNativeBridgeEventHandler {
     }
 
     private void handlePlayerInteractEvent(McNativeHandlerList handler, PlayerInteractEvent event) {
+        if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
+            Long lastInteract = this.playerInteractRightClick.get(event.getPlayer().getUniqueId());
+            if(lastInteract == null) {
+                this.playerInteractRightClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+            } else {
+                this.playerInteractRightClick.remove(event.getPlayer().getUniqueId());
+                if((lastInteract+500) >System.currentTimeMillis()) return;
+            }
+        }
         System.out.println("INTERNAL " + event.getMaterial() + ":" + event.getAction() + ":" + event.getHand());
         BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
         MinecraftPlayerInteractEvent mcnativeEvent = new BukkitMinecraftPlayerInteractEvent(event, player);
