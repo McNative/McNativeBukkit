@@ -407,7 +407,6 @@ public class McNativeBridgeEventHandler {
                 if((lastInteract+500) >System.currentTimeMillis()) return;
             }
         }
-        System.out.println("INTERNAL " + event.getMaterial() + ":" + event.getAction() + ":" + event.getHand());
         BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
         MinecraftPlayerInteractEvent mcnativeEvent = new BukkitMinecraftPlayerInteractEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
