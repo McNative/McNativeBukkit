@@ -25,7 +25,7 @@
 
     <groupId>org.mcnative.runtime.bukkit</groupId>
     <artifactId>McNativeBukkit</artifactId>
-    <version>1.35.4.368</version>
+    <version>1.37.1.378-BETA</version>
     <packaging>pom</packaging>
     <modules>
         <module>mcnative-bukkit</module>
@@ -51,8 +51,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency version -->
-        <dependency.mcnative.api>1.7.6.217-SNAPSHOT</dependency.mcnative.api>
-        <dependency.mcnative.common>1.15.17.212-SNAPSHOT</dependency.mcnative.common>
+        <dependency.mcnative.api>1.7.9.220-SNAPSHOT</dependency.mcnative.api>
+        <dependency.mcnative.common>1.15.20.215-SNAPSHOT</dependency.mcnative.common>
         <dependency.netty>4.1.56.Final</dependency.netty>
 
         <dependency.bukkit>1.14.2-R0.1-SNAPSHOT</dependency.bukkit>
@@ -85,7 +85,7 @@
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
             <id>vaultapi</id>
