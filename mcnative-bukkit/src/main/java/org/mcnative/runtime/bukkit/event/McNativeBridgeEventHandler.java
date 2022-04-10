@@ -398,6 +398,7 @@ public class McNativeBridgeEventHandler {
     }
 
     private void handlePlayerInteractEvent(McNativeHandlerList handler, PlayerInteractEvent event) {
+        /*
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
             Long lastInteract = this.playerInteractRightClick.get(event.getPlayer().getUniqueId());
             if(lastInteract == null) {
@@ -407,6 +408,7 @@ public class McNativeBridgeEventHandler {
                 if((lastInteract+500) >System.currentTimeMillis()) return;
             }
         }
+         */
         BukkitPlayer player = playerManager.getMappedPlayer(event.getPlayer());
         MinecraftPlayerInteractEvent mcnativeEvent = new BukkitMinecraftPlayerInteractEvent(event, player);
         handler.callEvents(event,mcnativeEvent);
