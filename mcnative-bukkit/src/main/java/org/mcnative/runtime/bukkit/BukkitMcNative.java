@@ -64,6 +64,7 @@ import org.mcnative.runtime.api.player.profile.GameProfileLoader;
 import org.mcnative.runtime.api.player.tablist.Tablist;
 import org.mcnative.runtime.api.plugin.MinecraftPlugin;
 import org.mcnative.runtime.api.plugin.configuration.ConfigurationProvider;
+import org.mcnative.runtime.api.protocol.MinecraftProtocolVersion;
 import org.mcnative.runtime.api.service.inventory.Inventory;
 import org.mcnative.runtime.api.service.inventory.gui.GuiManager;
 import org.mcnative.runtime.api.service.inventory.gui.implemen.DefaultGuiManager;
@@ -84,6 +85,7 @@ import org.mcnative.runtime.bukkit.plugin.command.McNativeCommand;
 import org.mcnative.runtime.bukkit.plugin.dependency.BukkitDependencyLoader;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginDescription;
 import org.mcnative.runtime.bukkit.plugin.mapped.BukkitPluginLoader;
+import org.mcnative.runtime.bukkit.utils.BukkitReflectionUtil;
 import org.mcnative.runtime.common.DefaultLoaderConfiguration;
 import org.mcnative.runtime.common.DefaultObjectFactory;
 import org.mcnative.runtime.common.player.*;
@@ -154,6 +156,10 @@ public class BukkitMcNative implements McNative {
 
         this.injector = new DefaultInjectorService(new ServiceClassRegistry(pluginManager));
         DocumentRegistry.setInstanceFactory(new DependencyInjectionObjectInstanceFactory(injector));
+
+        if(BukkitReflectionUtil.getProtocolVersionByServerVersion() == MinecraftProtocolVersion.UNKNOWN) {
+            getLogger().warn("Server version could not be detected for " + BukkitReflectionUtil.getServerVersion());
+        }
     }
 
     @Override
