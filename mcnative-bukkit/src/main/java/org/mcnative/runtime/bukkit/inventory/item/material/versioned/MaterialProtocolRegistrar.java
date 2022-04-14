@@ -101,10 +101,6 @@ public interface MaterialProtocolRegistrar {
                 registrar = new MaterialProtocolRegistrar1_18_1();
                 break;
             }
-
-            /**
-             * Register 1.18.2
-             */
             case JE_1_18_2: {
                 registrar = new MaterialProtocolRegistrar1_18_2();
                 break;
