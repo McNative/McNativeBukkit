@@ -101,6 +101,10 @@ public interface MaterialProtocolRegistrar {
                 registrar = new MaterialProtocolRegistrar1_18_1();
                 break;
             }
+            case JE_1_18_2: {
+                registrar = new MaterialProtocolRegistrar1_18_2();
+                break;
+            }
         }
         if(registrar == null) {
             throw new IllegalArgumentException("Unknown minecraft version " + version + ". Can't register MaterialProtocolIds");
