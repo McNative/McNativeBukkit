@@ -1166,5 +1166,6 @@ public class MaterialProtocolRegistrar1_19 implements MaterialProtocolRegistrar 
         ZOMBIE_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_19, new DefaultMaterialProtocolId(979));
         ZOMBIE_VILLAGER_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_19, new DefaultMaterialProtocolId(981));
         ZOMBIFIED_PIGLIN_SPAWN_EGG.getProtocolIds().put(MinecraftProtocolVersion.JE_1_19, new DefaultMaterialProtocolId(982));
+
     }
 }
