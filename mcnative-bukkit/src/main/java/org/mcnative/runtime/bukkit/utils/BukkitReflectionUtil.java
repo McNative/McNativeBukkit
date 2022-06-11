@@ -60,6 +60,7 @@ public class BukkitReflectionUtil {
         protocolVersionsByServerVersion.put("1_17_R1",MinecraftProtocolVersion.JE_1_17_1);
         protocolVersionsByServerVersion.put("1_18_R1",MinecraftProtocolVersion.JE_1_18_1);
         protocolVersionsByServerVersion.put("1_18_R2",MinecraftProtocolVersion.JE_1_18_2);
+        protocolVersionsByServerVersion.put("1_19_R1",MinecraftProtocolVersion.JE_1_19);
         try {
             Class.forName("net.minecraft.network.NetworkManager");
             NMS_OBFUSCATED = false;
