@@ -195,7 +195,7 @@
         <dependency>
             <groupId>com.github.ProtocolSupport</groupId>
             <artifactId>ProtocolSupport</artifactId>
-            <version>-f188eb2ea8-1</version>
+            <version>9fcf5d35ec</version>
             <scope>provided</scope>
         </dependency>
 
