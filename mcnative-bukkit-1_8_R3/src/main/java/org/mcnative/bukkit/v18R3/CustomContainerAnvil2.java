@@ -3,12 +3,8 @@ package org.mcnative.bukkit.v18R3;
 import net.minecraft.server.v1_8_R3.*;
 import net.pretronic.libraries.utility.reflect.ReflectionUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryAnvil;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.mcnative.bukkit.nms.shared.BukkitAnvilInventory;
-import org.mcnative.bukkit.nms.shared.NMSHelper;
 import org.mcnative.runtime.api.McNative;
 import org.mcnative.runtime.api.service.inventory.type.AnvilInventory;
 
