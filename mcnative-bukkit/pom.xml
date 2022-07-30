@@ -5,7 +5,7 @@
     <parent>
         <artifactId>McNativeBukkit</artifactId>
         <groupId>org.mcnative.runtime.bukkit</groupId>
-        <version>1.40.1.394-BETA</version>
+        <version>1.41.2.409-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
 
     <build>
         <plugins>
@@ -195,7 +196,7 @@
         <dependency>
             <groupId>com.github.ProtocolSupport</groupId>
             <artifactId>ProtocolSupport</artifactId>
-            <version>-f188eb2ea8-1</version>
+            <version>9fcf5d35ec</version>
             <scope>provided</scope>
         </dependency>
 

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>McNativeBukkit</artifactId>
         <groupId>org.mcnative.runtime.bukkit</groupId>
-        <version>1.40.1.394-BETA</version>
+        <version>1.41.2.409-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
 
     <dependencies>
         <dependency>
